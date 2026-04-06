@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/mcp.json
+!.vscode/settings.json
+
+# Logs
+*.log
+
+# Temp
+*.tmp
+*.temp
