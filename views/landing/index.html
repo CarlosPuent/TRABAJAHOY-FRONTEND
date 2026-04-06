@@ -7,399 +7,541 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="landing.css" />
   </head>
   <body class="landing-body">
-    <header class="header">
-      <div class="header__container wrapper">
-        <a href="index.html" class="header__logo-link">
+    <header class="site-header">
+      <div class="container site-header__container">
+        <a
+          href="./index.html"
+          class="site-header__logo-link"
+          aria-label="Inicio"
+        >
           <img
             src="../../src/images/logoPortal.png"
             alt="TrabajaHoy"
-            class="header__logo"
+            class="site-header__logo"
           />
         </a>
 
-        <nav class="header__nav">
-          <ul class="header__nav-list">
-            <li><a href="#" class="header__nav-link">Productos</a></li>
-            <li><a href="#" class="header__nav-link">Soluciones</a></li>
-            <li><a href="#" class="header__nav-link">Comunidad</a></li>
-            <li><a href="#" class="header__nav-link">Recursos</a></li>
-          </ul>
+        <nav class="site-header__nav" aria-label="Navegación principal">
+          <a
+            href="#"
+            class="site-header__nav-link site-header__nav-link--active"
+          >
+            Buscar empleos
+          </a>
+          <a href="#" class="site-header__nav-link">Empresas</a>
+          <a href="#" class="site-header__nav-link">Recursos</a>
+          <a href="#" class="site-header__nav-link">Foro</a>
         </nav>
 
-        <div class="header__actions">
-          <a
-            href="../login/index.html"
-            class="btn btn--outline-primary header__btn"
-            >Login</a
-          >
-          <a
-            href="../register-candidate/index.html"
-            class="btn btn--primary-orange header__btn"
-            >Registrarse</a
-          >
+        <div class="site-header__actions">
+          <a href="../login/index.html" class="btn btn--login">Login</a>
+          <a href="../register-candidate/index.html" class="btn btn--register">
+            Registrarse
+          </a>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="hero content-section">
-        <div class="hero__background"></div>
-        <div class="hero__content wrapper">
-          <h1 class="hero__title">Encuentra tu próximo empleo hoy</h1>
-          <p class="hero__subtitle">
-            Miles de oportunidades laborales publicadas por empresas verificadas
-          </p>
+      <section class="hero">
+        <div class="hero__gradient"></div>
 
-          <div class="hero-search">
-            <div class="hero-search__input-group">
+        <div class="container hero__container">
+          <div class="hero__top-row">
+            <div class="hero__copy">
+              <h1 class="hero__title">Encuentra tu próximo empleo hoy</h1>
+            </div>
+
+            <button type="button" class="hero__filter-btn">
               <svg
-                class="icon"
                 viewBox="0 0 24 24"
                 width="20"
                 height="20"
+                fill="none"
                 stroke="currentColor"
                 stroke-width="2"
-                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
                 aria-hidden="true"
               >
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
               </svg>
+              <span>Filtros</span>
+            </button>
+          </div>
+
+          <div class="hero__search-grid">
+            <div class="hero__search-main">
               <input
                 type="text"
-                class="hero-search__input"
+                class="hero__input"
                 placeholder="Palabras clave"
                 aria-label="Palabras clave"
               />
+              <button type="button" class="hero__icon-btn" aria-label="Buscar">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
             </div>
-            <div class="hero-search__divider"></div>
-            <div class="hero-search__input-group">
+
+            <div class="hero__search-location">
               <svg
-                class="icon"
                 viewBox="0 0 24 24"
-                width="20"
-                height="20"
+                width="18"
+                height="18"
+                fill="none"
                 stroke="currentColor"
                 stroke-width="2"
-                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
                 aria-hidden="true"
               >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
               <input
                 type="text"
-                class="hero-search__input"
-                placeholder="Ubicación"
+                class="hero__input hero__input--location"
+                placeholder="Ubicacion"
                 aria-label="Ubicación"
               />
             </div>
-            <button
-              type="button"
-              class="btn btn--primary-orange hero-search__btn"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <line x1="4" y1="6" x2="20" y2="6"></line>
-                <line x1="7" y1="12" x2="17" y2="12"></line>
-                <line x1="10" y1="18" x2="14" y2="18"></line>
-                <circle cx="8" cy="6" r="1.5"></circle>
-                <circle cx="15" cy="12" r="1.5"></circle>
-                <circle cx="11" cy="18" r="1.5"></circle>
-              </svg>
-              Buscar Filtros
-            </button>
           </div>
-        </div>
-      </section>
 
-      <section class="categories content-section wrapper">
-        <h2 class="section-title">Busquedas populares</h2>
-        <div class="categories__grid">
-          <a href="#" class="category-card">
-            <div class="category-card__icon text-orange">
-              <svg
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-                <path d="M2 2l7.586 7.586"></path>
-                <circle cx="11" cy="11" r="2"></circle>
-              </svg>
-            </div>
-            <div>
-              <h3 class="category-card__title">Diseño</h3>
-              <p class="category-card__count">357 Vacantes abiertas</p>
-            </div>
-          </a>
-          <a href="#" class="category-card">
-            <div class="category-card__icon text-orange">
-              <svg
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <polyline points="16 18 22 12 16 6"></polyline>
-                <polyline points="8 6 2 12 8 18"></polyline>
-              </svg>
-            </div>
-            <div>
-              <h3 class="category-card__title">Software</h3>
-              <p class="category-card__count">312 Vacantes abiertas</p>
-            </div>
-          </a>
-          <a href="#" class="category-card">
-            <div class="category-card__icon text-orange">
-              <svg
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <polygon points="11 19 2 12 11 5 11 19"></polygon>
-                <polygon points="22 19 13 12 22 5 22 19"></polygon>
-              </svg>
-            </div>
-            <div>
-              <h3 class="category-card__title">Marketing</h3>
-              <p class="category-card__count">297 Vacantes abiertas</p>
-            </div>
-          </a>
-          <a href="#" class="category-card">
-            <div class="category-card__icon text-orange">
-              <svg
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                <line x1="12" y1="20" x2="12.01" y2="20"></line>
-              </svg>
-            </div>
-            <div>
-              <h3 class="category-card__title">Remoto</h3>
-              <p class="category-card__count">247 Vacantes abiertas</p>
-            </div>
-          </a>
-        </div>
-      </section>
+          <p class="hero__caption">
+            Miles de oportunidades laborales publicadas por empresas verificadas
+          </p>
 
-      <section class="stats content-section wrapper">
-        <h2 class="section-title">Estadísticas</h2>
-        <div class="stats__grid">
-          <div class="stat-card">
-            <div class="stat-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="32"
-                height="32"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="8.5" cy="7" r="4"></circle>
-                <polyline points="17 11 19 13 23 9"></polyline>
-              </svg>
-            </div>
-            <h3 class="stat-card__number">+5000</h3>
-            <p class="stat-card__label">empleos activos</p>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="32"
-                height="32"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-              </svg>
-            </div>
-            <h3 class="stat-card__number">+1200</h3>
-            <p class="stat-card__label">empresas registradas</p>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="32"
-                height="32"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="8.5" cy="7" r="4"></circle>
-                <polyline points="17 11 19 13 23 9"></polyline>
-              </svg>
-            </div>
-            <h3 class="stat-card__number">+20,000</h3>
-            <p class="stat-card__label">candidatos</p>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="32"
-                height="32"
-                stroke="currentColor"
-                stroke-width="2"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <h3 class="stat-card__number">+350</h3>
-            <p class="stat-card__label">empleos publicados esta semana</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="jobs content-section wrapper">
-        <h2 class="section-title">Empleos destacados</h2>
-        <div class="jobs__empty" aria-hidden="true"></div>
-      </section>
-
-      <section class="resources content-section wrapper">
-        <h2 class="section-title">Previsualización recursos</h2>
-        <div class="resources__grid">
-          <div class="resource-card">
-            <h3 class="resource-card__title">Como hacer un CV</h3>
-            <p class="resource-card__text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-            <a href="#" class="btn btn--primary-orange">Leer más</a>
-          </div>
-          <div class="resource-card">
-            <h3 class="resource-card__title">Preparación para entrevistas</h3>
-            <p class="resource-card__text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-            <a href="#" class="btn btn--primary-orange">Leer más</a>
-          </div>
-          <div class="resource-card">
-            <h3 class="resource-card__title">Consejos de carrera</h3>
-            <p class="resource-card__text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-            <a href="#" class="btn btn--primary-orange">Leer más</a>
-          </div>
-        </div>
-        <div class="resources__actions">
-          <a href="#" class="btn btn--outline-orange"
-            >Ver más recursos útiles para tu búsqueda laboral</a
+          <section
+            class="hero-categories"
+            aria-labelledby="popular-searches-title"
           >
+            <h2 id="popular-searches-title" class="hero-categories__title">
+              Busquedas populares
+            </h2>
+
+            <div class="hero-categories__grid">
+              <article class="hero-category-card">
+                <div class="hero-category-card__icon-box">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                    <path d="M2 2l7.6 7.6"></path>
+                    <circle cx="11" cy="11" r="2"></circle>
+                  </svg>
+                </div>
+                <div class="hero-category-card__content">
+                  <h3 class="hero-category-card__title">Diseño</h3>
+                  <p class="hero-category-card__meta">357 Vacantes abiertas</p>
+                </div>
+              </article>
+
+              <article class="hero-category-card">
+                <div class="hero-category-card__icon-box">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                </div>
+                <div class="hero-category-card__content">
+                  <h3 class="hero-category-card__title">Software</h3>
+                  <p class="hero-category-card__meta">312 Vacantes abiertas</p>
+                </div>
+              </article>
+
+              <article class="hero-category-card">
+                <div class="hero-category-card__icon-box">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polygon points="11 19 2 12 11 5 11 19"></polygon>
+                    <polygon points="22 19 13 12 22 5 22 19"></polygon>
+                  </svg>
+                </div>
+                <div class="hero-category-card__content">
+                  <h3 class="hero-category-card__title">Marketing</h3>
+                  <p class="hero-category-card__meta">297 Vacantes abiertas</p>
+                </div>
+              </article>
+
+              <article class="hero-category-card">
+                <div class="hero-category-card__icon-box">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                  </svg>
+                </div>
+                <div class="hero-category-card__content">
+                  <h3 class="hero-category-card__title">Remoto</h3>
+                  <p class="hero-category-card__meta">247 Vacantes abiertas</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="stats-section section">
+        <div class="container">
+          <h2 class="section-heading">Estadísticas</h2>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-card__icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="42"
+                  height="42"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <polyline points="17 11 19 13 23 9"></polyline>
+                </svg>
+              </div>
+              <h3 class="stat-card__number">+5000</h3>
+              <p class="stat-card__label">empleos activos</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card__icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="42"
+                  height="42"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </div>
+              <h3 class="stat-card__number">+1200</h3>
+              <p class="stat-card__label">empresas registradas</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card__icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="42"
+                  height="42"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </div>
+              <h3 class="stat-card__number">+20,000</h3>
+              <p class="stat-card__label">candidatos</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card__icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="42"
+                  height="42"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <h3 class="stat-card__number">+350</h3>
+              <p class="stat-card__label">empleos publicados esta semana</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="featured-jobs section">
+        <div class="container">
+          <h2 class="section-heading">Empleos destacados</h2>
+
+          <div class="jobs-grid">
+            <article class="job-card">
+              <div class="job-card__company">
+                <div class="job-card__company-logo">G</div>
+                <h3 class="job-card__company-name">Nombre de compañía</h3>
+              </div>
+
+              <h4 class="job-card__position">Nombre del puesto de trabajo</h4>
+
+              <p class="job-card__meta">Ubicación • Remoto/Presencial</p>
+              <p class="job-card__salary">[Rango salarial]</p>
+
+              <div class="job-card__topics">
+                <span class="job-card__topics-label">Temas:</span>
+                <div class="job-card__tags">
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                </div>
+              </div>
+
+              <div class="job-card__actions">
+                <button type="button" class="job-btn job-btn--apply">
+                  Aplicar
+                </button>
+                <button type="button" class="job-btn job-btn--save">
+                  Guardar
+                </button>
+              </div>
+            </article>
+
+            <article class="job-card">
+              <div class="job-card__company">
+                <div class="job-card__company-logo">G</div>
+                <h3 class="job-card__company-name">Nombre de compañía</h3>
+              </div>
+
+              <h4 class="job-card__position">Nombre del puesto de trabajo</h4>
+
+              <p class="job-card__meta">Ubicación • Remoto/Presencial</p>
+              <p class="job-card__salary">[Rango salarial]</p>
+
+              <div class="job-card__topics">
+                <span class="job-card__topics-label">Temas:</span>
+                <div class="job-card__tags">
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                </div>
+              </div>
+
+              <div class="job-card__actions">
+                <button type="button" class="job-btn job-btn--apply">
+                  Aplicar
+                </button>
+                <button type="button" class="job-btn job-btn--save">
+                  Guardar
+                </button>
+              </div>
+            </article>
+
+            <article class="job-card">
+              <div class="job-card__company">
+                <div class="job-card__company-logo">G</div>
+                <h3 class="job-card__company-name">Nombre de compañía</h3>
+              </div>
+
+              <h4 class="job-card__position">Nombre del puesto de trabajo</h4>
+
+              <p class="job-card__meta">Ubicación • Remoto/Presencial</p>
+              <p class="job-card__salary">[Rango salarial]</p>
+
+              <div class="job-card__topics">
+                <span class="job-card__topics-label">Temas:</span>
+                <div class="job-card__tags">
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                  <span class="tag">Tema</span>
+                </div>
+              </div>
+
+              <div class="job-card__actions">
+                <button type="button" class="job-btn job-btn--apply">
+                  Aplicar
+                </button>
+                <button type="button" class="job-btn job-btn--save">
+                  Guardar
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="resources section">
+        <div class="container">
+          <h2 class="section-heading">Previsualización recursos</h2>
+
+          <div class="resources-grid">
+            <article class="resource-card">
+              <h3 class="resource-card__title">Como hacer un CV</h3>
+              <p class="resource-card__text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <a href="#" class="resource-card__button">Leer más</a>
+            </article>
+
+            <article class="resource-card">
+              <h3 class="resource-card__title">Preparación para entrevistas</h3>
+              <p class="resource-card__text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <a href="#" class="resource-card__button">Leer más</a>
+            </article>
+
+            <article class="resource-card">
+              <h3 class="resource-card__title">Consejos de carrera</h3>
+              <p class="resource-card__text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <a href="#" class="resource-card__button">Leer más</a>
+            </article>
+          </div>
+
+          <div class="resources__more">
+            <a href="#" class="resources__more-link">
+              Ver más recursos útiles para tu búsqueda laboral
+            </a>
+          </div>
         </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="footer__container wrapper">
-        <div class="footer__brand">
-          <div class="footer__logo-group">
+    <footer class="site-footer">
+      <div class="container site-footer__container">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
             <svg
               viewBox="0 0 24 24"
-              width="32"
-              height="32"
+              width="28"
+              height="28"
+              fill="none"
               stroke="currentColor"
               stroke-width="2"
-              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
               aria-hidden="true"
             >
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
-            <span class="footer__logo-text">TrabajaHoy</span>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
           </div>
-          <div class="footer__contact">
-            <p class="footer__contact-phone">
-              Llámanos: <span class="text-white">(503) 2222-0000</span>
-            </p>
-            <p class="footer__contact-address">
-              Av. La Revolución #123, San Salvador, El Salvador
-            </p>
-          </div>
+
+          <p class="site-footer__phone">Llámanos:(503) 2222-0000</p>
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
         </div>
 
-        <div class="footer__links">
-          <div class="footer__column">
-            <h4 class="footer__column-title">Enlaces Rápidos</h4>
-            <ul class="footer__list">
-              <li><a href="#">Acerca de</a></li>
-              <li><a href="#">Contacto</a></li>
-              <li><a href="#">Precio</a></li>
-              <li><a href="#">Blog</a></li>
-            </ul>
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces Rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
           </div>
-          <div class="footer__column">
-            <h4 class="footer__column-title">Candidatos</h4>
-            <ul class="footer__list">
-              <li><a href="#">Buscar Empleos</a></li>
-              <li><a href="#">Ver Empresas</a></li>
-              <li><a href="#">Panel de Candidato</a></li>
-              <li><a href="#">Empleos Guardados</a></li>
-            </ul>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar Empleos</a>
+            <a href="#">Ver Empresas</a>
+            <a href="#">Panel de Candidato</a>
+            <a href="#">Empleos Guardados</a>
           </div>
-          <div class="footer__column">
-            <h4 class="footer__column-title">Empleadores</h4>
-            <ul class="footer__list">
-              <li><a href="#">Publicar Empleo</a></li>
-              <li><a href="#">Buscar Candidatos</a></li>
-              <li><a href="#">Panel del Empleador</a></li>
-              <li><a href="#">Solicitudes</a></li>
-            </ul>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar Empleo</a>
+            <a href="#">Buscar Candidatos</a>
+            <a href="#">Panel del Empleador</a>
+            <a href="#">Solicitudes</a>
           </div>
-          <div class="footer__column">
-            <h4 class="footer__column-title">Soporte</h4>
-            <ul class="footer__list">
-              <li><a href="#">Preguntas Frecuentes</a></li>
-              <li><a href="#">Política de Privacidad</a></li>
-              <li><a href="#">Términos y Condiciones</a></li>
-            </ul>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas Frecuentes</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Términos y Condiciones</a>
           </div>
         </div>
       </div>
