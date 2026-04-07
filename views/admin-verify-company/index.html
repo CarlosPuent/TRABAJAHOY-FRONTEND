@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Compañias | TrabajaHoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../landing/landing.css">
+  <link rel="stylesheet" href="../admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="site-header">
+    <div class="container site-header__container">
+      <a href="../landing/index.html" class="site-header__logo-link">
+        <img src="../../src/images/logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
+      </a>
+      <nav class="site-header__nav">
+        <a href="#" class="site-header__nav-link site-header__nav-link--active">Buscar empleos</a>
+        <a href="#" class="site-header__nav-link">Empresas</a>
+        <a href="#" class="site-header__nav-link">Recursos</a>
+        <a href="#" class="site-header__nav-link">Foro</a>
+      </nav>
+      <div class="site-header__actions">
+        <a href="#" class="btn btn--login">Login</a>
+        <a href="#" class="btn btn--register">Registrarse</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ ADMIN LAYOUT ═══ -->
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <h2 class="admin-sidebar__title">Panel de Administrador</h2>
+      <nav class="admin-sidebar__nav">
+        <a href="../admin-dashboard/index.html" class="admin-sidebar__link">Vista General</a>
+        <a href="../admin-manage-users/index.html" class="admin-sidebar__link">Gestión de Usuarios</a>
+        <a href="../admin-verify-company/index.html" class="admin-sidebar__link admin-sidebar__link--active">Verificacion de Compañias</a>
+        <a href="#" class="admin-sidebar__link">Moderación de Foro</a>
+        <a href="#" class="admin-sidebar__link">Moderación de Revisiones</a>
+        <a href="#" class="admin-sidebar__link">Gestión de Recursos</a>
+      </nav>
+    </aside>
+
+    <main class="admin-content">
+      <h1 class="admin-content__title">Verificar Compañias</h1>
+
+      <!-- Filters -->
+      <div class="admin-filters">
+        <select class="admin-select">
+          <option>Ascendente</option>
+          <option>Descendente</option>
+        </select>
+        <select class="admin-select">
+          <option>Nombre</option>
+          <option>Fecha</option>
+        </select>
+        <div class="admin-filters__spacer"></div>
+        <a href="#" class="admin-btn">Export Report</a>
+      </div>
+
+      <!-- Table -->
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Documentos Completos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>TechGlobal S.A. de C.V.</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(1, 'TechGlobal S.A.', 'contacto@techglobal.com', 'REG-10293')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(1, 'TechGlobal S.A.')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(1, 'TechGlobal S.A.', 'contacto@techglobal.com', 'REG-10293', '12 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(1, 'TechGlobal S.A.')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>InnovaSoft Solutions</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(2, 'InnovaSoft', 'info@innovasoft.sv', 'REG-20484')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(2, 'InnovaSoft')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(2, 'InnovaSoft', 'info@innovasoft.sv', 'REG-20484', '15 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(2, 'InnovaSoft')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Constructora Cuscatlán</td>
+            <td>false</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(3, 'BuildersCo', 'rrhh@builders.co', 'REG-30102')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(3, 'BuildersCo')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(3, 'BuildersCo', 'rrhh@builders.co', 'REG-30102', '18 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(3, 'BuildersCo')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>AgroPlus El Salvador</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(4, 'AgroPlus SV', 'admin@agroplus.sv', 'REG-40550')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(4, 'AgroPlus SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(4, 'AgroPlus SV', 'admin@agroplus.sv', 'REG-40550', '20 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(4, 'AgroPlus SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Distribuidora Comercial SV</td>
+            <td>false</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(5, 'Comercial SV', 'ventas@comercial.sv', 'REG-50888')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(5, 'Comercial SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(5, 'Comercial SV', 'ventas@comercial.sv', 'REG-50888', '22 Oct, 2023', false, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(5, 'Comercial SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>DataWorks Centroamérica</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(6, 'DataWorks', 'hello@dataworks.io', 'REG-60123')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(6, 'DataWorks')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(6, 'DataWorks', 'hello@dataworks.io', 'REG-60123', '25 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(6, 'DataWorks')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>LogiFreight Transportes</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(7, 'LogiFreight', 'ops@logifreight.sv', 'REG-70991')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(7, 'LogiFreight')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(7, 'LogiFreight', 'ops@logifreight.sv', 'REG-70991', '28 Oct, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(7, 'LogiFreight')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>CleanStar Servicios</td>
+            <td>false</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(8, 'CleanStar', 'admin@cleanstar.sv', 'REG-80222')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(8, 'CleanStar')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(8, 'CleanStar', 'admin@cleanstar.sv', 'REG-80222', '30 Oct, 2023', false, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(8, 'CleanStar')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>FoodChain Restaurantes</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(9, 'FoodChain SV', 'hola@foodchain.sv', 'REG-90455')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(9, 'FoodChain SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(9, 'FoodChain SV', 'hola@foodchain.sv', 'REG-90455', '01 Nov, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(9, 'FoodChain SV')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>GreenEnergy Solar S.A.</td>
+            <td>true</td>
+            <td>
+              <div class="table-actions">
+                <svg class="table-action-icon" onclick="openEditCompanyModal(10, 'GreenEnergy', 'info@greenenergy.sv', 'REG-10099')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg class="table-action-icon" onclick="openDeleteCompanyModal(10, 'GreenEnergy')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="table-action-icon" onclick="openViewCompanyModal(10, 'GreenEnergy', 'info@greenenergy.sv', 'REG-10099', '03 Nov, 2023', true, 'Pendiente')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="table-action-icon" onclick="openApproveCompanyModal(10, 'GreenEnergy')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+
+  <!-- ═══ MODAL: Ver Compañia ═══ -->
+  <div class="modal-overlay" id="viewCompanyModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h2>Detalle de Compañía</h2>
+        <button class="modal-close" onclick="closeModal('viewCompanyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="detail-list">
+          <li><span class="detail-label">ID</span><span class="detail-value" id="viewId">—</span></li>
+          <li><span class="detail-label">Nombre</span><span class="detail-value" id="viewNombre">—</span></li>
+          <li><span class="detail-label">Correo</span><span class="detail-value" id="viewEmail">—</span></li>
+          <li><span class="detail-label">Número de Registro</span><span class="detail-value" id="viewRegistro">—</span></li>
+          <li><span class="detail-label">Fecha de Solicitud</span><span class="detail-value" id="viewFecha">—</span></li>
+          <li><span class="detail-label">Estado</span><span id="viewEstado">—</span></li>
+        </ul>
+
+        <!-- Documentos Requeridos -->
+        <div class="docs-section">
+          <h3 class="docs-section__title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Documentos Requeridos
+          </h3>
+          <ul class="docs-checklist" id="docsChecklist">
+            <li class="docs-checklist__item" data-doc="nit">
+              <span class="docs-check">✓</span>
+              <span class="docs-name">NIT de la empresa</span>
+              <span class="docs-status docs-status--ok">Presentado</span>
+            </li>
+            <li class="docs-checklist__item" data-doc="escritura">
+              <span class="docs-check">✓</span>
+              <span class="docs-name">Escritura de Constitución</span>
+              <span class="docs-status docs-status--ok">Presentado</span>
+            </li>
+            <li class="docs-checklist__item" data-doc="matricula">
+              <span class="docs-check">✓</span>
+              <span class="docs-name">Matrícula de Comercio</span>
+              <span class="docs-status docs-status--ok">Presentado</span>
+            </li>
+            <li class="docs-checklist__item" data-doc="representante">
+              <span class="docs-check">✓</span>
+              <span class="docs-name">DUI del Representante Legal</span>
+              <span class="docs-status docs-status--ok">Presentado</span>
+            </li>
+            <li class="docs-checklist__item docs-checklist__item--missing" data-doc="iva">
+              <span class="docs-check">✗</span>
+              <span class="docs-name">Registro de IVA</span>
+              <span class="docs-status docs-status--missing">Pendiente</span>
+            </li>
+            <li class="docs-checklist__item docs-checklist__item--missing" data-doc="solvencia">
+              <span class="docs-check">✗</span>
+              <span class="docs-name">Solvencia de la DGII</span>
+              <span class="docs-status docs-status--missing">Pendiente</span>
+            </li>
+            <li class="docs-checklist__item" data-doc="poder">
+              <span class="docs-check">✓</span>
+              <span class="docs-name">Poder de Representación Legal</span>
+              <span class="docs-status docs-status--ok">Presentado</span>
+            </li>
+          </ul>
+          <div class="docs-summary" id="docsSummary">
+            <span class="docs-summary__count">5 de 7 documentos presentados</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn--cancel" onclick="closeModal('viewCompanyModal')">Cerrar</button>
+        <button class="modal-btn modal-btn--approve" onclick="closeModal('viewCompanyModal'); openApproveCompanyModal(null, document.getElementById('viewNombre').textContent)">Aprobar</button>
+        <button class="modal-btn modal-btn--danger" onclick="closeModal('viewCompanyModal')">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Editar Compañia ═══ -->
+  <div class="modal-overlay" id="editCompanyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Editar Compañía</h2>
+        <button class="modal-close" onclick="closeModal('editCompanyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editCompanyId">
+        <div class="form-group">
+          <label for="editCompanyNombre">Nombre de la Compañía</label>
+          <input type="text" class="form-input" id="editCompanyNombre" placeholder="Nombre de la empresa">
+        </div>
+        <div class="form-group">
+          <label for="editCompanyEmail">Correo de Contacto</label>
+          <input type="email" class="form-input" id="editCompanyEmail" placeholder="correo@empresa.com">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editCompanyRegistro">Número de Registro</label>
+            <input type="text" class="form-input" id="editCompanyRegistro" placeholder="REG-XXXXX">
+          </div>
+          <div class="form-group">
+            <label for="editCompanyEstado">Estado</label>
+            <select class="form-select" id="editCompanyEstado">
+              <option>Pendiente</option>
+              <option>Verificada</option>
+              <option>Rechazada</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-checkbox">
+          <input type="checkbox" id="editCompanyDocs">
+          <label for="editCompanyDocs">Documentos Completos</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn--cancel" onclick="closeModal('editCompanyModal')">Cancelar</button>
+        <button class="modal-btn modal-btn--save" onclick="saveCompany()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Eliminar Compañia ═══ -->
+  <div class="modal-overlay" id="deleteCompanyModal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2>Eliminar Compañía</h2>
+        <button class="modal-close" onclick="closeModal('deleteCompanyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="width:64px; height:64px; border-radius:50%; background:#fee2e2; color:#ef4444; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </div>
+        <p style="font-size:15px; color:#1e1e1e; margin-bottom:8px;">¿Estás seguro de eliminar a</p>
+        <p style="font-size:17px; font-weight:700; color:#000;" id="deleteCompanyName">—</p>
+        <p style="font-size:13px; color:#727272; margin-top:8px;">Esta acción eliminará todos los datos y publicaciones de esta empresa.</p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="modal-btn modal-btn--cancel" onclick="closeModal('deleteCompanyModal')">Cancelar</button>
+        <button class="modal-btn modal-btn--danger" onclick="confirmDeleteCompany()">Eliminar Compañía</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Aprobar Compañia ═══ -->
+  <div class="modal-overlay" id="approveCompanyModal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2>Aprobar Compañía</h2>
+        <button class="modal-close" onclick="closeModal('approveCompanyModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="width:64px; height:64px; border-radius:50%; background:#d1fae5; color:#10b981; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px;">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p style="font-size:15px; color:#1e1e1e; margin-bottom:8px;">¿Aprobar la verificación de</p>
+        <p style="font-size:17px; font-weight:700; color:#000;" id="approveCompanyName">—</p>
+        <p style="font-size:13px; color:#727272; margin-top:8px;">La empresa podrá publicar vacantes y recibir candidaturas.</p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="modal-btn modal-btn--cancel" onclick="closeModal('approveCompanyModal')">Cancelar</button>
+        <button class="modal-btn modal-btn--approve" onclick="confirmApproveCompany()">Confirmar Aprobación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="container site-footer__container">
+      <div class="site-footer__brand">
+        <div class="site-footer__brand-row">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          <span class="site-footer__brand-name">TrabajaHoy</span>
+        </div>
+        <p class="site-footer__phone">Llámanos:(503) 2222-0000</p>
+        <p class="site-footer__address">Av. La Revolución #123, San Salvador, El Salvador</p>
+      </div>
+      <div class="site-footer__columns">
+        <div class="site-footer__column"><h4 class="site-footer__title">Enlaces Rápidos</h4><a href="#">Acerca de</a><a href="#">Contacto</a><a href="#">Precio</a><a href="#">Blog</a></div>
+        <div class="site-footer__column"><h4 class="site-footer__title">Candidatos</h4><a href="#">Buscar Empleos</a><a href="#">Ver Empresas</a><a href="#">Panel de Candidato</a><a href="#">Empleos Guardados</a></div>
+        <div class="site-footer__column"><h4 class="site-footer__title">Empleadores</h4><a href="#">Publicar Empleo</a><a href="#">Buscar Candidatos</a><a href="#">Panel del Empleador</a><a href="#">Solicitudes</a></div>
+        <div class="site-footer__column"><h4 class="site-footer__title">Soporte</h4><a href="#">Preguntas Frecuentes</a><a href="#">Política de Privacidad</a><a href="#">Términos y Condiciones</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Modal helpers ──
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('active');
+      });
+    });
+
+    // ── View Company ──
+    function openViewCompanyModal(id, nombre, email, registro, fecha, docs, estado) {
+      document.getElementById('viewId').textContent = id;
+      document.getElementById('viewNombre').textContent = nombre;
+      document.getElementById('viewEmail').textContent = email;
+      document.getElementById('viewRegistro').textContent = registro;
+      document.getElementById('viewFecha').textContent = fecha;
+
+      // Update Estado badge
+      const badge = document.getElementById('viewEstado');
+      badge.textContent = estado;
+      badge.className = 'status-badge status-badge--pending';
+
+      // Update document checklist based on docs flag
+      const items = document.querySelectorAll('.docs-checklist__item');
+      let presented = 0;
+      items.forEach(item => {
+        const isMissing = item.classList.contains('docs-checklist__item--missing');
+        if (!isMissing) presented++;
+      });
+      document.querySelector('.docs-summary__count').textContent = presented + ' de ' + items.length + ' documentos presentados';
+
+      document.getElementById('viewCompanyModal').classList.add('active');
+    }
+
+    // ── Edit Company ──
+    function openEditCompanyModal(id, nombre, email, registro) {
+      document.getElementById('editCompanyId').value = id;
+      document.getElementById('editCompanyNombre').value = nombre;
+      document.getElementById('editCompanyEmail').value = email;
+      document.getElementById('editCompanyRegistro').value = registro;
+      document.getElementById('editCompanyModal').classList.add('active');
+    }
+
+    function saveCompany() {
+      alert('Compañía guardada correctamente');
+      closeModal('editCompanyModal');
+    }
+
+    // ── Delete Company ──
+    function openDeleteCompanyModal(id, nombre) {
+      document.getElementById('deleteCompanyName').textContent = nombre;
+      document.getElementById('deleteCompanyModal').classList.add('active');
+    }
+
+    function confirmDeleteCompany() {
+      alert('Compañía eliminada');
+      closeModal('deleteCompanyModal');
+    }
+
+    // ── Approve Company ──
+    function openApproveCompanyModal(id, nombre) {
+      document.getElementById('approveCompanyName').textContent = nombre;
+      document.getElementById('approveCompanyModal').classList.add('active');
+    }
+
+    function confirmApproveCompany() {
+      alert('Compañía aprobada exitosamente');
+      closeModal('approveCompanyModal');
+    }
+  </script>
+</body>
+</html>
