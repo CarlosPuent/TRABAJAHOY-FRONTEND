@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+	<title>Mi Perfil | TrabajaHoy</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="stylesheet" href="my-profile.css">
+</head>
+<body>
+	<header class="site-header">
+		<div class="container site-header__container">
+			<a href="../landing/index.html" class="site-header__logo-link" aria-label="Inicio">
+				<img src="../../src/images/logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
+			</a>
+
+			<div class="site-header__actions">
+				<nav class="site-header__nav" aria-label="Navegación principal">
+					<a href="#" class="site-header__nav-link">Buscar empleos</a>
+					<a href="#" class="site-header__nav-link">Empresas</a>
+					<a href="#" class="site-header__nav-link">Recursos</a>
+					<a href="#" class="site-header__nav-link">Foro</a>
+				</nav>
+
+				<div class="site-header__user">
+					<img src="https://placehold.co/40x40/cccccc/fff?text=U" alt="Usuario" class="site-header__avatar" />
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="perfil-page">
+		<section class="perfil-wrapper">
+			<div class="perfil-main-grid">
+				<section class="perfil-col-left">
+					<article class="card profile-hero-card">
+						<div class="profile-cover"></div>
+						<div class="profile-top">
+							<img class="profile-avatar" src="https://placehold.co/96x96/b0b0b0/ffffff?text=U" alt="Foto de perfil">
+
+							<div class="profile-identity">
+								<h1 class="profile-name">Nombre</h1>
+								<p class="profile-username">@NombreDeUsuario</p>
+							</div>
+
+							<div class="profile-actions">
+								<button class="chip chip--primary" type="button">Editar perfil</button>
+								<button class="chip" type="button">Estadísticas</button>
+								<button class="chip chip--dark" type="button">Tema</button>
+								<button class="chip chip--dark" type="button">Tema</button>
+							</div>
+						</div>
+					</article>
+
+					<article class="card info-card">
+						<h2>Descripción</h2>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+							Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+					</article>
+
+					<article class="card info-card">
+						<h2>Experiencia laboral</h2>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+							Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+							Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+					</article>
+
+					<article class="card info-card">
+						<h2>Información de contacto</h2>
+						<p>Tel: +502 1231-1212</p>
+						<p>E-mail: NombreDeUsuario@mail.com</p>
+						<p>Sitio web: https://algo.com</p>
+					</article>
+				</section>
+
+				<aside class="perfil-col-right">
+					<article class="card side-card">
+						<h3>Compañías populares</h3>
+						<div class="company-list">
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+							<div class="company-item"><span class="google-icon" aria-hidden="true"></span> Nombre de compañía</div>
+						</div>
+					</article>
+
+					<article class="card side-card">
+						<h3>Personas que quizá conozcas</h3>
+						<div class="people-list">
+							<div class="person-card"><span class="person-avatar"></span><span>Nombre</span></div>
+							<div class="person-card"><span class="person-avatar"></span><span>Nombre</span></div>
+							<div class="person-card"><span class="person-avatar"></span><span>Nombre</span></div>
+							<div class="person-card"><span class="person-avatar"></span><span>Nombre</span></div>
+							<div class="person-card"><span class="person-avatar"></span><span>Nombre</span></div>
+						</div>
+					</article>
+				</aside>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container site-footer__container">
+			<div class="site-footer__brand">
+				<div class="site-footer__brand-row">
+					<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+						<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+					</svg>
+					<span class="site-footer__brand-name">TrabajaHoy</span>
+				</div>
+
+				<p class="site-footer__phone">Llámanos:(503) 2222-0000</p>
+				<p class="site-footer__address">Av. La Revolución #123, San Salvador, El Salvador</p>
+			</div>
+
+			<div class="site-footer__columns">
+				<div class="site-footer__column">
+					<h4 class="site-footer__title">Enlaces Rápidos</h4>
+					<a href="#">Acerca de</a>
+					<a href="#">Contacto</a>
+					<a href="#">Precio</a>
+					<a href="#">Blog</a>
+				</div>
+
+				<div class="site-footer__column">
+					<h4 class="site-footer__title">Candidatos</h4>
+					<a href="#">Buscar Empleos</a>
+					<a href="#">Ver Empresas</a>
+					<a href="#">Panel de Candidato</a>
+					<a href="#">Empleos Guardados</a>
+				</div>
+
+				<div class="site-footer__column">
+					<h4 class="site-footer__title">Empleadores</h4>
+					<a href="#">Publicar Empleo</a>
+					<a href="#">Buscar Candidatos</a>
+					<a href="#">Panel del Empleador</a>
+					<a href="#">Solicitudes</a>
+				</div>
+
+				<div class="site-footer__column">
+					<h4 class="site-footer__title">Soporte</h4>
+					<a href="#">Preguntas Frecuentes</a>
+					<a href="#">Política de Privacidad</a>
+					<a href="#">Términos y Condiciones</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

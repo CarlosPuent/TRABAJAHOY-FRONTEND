@@ -62,8 +62,6 @@ a {
   padding: 0 28px;
 }
 
-/* HEADER */
-
 .site-header {
   background: var(--white);
 }
@@ -153,8 +151,6 @@ a {
   font-size: 14px;
   font-weight: 500;
 }
-
-/* HERO */
 
 .hero {
   position: relative;
@@ -284,8 +280,6 @@ a {
   font-weight: 400;
 }
 
-/* HERO CATEGORIES */
-
 .hero-categories {
   margin-top: 28px;
 }
@@ -341,8 +335,6 @@ a {
   line-height: 1.2;
 }
 
-/* SHARED SECTION */
-
 .section {
   padding-top: 24px;
 }
@@ -354,8 +346,6 @@ a {
   line-height: 1.15;
   margin-bottom: 18px;
 }
-
-/* STATS */
 
 .stats-grid {
   display: grid;
@@ -394,8 +384,6 @@ a {
   color: #222222;
   max-width: 180px;
 }
-
-/* JOBS */
 
 .featured-jobs {
   padding-top: 34px;
@@ -517,8 +505,6 @@ a {
   color: var(--orange);
 }
 
-/* RESOURCES */
-
 .resources {
   padding-top: 52px;
   padding-bottom: 28px;
@@ -590,8 +576,6 @@ a {
   font-weight: 400;
 }
 
-/* FOOTER */
-
 .site-footer {
   background: var(--footer-bg);
   padding: 30px 0 26px;
@@ -658,8 +642,6 @@ a {
   font-size: 14px;
   line-height: 1.55;
 }
-
-/* RESPONSIVE */
 
 @media (max-width: 1200px) {
   .hero-categories__grid,
