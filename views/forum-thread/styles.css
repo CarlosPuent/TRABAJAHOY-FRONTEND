@@ -1,0 +1,227 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+  background:#f3f4f6;
+}
+
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 40px;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.menu{
+  display:flex;
+  gap:25px;
+  color:#6b7280;
+}
+
+.menu a{
+  text-decoration:none;
+  color:#6b7280;
+}
+
+.btn-login{
+  background:#f97316;
+  color:#fff;
+  border:none;
+  padding:6px 14px;
+  border-radius:6px;
+}
+
+.btn-register{
+  border:1px solid #f97316;
+  color:#f97316;
+  background:#fff;
+  padding:6px 14px;
+  border-radius:6px;
+}
+
+/* HERO */
+.hero{
+  background:linear-gradient(90deg,#f97316,#2563eb);
+  color:#fff;
+  padding:50px 40px;
+}
+
+.search-bar{
+  background:#fff;
+  border-radius:999px;
+  padding:10px 20px;
+  margin-top:15px;
+  width:300px;
+}
+
+.search-bar input{
+  border:none;
+  outline:none;
+  width:100%;
+}
+
+/* CATEGORÍAS */
+.categories{
+  padding:20px 40px;
+}
+
+.category-list{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.category{
+  background:#e5e7eb;
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:14px;
+}
+
+/* POSTS */
+.posts{
+  padding:20px 40px;
+}
+
+.post{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:15px;
+}
+
+.post-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  background:#d1d5db;
+  border-radius:50%;
+}
+
+.post p{
+  margin:10px 0;
+  font-size:14px;
+  color:#6b7280;
+}
+
+.post-actions{
+  text-align:right;
+}
+
+/* PUBLICAR */
+.publish{
+  display:flex;
+  gap:10px;
+  padding:20px 40px;
+}
+
+.publish input{
+  flex:1;
+  padding:10px;
+  border-radius:999px;
+  border:1px solid #ccc;
+}
+
+.publish button{
+  background:#f97316;
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+}
+
+/* FOOTER */
+.site-footer {
+  background: #1d1d20; /* MISMO color */
+  padding: 30px 0 26px;
+}
+
+/* CONTENEDOR */
+.site-footer__container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+}
+
+/* LADO IZQUIERDO */
+.site-footer__brand {
+  color: #9b9b9b;
+}
+
+.site-footer__brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.site-footer__brand-name {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.site-footer__phone {
+  color: #9b9b9b;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.site-footer__address {
+  color: #9b9b9b;
+  font-size: 14px;
+  max-width: 220px;
+}
+
+/* COLUMNAS */
+.site-footer__columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.site-footer__column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* TITULOS */
+.site-footer__title {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* LINKS */
+.site-footer__column a {
+  color: #9b9b9b;
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.site-footer__column a:hover {
+  color: #ffffff;
+}
