@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderar Reseñas | TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="moderate-reviews.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="site-header__logo-link"
+          aria-label="Ir al inicio de TrabajaHoy"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="site-header__logo"
+          />
+        </a>
+
+        <div class="site-header__right">
+          <button
+            type="button"
+            class="site-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="site-header__nav" aria-label="Principal">
+            <a href="#" class="site-header__nav-link">Buscar empleos</a>
+            <a href="#" class="site-header__nav-link">Empresas</a>
+            <a href="#" class="site-header__nav-link">Recursos</a>
+            <a href="#" class="site-header__nav-link">Foro</a>
+          </nav>
+
+          <button
+            type="button"
+            class="site-header__profile"
+            aria-label="Perfil"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-section wrapper">
+        <div class="page-intro">
+          <nav class="page-breadcrumbs" aria-label="Navegación de rutas">
+            <span class="page-breadcrumbs__item">Admin</span>
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+            <span class="page-breadcrumbs__item page-breadcrumbs__item--active">
+              Moderar Reseñas
+            </span>
+          </nav>
+
+          <h1 class="page-intro__title">Moderar Reseñas</h1>
+          <p class="page-intro__subtitle">
+            Protege la credibilidad de las empresas revisando comentarios,
+            calificaciones y reportes relacionados con la reputación.
+          </p>
+        </div>
+
+        <section class="stats-grid" aria-label="Resumen de reseñas moderadas">
+          <article class="stats-card">
+            <h2 class="stats-card__title">Revisiones pendientes</h2>
+            <p class="stats-card__value">12</p>
+            <p class="stats-card__meta">
+              Reseñas de candidatos en espera de decisión
+            </p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Promedio reportado</h2>
+            <p class="stats-card__value">3.4 / 5</p>
+            <p class="stats-card__meta">
+              Promedio de calificación en reseñas reportadas
+            </p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Empresas afectadas</h2>
+            <p class="stats-card__value">7</p>
+            <p class="stats-card__meta">
+              Organizaciones mencionadas esta semana
+            </p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Reseñas retiradas</h2>
+            <p class="stats-card__value">34</p>
+            <p class="stats-card__meta">
+              Ocultas temporalmente de la vista pública
+            </p>
+          </article>
+        </section>
+
+        <section class="reviews-dashboard">
+          <div class="dashboard-top">
+            <div class="filters-card">
+              <div class="filters-card__group">
+                <select
+                  class="form-control form-control--select"
+                  aria-label="Estatus"
+                >
+                  <option value="">Estatus</option>
+                </select>
+
+                <select
+                  class="form-control form-control--select"
+                  aria-label="Calificación"
+                >
+                  <option value="">Calificación</option>
+                </select>
+
+                <select
+                  class="form-control form-control--select"
+                  aria-label="Fecha"
+                >
+                  <option value="">Fecha</option>
+                </select>
+              </div>
+
+              <div class="filters-card__search">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Buscar reseña o empresa..."
+                />
+                <button class="btn btn--secondary" type="button">
+                  Filtrar
+                </button>
+              </div>
+            </div>
+
+            <article class="highlight-card">
+              <p class="highlight-card__eyebrow">
+                Resumen de la reseña seleccionada
+              </p>
+              <h2 class="highlight-card__title">
+                TechNova — Queja por pagos tardíos
+              </h2>
+              <p class="highlight-card__text">
+                Opinión de candidato con baja calificación y múltiples reportes
+                relacionados con prácticas de contratación engañosas y problemas
+                de pago.
+              </p>
+            </article>
+          </div>
+
+          <section class="reviews-board">
+            <div class="reviews-list-card">
+              <div class="section-heading">
+                <h2 class="section-heading__title">
+                  Reseñas empresariales reportadas
+                </h2>
+                <p class="section-heading__subtitle">
+                  Reseñas que pueden afectar la reputación, la confianza o la
+                  credibilidad pública de las empresas dentro del portal.
+                </p>
+              </div>
+
+              <div class="table-card">
+                <div class="table-card__scroll">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Empresa / Reseña</th>
+                        <th>Candidato</th>
+                        <th>Calificación</th>
+                        <th>Categoría</th>
+                        <th>Reportes</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="data-table__row--active">
+                        <td class="data-table__content-cell">
+                          <strong class="data-table__title">TechNova</strong>
+                          <span class="data-table__subtitle"
+                            >Queja por pagos tardíos</span
+                          >
+                        </td>
+                        <td>Andrea López</td>
+                        <td class="rating-cell">⭐</td>
+                        <td>Credibilidad</td>
+                        <td>7</td>
+                        <td>
+                          <button type="button" class="btn-text">
+                            Ver restaurar
+                          </button>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="data-table__content-cell">
+                          <strong class="data-table__title">Innova Sys</strong>
+                          <span class="data-table__subtitle">
+                            Discriminación en entrevista
+                          </span>
+                        </td>
+                        <td>Carlos M.</td>
+                        <td class="rating-cell">⭐⭐</td>
+                        <td>Conducta</td>
+                        <td>3</td>
+                        <td>
+                          <button type="button" class="btn-text">
+                            Seleccionar
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="table-pagination">
+                  <button class="table-pagination__btn" disabled>
+                    &lt; Ant
+                  </button>
+                  <span class="table-pagination__info">Página 1 de 4</span>
+                  <button class="table-pagination__btn">Sig &gt;</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="detail-card">
+              <div class="detail-card__header">
+                <p class="detail-card__eyebrow">Caso de reseña</p>
+                <p class="detail-card__id">REV-0418</p>
+              </div>
+
+              <div class="detail-section">
+                <h3 class="detail-section__label">Impacto en la empresa</h3>
+                <ul class="detail-meta">
+                  <li><strong>Empresa:</strong> TechNova</li>
+                  <li><strong>Calificación pública:</strong> 3.4 / 5</li>
+                  <li>
+                    <strong>Puntaje de la reseña reportada:</strong>
+                    <span class="text-danger">1.0 / 5</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="detail-section">
+                <h3 class="detail-section__label">Contenido de la reseña</h3>
+                <ul class="detail-meta">
+                  <li><strong>Candidato:</strong> Andrea López</li>
+                  <li><strong>Fecha:</strong> 11 Mar 2026</li>
+                  <li><strong>Categoría del reporte:</strong> Credibilidad</li>
+                </ul>
+
+                <p class="detail-section__text">
+                  Quiero advertir a otros candidatos que esta empresa retrasó
+                  pagos después de solicitar trabajo de prueba no remunerado. La
+                  comunicación se detuvo después de entregar los archivos y el
+                  proceso se sintió engañoso.
+                </p>
+              </div>
+
+              <div class="detail-section">
+                <h3 class="detail-section__label">
+                  Desglose de la calificación
+                </h3>
+                <ul class="detail-meta">
+                  <li>
+                    <strong>Puntaje general:</strong>
+                    <span class="rating-inline">⭐ 1 / 5</span>
+                  </li>
+                  <li><strong>Proceso de entrevista:</strong> 1 / 5</li>
+                  <li><strong>Comunicación:</strong> 1 / 5</li>
+                </ul>
+              </div>
+
+              <div class="detail-section detail-section--actions">
+                <h3 class="detail-section__label">Decisión administrativa</h3>
+
+                <select
+                  class="form-control form-control--select"
+                  aria-label="Seleccionar acción de moderación"
+                >
+                  <option value="">Seleccionar acción</option>
+                  <option value="hide">Ocultar reseña</option>
+                  <option value="ban">Suspender usuario</option>
+                  <option value="dismiss">Descartar reporte (restaurar)</option>
+                </select>
+
+                <textarea
+                  class="form-control form-control--textarea"
+                  placeholder="Escribe notas de moderador aquí"
+                  rows="4"
+                ></textarea>
+
+                <div class="detail-actions">
+                  <button class="btn btn--secondary" type="button">
+                    Cancelar
+                  </button>
+                  <button class="btn btn--primary" type="button">
+                    Aplicar decisión
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__container wrapper">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="site-footer__contact">
+            <span class="site-footer__contact-label">Llámanos:</span>
+            <span class="site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar empleos</a>
+            <a href="#">Ver empresas</a>
+            <a href="#">Panel de candidato</a>
+            <a href="#">Empleos guardados</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar empleo</a>
+            <a href="#">Buscar candidatos</a>
+            <a href="#">Panel del empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Términos y condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

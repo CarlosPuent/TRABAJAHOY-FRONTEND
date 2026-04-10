@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderar Foro | TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="manage-forum.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="site-header__logo-link"
+          aria-label="Ir al inicio de TrabajaHoy"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="site-header__logo"
+          />
+        </a>
+
+        <div class="site-header__right">
+          <button
+            type="button"
+            class="site-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="site-header__nav" aria-label="Principal">
+            <a href="#" class="site-header__nav-link">Buscar empleos</a>
+            <a href="#" class="site-header__nav-link">Empresas</a>
+            <a href="#" class="site-header__nav-link">Recursos</a>
+            <a
+              href="#"
+              class="site-header__nav-link site-header__nav-link--active"
+              >Foro</a
+            >
+          </nav>
+
+          <button
+            type="button"
+            class="site-header__profile"
+            aria-label="Perfil"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-section wrapper">
+        <div class="page-intro">
+          <nav class="page-breadcrumbs" aria-label="Navegación de rutas">
+            <span class="page-breadcrumbs__item">Admin</span>
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+            <span class="page-breadcrumbs__item page-breadcrumbs__item--active">
+              Moderar Foro
+            </span>
+          </nav>
+
+          <h1 class="page-intro__title">Moderar Foro</h1>
+          <p class="page-intro__subtitle">
+            Modera publicaciones reportadas del foro, protege los estándares de
+            la comunidad y toma acciones de moderación cuando sea necesario.
+          </p>
+        </div>
+
+        <section class="stats-grid" aria-label="Resumen de moderación">
+          <article class="stats-card">
+            <h2 class="stats-card__title">Revisiones pendientes</h2>
+            <p class="stats-card__value">12</p>
+            <p class="stats-card__meta">En espera de moderación</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Contenido oculto</h2>
+            <p class="stats-card__value">34</p>
+            <p class="stats-card__meta">Publicaciones removidas</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Usuarios alertados</h2>
+            <p class="stats-card__value">5</p>
+            <p class="stats-card__meta">Advertencias enviadas hoy</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Reportes resueltos</h2>
+            <p class="stats-card__value">56</p>
+            <p class="stats-card__meta">Últimos 30 días</p>
+          </article>
+        </section>
+
+        <section class="forum-board">
+          <div class="forum-list-card">
+            <div class="section-heading">
+              <h2 class="section-heading__title">Publicaciones reportadas</h2>
+              <p class="section-heading__subtitle">
+                Mostrando publicaciones recientes del foro marcadas por
+                candidatos y administradores.
+              </p>
+            </div>
+
+            <div class="table-card">
+              <div class="table-card__scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Contenido de la publicación</th>
+                      <th>Autor</th>
+                      <th>Categoría</th>
+                      <th>Fecha</th>
+                      <th>Reportes</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="data-table__content">
+                        Empresa que no responde después del proceso
+                      </td>
+                      <td>Ana López</td>
+                      <td>Quejas</td>
+                      <td>11 Mar 2026</td>
+                      <td>7</td>
+                      <td>
+                        <button type="button" class="btn-text">
+                          Seleccionar
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr class="data-table__row--active">
+                      <td class="data-table__content">
+                        Entrevista técnica engañosa...
+                      </td>
+                      <td>Andrea López</td>
+                      <td>Experiencias</td>
+                      <td>11 Mar 2026</td>
+                      <td>12</td>
+                      <td>
+                        <button type="button" class="btn-text">Ver</button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="data-table__content">
+                        Oferta con salario diferente al listado
+                      </td>
+                      <td>Carlos M.</td>
+                      <td>Dudas</td>
+                      <td>10 Mar 2026</td>
+                      <td>3</td>
+                      <td>
+                        <button type="button" class="btn-text">
+                          Seleccionar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-pagination">
+                <button class="table-pagination__btn" disabled>&lt; Ant</button>
+                <span class="table-pagination__info">Página 1 de 4</span>
+                <button class="table-pagination__btn">Sig &gt;</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="detail-card">
+            <div class="detail-card__header">
+              <p class="detail-card__eyebrow">Detalle del caso</p>
+              <p class="detail-card__id">FRM-0231</p>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section__label">Contenido de la publicación</h3>
+              <h4 class="detail-section__title">
+                Empresa que no responde después del proceso
+              </h4>
+
+              <ul class="detail-meta">
+                <li><strong>Autor:</strong> Andrea López</li>
+                <li><strong>Categoría:</strong> Experiencias</li>
+                <li><strong>Fecha:</strong> 11 Mar 2026</li>
+              </ul>
+
+              <p class="detail-section__text">
+                Quiero advertir a otros candidatos que esta empresa dejó de
+                responder después de pedir trabajo de prueba no remunerado. La
+                comunicación se detuvo después de entregar el material, y el
+                proceso se sintió poco transparente.
+              </p>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section__label">Motivos del reporte</h3>
+              <div class="tag-list">
+                <span class="tag tag--warning">Información falsa</span>
+                <span class="tag tag--danger">Acoso</span>
+                <span class="tag tag--danger">Lenguaje ofensivo</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section__label">Historial</h3>
+              <div class="timeline">
+                <div class="timeline__item">
+                  <span class="timeline__date">11 Mar 2026</span>
+                  <span class="timeline__text"
+                    >Reporte enviado por user_203</span
+                  >
+                </div>
+
+                <div class="timeline__item">
+                  <span class="timeline__date">11 Mar 2026</span>
+                  <span class="timeline__text">
+                    Publicación ocultada por Admin Laura
+                  </span>
+                </div>
+
+                <div class="timeline__item">
+                  <span class="timeline__date">11 Mar 2026</span>
+                  <span class="timeline__text">
+                    Usuario notificado sobre la revisión
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section detail-section--actions">
+              <h3 class="detail-section__label">Decisión administrativa</h3>
+
+              <select
+                class="form-control form-control--select"
+                aria-label="Seleccionar acción de moderación"
+              >
+                <option value="">Seleccionar acción</option>
+                <option value="hide">Ocultar publicación</option>
+                <option value="ban">Suspender usuario</option>
+                <option value="dismiss">Rechazar reporte</option>
+              </select>
+
+              <textarea
+                class="form-control form-control--textarea"
+                placeholder="Escribe notas de moderación aquí"
+                rows="4"
+              ></textarea>
+
+              <div class="detail-actions">
+                <button class="btn btn--secondary" type="button">
+                  Cancelar
+                </button>
+                <button class="btn btn--primary" type="button">
+                  Aplicar decisión
+                </button>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__container wrapper">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="site-footer__contact">
+            <span class="site-footer__contact-label">Llámanos:</span>
+            <span class="site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar empleos</a>
+            <a href="#">Ver empresas</a>
+            <a href="#">Panel de candidato</a>
+            <a href="#">Empleos guardados</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar empleo</a>
+            <a href="#">Buscar candidatos</a>
+            <a href="#">Panel del empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Términos y condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
