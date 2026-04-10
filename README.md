@@ -22,27 +22,6 @@ espaciados precisos
 tipografía uniforme (Inter)
 componentes reutilizables (inputs, botones, layouts)
 
-Workflow con Figma + MCP
-
-Durante el desarrollo se utilizó integración local con Figma mediante MCP para acelerar el proceso de maquetación:
-
-{
-  "servers": {
-    "Figma": {
-      "type": "http",
-      "url": "https://mcp.figma.com/mcp"
-    }
-  }
-}
-Uso en desarrollo:
-inspección de diseño (spacing, colors, typography)
-extracción de estilos directamente desde Figma
-referencia visual precisa para replicar UI
-
-Nota:
-Esta configuración es opcional y local.
-El proyecto no depende de MCP para ejecutarse.
-
 Cómo ejecutar el proyecto
 
 Este es un proyecto estático, no requiere backend.
