@@ -1,25 +1,34 @@
 // Register Candidate Page Controller
-import { authService } from '@services/auth.service';
-import { store } from '@core/store';
-import { showLoading, renderNavbar, renderPage } from '@utils/ui.js';
+import { authService } from "@services/auth.service";
+import { config } from "@core/config";
+import { getDashboardRouteForRoles } from "@core/roles";
+import {
+  getAuthUiContext,
+  resolveRequestErrorMessage,
+  showLoading,
+  renderNavbar,
+  renderPage,
+} from "@utils/ui.js";
 
 export async function initRegisterPage(params, query) {
-  if (store.get('isAuthenticated')) {
-    const roles = store.get('roles') || [];
-    window.location.hash = roles.includes('candidate') ? '#/candidate/dashboard' : '#/company/dashboard';
+  const { isAuthenticated, roles } = getAuthUiContext();
+  if (isAuthenticated) {
+    window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
     return;
   }
 
-  showLoading('Cargando...');
+  showLoading("Cargando...");
   renderRegisterPage();
   initRegisterEvents();
 }
 
 function renderRegisterPage() {
-  const navbar = renderNavbar({ activeRoute: '' });
+  const navbar = renderNavbar({ activeRoute: "" });
 
   const mainContent = `
-    <div class="register-page">
+    <div class="auth-page auth-page--register">
+      <div class="auth-page__glow auth-page__glow--left"></div>
+      <div class="auth-page__glow auth-page__glow--right"></div>
       <div class="register-page__logo-container">
         <a href="#/">
           <img src="/logoPortal.png" alt="Logo TrabajaHoy" class="register-page__logo" />
@@ -74,15 +83,53 @@ function renderRegisterPage() {
   `;
 
   const styles = `
-    .register-page {
-      min-height: calc(100vh - 70px); display: flex; flex-direction: column;
+    .auth-page {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
       align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 10% 10%, #fff4de 0%, transparent 42%),
+                  radial-gradient(circle at 88% 16%, #e0f2fe 0%, transparent 40%),
+                  linear-gradient(120deg, #f8fafc 0%, #eef2ff 45%, #fefce8 100%);
+      padding: 40px 20px;
+    }
+    .auth-page__glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .auth-page__glow--left {
+      background: #fdba74;
+      left: -80px;
+      top: 40px;
+    }
+    .auth-page__glow--right {
+      background: #7dd3fc;
+      right: -100px;
+      bottom: 20px;
     }
     .register-page__logo-container { margin-bottom: 32px; }
-    .register-page__logo { height: 60px; width: auto; cursor: pointer; }
+    .register-page__logo {
+      height: 60px;
+      width: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
     .register-page__container {
-      background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 24px 50px rgba(15, 23, 42, 0.15);
       padding: 48px; max-width: 600px; width: 100%;
     }
     .register-page__header { text-align: center; margin-bottom: 32px; }
@@ -124,55 +171,79 @@ function renderRegisterPage() {
     }
   `;
 
-  document.getElementById('app').innerHTML = renderPage({ navbar, main: mainContent, extraStyles: styles });
+  document.getElementById("app").innerHTML = renderPage({
+    navbar,
+    main: mainContent,
+    extraStyles: styles,
+  });
 }
 
 function initRegisterEvents() {
-  const form = document.getElementById('register-form');
-  const passwordInput = document.getElementById('register-password');
-  const confirmPasswordInput = document.getElementById('register-confirm-password');
-  const submitBtn = document.getElementById('register-btn');
-  const togglePasswordBtn = document.getElementById('toggle-password');
-  const errorDiv = document.getElementById('register-error');
+  const form = document.getElementById("register-form");
+  const passwordInput = document.getElementById("register-password");
+  const confirmPasswordInput = document.getElementById(
+    "register-confirm-password",
+  );
+  const submitBtn = document.getElementById("register-btn");
+  const togglePasswordBtn = document.getElementById("toggle-password");
+  const errorDiv = document.getElementById("register-error");
+  const defaultSubmitHtml = submitBtn.innerHTML;
+
+  const setSubmitting = (isSubmitting) => {
+    submitBtn.disabled = isSubmitting;
+    submitBtn.innerHTML = isSubmitting
+      ? '<span class="spinner"></span> Creando cuenta...'
+      : defaultSubmitHtml;
+  };
 
   if (togglePasswordBtn) {
-    togglePasswordBtn.addEventListener('click', () => {
-      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    togglePasswordBtn.addEventListener("click", () => {
+      passwordInput.type =
+        passwordInput.type === "password" ? "text" : "password";
     });
   }
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const firstName = document.getElementById('register-firstname').value.trim();
-    const lastName = document.getElementById('register-lastname').value.trim();
-    const email = document.getElementById('register-email').value.trim();
+    const firstName = document
+      .getElementById("register-firstname")
+      .value.trim();
+    const lastName = document.getElementById("register-lastname").value.trim();
+    const email = document.getElementById("register-email").value.trim();
     const password = passwordInput.value;
     const confirm = confirmPasswordInput.value;
 
     if (password !== confirm) {
-      errorDiv.textContent = 'Las contraseñas no coinciden';
-      errorDiv.style.display = 'block';
+      errorDiv.textContent = "Las contraseñas no coinciden";
+      errorDiv.style.display = "block";
       return;
     }
     if (password.length < 8) {
-      errorDiv.textContent = 'La contraseña debe tener al menos 8 caracteres';
-      errorDiv.style.display = 'block';
+      errorDiv.textContent = "La contraseña debe tener al menos 8 caracteres";
+      errorDiv.style.display = "block";
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
-    errorDiv.style.display = 'none';
+    setSubmitting(true);
+    errorDiv.style.display = "none";
 
     try {
-      await authService.registerCandidate({ email, password, firstName, lastName });
-      window.location.hash = '#/candidate/dashboard';
+      await authService.registerCandidate({
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+      const { roles } = getAuthUiContext();
+      window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
     } catch (error) {
-      console.error('Register error:', error);
-      errorDiv.textContent = error.response?.data?.message || 'Error al crear la cuenta.';
-      errorDiv.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `Crear Cuenta <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      console.error("Register error:", error);
+      errorDiv.textContent = resolveRequestErrorMessage(
+        error,
+        "Error al crear la cuenta.",
+      );
+      errorDiv.style.display = "block";
+      setSubmitting(false);
     }
   });
 }

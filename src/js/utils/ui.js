@@ -1,10 +1,18 @@
 // UI Helpers
+import {
+  getDashboardRouteForRoles,
+  getNavigationForRoles,
+  getPrimaryRole,
+  getRoleLabel,
+  normalizeRoles,
+} from "@core/roles";
+import { store } from "@core/store";
 
 // ============================================================
 // Global Loading
 // ============================================================
-export function showLoading(message = 'Cargando...') {
-  const app = document.getElementById('app');
+export function showLoading(message = "Cargando...") {
+  const app = document.getElementById("app");
   if (app) {
     app.innerHTML = `
       <div class="app-loading">
@@ -16,7 +24,7 @@ export function showLoading(message = 'Cargando...') {
 }
 
 export function showError(title, message) {
-  const app = document.getElementById('app');
+  const app = document.getElementById("app");
   if (app) {
     app.innerHTML = `
       <div class="app-error">
@@ -32,15 +40,99 @@ export function showError(title, message) {
   }
 }
 
+export function getAuthUiContext() {
+  const isAuthenticated =
+    typeof store.isAuthenticated === "function"
+      ? store.isAuthenticated()
+      : store.get("isAuthenticated") === true;
+  const user = store.get("user") || null;
+  const roles =
+    typeof store.getRoles === "function"
+      ? store.getRoles()
+      : normalizeRoles(user?.roles || []);
+  const primaryRole =
+    typeof store.getPrimaryRole === "function"
+      ? store.getPrimaryRole()
+      : getPrimaryRole(roles);
+
+  return {
+    isAuthenticated,
+    user,
+    roles,
+    primaryRole,
+  };
+}
+
+export function resolveRequestErrorMessage(
+  error,
+  fallback = "Ocurrio un error inesperado.",
+) {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    fallback
+  );
+}
+
+export function renderSectionHeader({
+  title = "",
+  subtitle = "",
+  actions = "",
+  className = "",
+} = {}) {
+  return `
+    <div class="th-section-header ${className}">
+      <div>
+        <h1 class="th-section-header__title">${title}</h1>
+        ${subtitle ? `<p class="th-section-header__subtitle">${subtitle}</p>` : ""}
+      </div>
+      ${actions ? `<div class="th-section-header__actions">${actions}</div>` : ""}
+    </div>
+  `;
+}
+
+export function renderContentState({
+  type = "empty",
+  title = "Sin informacion",
+  message = "",
+  actionLabel = "",
+  actionHref = "",
+  icon = "briefcase",
+  compact = false,
+} = {}) {
+  const iconSvg =
+    icon === "alert"
+      ? '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'
+      : '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>';
+
+  return `
+    <div class="th-content-state th-content-state--${type}${compact ? " th-content-state--compact" : ""}">
+      <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5">
+        ${iconSvg}
+      </svg>
+      <h3>${title}</h3>
+      ${message ? `<p>${message}</p>` : ""}
+      ${actionHref && actionLabel ? `<a href="${actionHref}" class="btn btn--primary">${actionLabel}</a>` : ""}
+    </div>
+  `;
+}
+
 // ============================================================
 // Shared Navbar
 // ============================================================
 
-const NAV_LINKS = [
-  { href: '#/vacancies', label: 'Buscar empleos' },
-  { href: '#/resources', label: 'Recursos' },
-  { href: '#/forum', label: 'Foro' },
-];
+function toRoutePath(activeRoute = "") {
+  if (!activeRoute) return "";
+  return activeRoute.startsWith("/") ? activeRoute : `/${activeRoute}`;
+}
+
+function isActiveLink(href, activePath) {
+  const hrefPath = href.replace(/^#/, "");
+  if (!activePath) return hrefPath === "/";
+  if (hrefPath === "/") return activePath === "/";
+  return activePath === hrefPath || activePath.startsWith(`${hrefPath}/`);
+}
 
 /**
  * Renders a consistent navbar across all pages.
@@ -48,20 +140,53 @@ const NAV_LINKS = [
  * @param {string} options.activeRoute - e.g. 'vacancies', 'resources', 'forum'
  * @param {boolean} options.isAuthenticated
  * @param {Object} [options.user]
+ * @param {string[]} [options.roles]
+ * @param {string|null} [options.primaryRole]
  * @param {string} [options.extraHeaderContent] - Extra HTML inside header actions
  * @returns {string} HTML string
  */
-export function renderNavbar({ activeRoute = '', isAuthenticated = false, user = null, extraHeaderContent = '' } = {}) {
-  const fullName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
+export function renderNavbar({
+  activeRoute = "",
+  isAuthenticated = false,
+  user = null,
+  roles = [],
+  primaryRole = null,
+  extraHeaderContent = "",
+} = {}) {
+  const activePath = toRoutePath(activeRoute);
+  const fullName = user
+    ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+    : "";
 
-  const navLinks = NAV_LINKS.map(link => {
-    const isActive = link.href === `#/${activeRoute}`;
-    return `<a href="${link.href}" class="site-header__nav-link${isActive ? ' site-header__nav-link--active' : ''}">${link.label}</a>`;
-  }).join('\n');
+  const fallbackStoreRoles =
+    typeof store.getRoles === "function" ? store.getRoles() : [];
+  const resolvedRoles = normalizeRoles(
+    Array.isArray(roles) && roles.length > 0
+      ? roles
+      : Array.isArray(user?.roles)
+        ? user.roles
+        : fallbackStoreRoles,
+  );
+  const resolvedPrimaryRole =
+    primaryRole ||
+    (typeof store.getPrimaryRole === "function"
+      ? store.getPrimaryRole()
+      : null) ||
+    getPrimaryRole(resolvedRoles);
+  const dashboardRoute = getDashboardRouteForRoles(resolvedRoles, "/");
+  const navigation = getNavigationForRoles(resolvedRoles, isAuthenticated);
+
+  const navLinks = navigation
+    .map((link) => {
+      const isActive = isActiveLink(link.href, activePath);
+      return `<a href="${link.href}" class="site-header__nav-link${isActive ? " site-header__nav-link--active" : ""}">${link.label}</a>`;
+    })
+    .join("\n");
 
   const authSection = isAuthenticated
-    ? `<a href="#/candidate/dashboard" class="site-header__nav-link">Mi Panel</a>
-       <span class="site-header__username">${fullName}</span>
+    ? `<a href="#${dashboardRoute}" class="site-header__dashboard-link" aria-label="Ir al panel">Panel</a>
+       <span class="site-header__role-badge site-header__role-badge--${resolvedPrimaryRole || "guest"}">${getRoleLabel(resolvedPrimaryRole)}</span>
+       <span class="site-header__username">${fullName || "Usuario"}</span>
        <button class="site-header__logout-btn" id="logout-btn" aria-label="Cerrar sesión">
          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -83,10 +208,58 @@ export function renderNavbar({ activeRoute = '', isAuthenticated = false, user =
         </nav>
         <div class="site-header__actions">
           ${authSection}
-          ${extraHeaderContent || ''}
+          ${extraHeaderContent || ""}
         </div>
       </div>
     </header>
+  `;
+}
+
+/**
+ * Renders a shared authenticated shell header for role-based pages.
+ * @param {Object} options
+ * @param {string} options.title
+ * @param {string} [options.subtitle]
+ * @param {string} [options.content]
+ * @param {string[]} [options.roles]
+ * @param {string|null} [options.primaryRole]
+ * @param {string} [options.actions]
+ * @param {string} [options.shellClass]
+ * @returns {string}
+ */
+export function renderRoleShell({
+  title,
+  subtitle = "",
+  content = "",
+  roles = [],
+  primaryRole = null,
+  actions = "",
+  shellClass = "",
+} = {}) {
+  const fallbackStoreRoles =
+    typeof store.getRoles === "function" ? store.getRoles() : [];
+  const resolvedRoles = normalizeRoles(
+    Array.isArray(roles) && roles.length ? roles : fallbackStoreRoles,
+  );
+  const resolvedPrimaryRole =
+    primaryRole ||
+    (typeof store.getPrimaryRole === "function"
+      ? store.getPrimaryRole()
+      : null) ||
+    getPrimaryRole(resolvedRoles);
+
+  return `
+    <section class="role-shell ${shellClass}" data-role="${resolvedPrimaryRole || "guest"}">
+      <header class="role-shell__header">
+        <div>
+          <div class="role-shell__badge role-shell__badge--${resolvedPrimaryRole || "guest"}">${getRoleLabel(resolvedPrimaryRole)}</div>
+          <h1 class="role-shell__title">${title || "Panel"}</h1>
+          ${subtitle ? `<p class="role-shell__subtitle">${subtitle}</p>` : ""}
+        </div>
+        ${actions ? `<div class="role-shell__actions">${actions}</div>` : ""}
+      </header>
+      <div class="role-shell__content">${content}</div>
+    </section>
   `;
 }
 
@@ -99,7 +272,12 @@ export function renderNavbar({ activeRoute = '', isAuthenticated = false, user =
  * @param {string} [options.extraStyles] - Additional CSS
  * @returns {string} Full page HTML
  */
-export function renderPage({ navbar, main, pageClass = '', extraStyles = '' } = {}) {
+export function renderPage({
+  navbar,
+  main,
+  pageClass = "",
+  extraStyles = "",
+} = {}) {
   return `
     ${navbar}
     <main class="${pageClass}">
@@ -157,6 +335,49 @@ export function renderPage({ navbar, main, pageClass = '', extraStyles = '' } = 
         display: flex;
         align-items: center;
         gap: 12px;
+      }
+      .site-header__dashboard-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .site-header__dashboard-link:hover {
+        background: #f3f4f6;
+      }
+      .site-header__role-badge {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .site-header__role-badge--candidate {
+        background: #e0e7ff;
+        color: #3730a3;
+      }
+      .site-header__role-badge--recruiter {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .site-header__role-badge--admin {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .site-header__role-badge--moderator {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .site-header__role-badge--guest {
+        background: #f3f4f6;
+        color: #4b5563;
       }
       .site-header__username {
         font-size: 14px;
@@ -235,6 +456,136 @@ export function renderPage({ navbar, main, pageClass = '', extraStyles = '' } = 
         width: 100%;
       }
 
+      /* === Shared Role Shell === */
+      .role-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 20px;
+      }
+      .role-shell__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .role-shell__badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+      }
+      .role-shell__badge--candidate {
+        background: #e0e7ff;
+        color: #3730a3;
+      }
+      .role-shell__badge--recruiter {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .role-shell__badge--admin {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .role-shell__badge--moderator {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .role-shell__badge--guest {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+      .role-shell__title {
+        margin: 0;
+        color: #111827;
+        font-size: 30px;
+      }
+      .role-shell__subtitle {
+        margin: 8px 0 0;
+        color: #6b7280;
+      }
+      .role-shell__actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .role-shell__content {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 8px 20px rgba(17, 24, 39, 0.04);
+      }
+
+      /* === Shared Content Blocks === */
+      .th-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .th-section-header__title {
+        margin: 0;
+        color: #111827;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+      .th-section-header__subtitle {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+      }
+      .th-section-header__actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .th-content-state {
+        text-align: center;
+        background: #fff;
+        border: 1px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 48px 24px;
+        color: #6b7280;
+      }
+      .th-content-state--error {
+        border-style: solid;
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .th-content-state--compact {
+        padding: 28px 20px;
+      }
+      .th-content-state svg {
+        color: #c4c9d4;
+        margin-bottom: 14px;
+      }
+      .th-content-state--error svg {
+        color: #ef4444;
+      }
+      .th-content-state h3 {
+        margin: 0;
+        color: inherit;
+        font-size: 18px;
+      }
+      .th-content-state p {
+        margin: 10px auto 0;
+        max-width: 560px;
+        color: inherit;
+        opacity: 0.9;
+      }
+      .th-content-state .btn {
+        margin-top: 18px;
+      }
+
       /* === Global Loading Screen === */
       .app-loading {
         position: fixed;
@@ -308,8 +659,26 @@ export function renderPage({ navbar, main, pageClass = '', extraStyles = '' } = 
           padding: 6px 12px;
           font-size: 13px;
         }
+        .site-header__role-badge {
+          display: none;
+        }
         .site-header__username {
           display: none;
+        }
+        .role-shell {
+          padding: 20px 12px;
+        }
+        .role-shell__header {
+          flex-direction: column;
+        }
+        .role-shell__content {
+          padding: 20px;
+        }
+        .th-section-header {
+          flex-direction: column;
+        }
+        .th-section-header__title {
+          font-size: 24px;
         }
       }
 

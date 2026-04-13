@@ -1,7 +1,7 @@
 // Client-side Router
-import { config } from '@core/config';
-import { store } from '@core/store';
-import { storage } from '@utils/storage';
+import { config } from "@core/config";
+import { store } from "@core/store";
+import { getDashboardRouteForRoles } from "@core/roles";
 
 class Router {
   constructor() {
@@ -28,31 +28,31 @@ class Router {
 
   // Get current path from hash
   getPath() {
-    const hash = window.location.hash.slice(1) || '/';
-    return hash.split('?')[0]; // Remove query params
+    const hash = window.location.hash.slice(1) || "/";
+    return hash.split("?")[0]; // Remove query params
   }
 
   // Get query parameters
   getQueryParams() {
-    const hash = window.location.hash || '';
-    const queryString = hash.split('?')[1];
+    const hash = window.location.hash || "";
+    const queryString = hash.split("?")[1];
     if (!queryString) return {};
 
-    return queryString.split('&').reduce((params, param) => {
-      const [key, value] = param.split('=');
-      params[key] = decodeURIComponent(value || '');
+    return queryString.split("&").reduce((params, param) => {
+      const [key, value] = param.split("=");
+      params[key] = decodeURIComponent(value || "");
       return params;
     }, {});
   }
 
   // Get route parameters (e.g., /vacancies/:id)
   getRouteParams(path, route) {
-    const pathParts = path.split('/');
-    const routeParts = route.split('/');
+    const pathParts = path.split("/");
+    const routeParts = route.split("/");
     const params = {};
 
     for (let i = 0; i < routeParts.length; i++) {
-      if (routeParts[i].startsWith(':')) {
+      if (routeParts[i].startsWith(":")) {
         const paramName = routeParts[i].slice(1);
         params[paramName] = pathParts[i];
       }
@@ -81,15 +81,15 @@ class Router {
 
   // Check if path matches route pattern
   isRouteMatch(path, route) {
-    const pathParts = path.split('/');
-    const routeParts = route.split('/');
+    const pathParts = path.split("/");
+    const routeParts = route.split("/");
 
     if (pathParts.length !== routeParts.length) {
       return false;
     }
 
     for (let i = 0; i < routeParts.length; i++) {
-      if (routeParts[i].startsWith(':')) {
+      if (routeParts[i].startsWith(":")) {
         continue; // Dynamic segment, always matches
       }
       if (pathParts[i] !== routeParts[i]) {
@@ -123,7 +123,7 @@ class Router {
 
   // Run after hooks
   runAfterEach(to, from) {
-    this.afterEachHooks.forEach(hook => hook(to, from));
+    this.afterEachHooks.forEach((hook) => hook(to, from));
   }
 
   // Authentication guard
@@ -131,35 +131,26 @@ class Router {
     const route = to.route;
 
     // Check if route requires authentication
-    if (route.requiresAuth && !store.get('isAuthenticated')) {
-      return '/login';
+    if (route.requiresAuth && !store.get("isAuthenticated")) {
+      return "/login";
     }
 
     // Check if route requires specific roles
     if (route.roles && route.roles.length > 0) {
-      const userRoles = store.get('roles') || [];
-      const hasRequiredRole = route.roles.some(role => userRoles.includes(role));
+      const userRoles = store.get("roles") || [];
+      const hasRequiredRole = route.roles.some((role) =>
+        userRoles.includes(role),
+      );
 
       if (!hasRequiredRole) {
-        // Redirect to appropriate dashboard based on role
-        if (userRoles.includes('candidate')) {
-          return '/candidate/dashboard';
-        } else if (userRoles.includes('recruiter') || userRoles.includes('admin')) {
-          return '/company/dashboard';
-        } else {
-          return '/';
-        }
+        return getDashboardRouteForRoles(userRoles, config.ROUTES.LANDING);
       }
     }
 
     // Redirect authenticated users away from login/register
-    if (route.redirectIfAuth && store.get('isAuthenticated')) {
-      const userRoles = store.get('roles') || [];
-      if (userRoles.includes('candidate')) {
-        return '/candidate/dashboard';
-      } else {
-        return '/company/dashboard';
-      }
+    if (route.redirectIfAuth && store.get("isAuthenticated")) {
+      const userRoles = store.get("roles") || [];
+      return getDashboardRouteForRoles(userRoles, config.ROUTES.LANDING);
     }
 
     return true;
@@ -191,7 +182,7 @@ class Router {
       if (guardResult === false) return; // Navigation cancelled
 
       // Handle redirect from guard
-      if (typeof guardResult === 'string') {
+      if (typeof guardResult === "string") {
         this.navigate(guardResult);
         return;
       }
@@ -208,7 +199,7 @@ class Router {
     };
 
     // Listen to hash changes
-    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener("hashchange", handleRoute);
 
     // Handle initial load
     handleRoute();

@@ -1,19 +1,64 @@
 // LocalStorage/SessionStorage Wrapper
 
 const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'trabajahoy_access_token',
-  REFRESH_TOKEN: 'trabajahoy_refresh_token',
-  USER: 'trabajahoy_user',
-  ROLES: 'trabajahoy_roles',
-  THEME: 'trabajahoy_theme',
-  LANGUAGE: 'trabajahoy_language',
+  ACCESS_TOKEN: "trabajahoy_access_token",
+  REFRESH_TOKEN: "trabajahoy_refresh_token",
+  USER: "trabajahoy_user",
+  ROLES: "trabajahoy_roles",
+  THEME: "trabajahoy_theme",
+  LANGUAGE: "trabajahoy_language",
 };
 
+function parseStoredJson(value, fallbackValue, onError = null) {
+  if (value === null || value === undefined || value === "") {
+    return fallbackValue;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    if (typeof onError === "function") {
+      onError();
+    }
+    return fallbackValue;
+  }
+}
+
 export const storage = {
+  setAuthSession(session = {}) {
+    const { accessToken, refreshToken, user, roles } = session;
+
+    if (accessToken || refreshToken) {
+      this.setTokens({ accessToken, refreshToken });
+    }
+    if (user) {
+      this.setUser(user);
+    }
+    if (Array.isArray(roles)) {
+      this.setRoles(roles);
+    }
+  },
+
+  getAuthSession() {
+    return {
+      accessToken: this.getAccessToken(),
+      refreshToken: this.getRefreshToken(),
+      user: this.getUser(),
+      roles: this.getRoles(),
+    };
+  },
+
+  clearAuthSession() {
+    this.clearAll();
+  },
+
   // Tokens
   setTokens(tokens) {
-    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken);
-    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
+    const accessToken = tokens?.accessToken || "";
+    const refreshToken = tokens?.refreshToken || "";
+
+    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
   },
 
   getAccessToken() {
@@ -36,7 +81,9 @@ export const storage = {
 
   getUser() {
     const user = localStorage.getItem(STORAGE_KEYS.USER);
-    return user ? JSON.parse(user) : null;
+    return parseStoredJson(user, null, () => {
+      localStorage.removeItem(STORAGE_KEYS.USER);
+    });
   },
 
   clearUser() {
@@ -50,7 +97,9 @@ export const storage = {
 
   getRoles() {
     const roles = localStorage.getItem(STORAGE_KEYS.ROLES);
-    return roles ? JSON.parse(roles) : [];
+    return parseStoredJson(roles, [], () => {
+      localStorage.removeItem(STORAGE_KEYS.ROLES);
+    });
   },
 
   clearRoles() {
@@ -67,7 +116,10 @@ export const storage = {
   // Generic methods
   set(key, value, useSession = false) {
     const storage = useSession ? sessionStorage : localStorage;
-    storage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+    storage.setItem(
+      key,
+      typeof value === "string" ? value : JSON.stringify(value),
+    );
   },
 
   get(key, useSession = false) {

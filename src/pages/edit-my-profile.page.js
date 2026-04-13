@@ -1,8 +1,11 @@
 // Edit My Profile Page Controller - Tab-based modern UI
-import { candidateService } from '@services/candidate.service';
-import { authService } from '@services/auth.service';
-import { store } from '@core/store';
-import { showLoading, renderNavbar, renderPage } from '@utils/ui.js';
+import { candidateService } from "@services/candidate.service";
+import {
+  getAuthUiContext,
+  showLoading,
+  renderNavbar,
+  renderPage,
+} from "@utils/ui.js";
 
 let currentProfile = null;
 let currentExperiences = [];
@@ -11,53 +14,88 @@ let currentSkills = [];
 let currentLanguages = [];
 
 export async function initEditMyProfilePage(params, query) {
-  const user = store.get('user');
-  showLoading('Cargando perfil...');
+  const authContext = getAuthUiContext();
+  const user = authContext.user;
+  showLoading("Cargando perfil...");
 
   try {
     const candidateId = user?.id;
-    const [profileData, expData, eduData, skillsData, langData] = await Promise.allSettled([
-      candidateService.getProfileById(candidateId).catch(() => null),
-      candidateService.getExperiences(candidateId).catch(() => ({ data: [] })),
-      candidateService.getEducation(candidateId).catch(() => ({ data: [] })),
-      candidateService.getSkills(candidateId).catch(() => ({ data: [] })),
-      candidateService.getLanguages(candidateId).catch(() => ({ data: [] })),
-    ]);
+    const [profileData, expData, eduData, skillsData, langData] =
+      await Promise.allSettled([
+        candidateService.getProfileById(candidateId).catch(() => null),
+        candidateService
+          .getExperiences(candidateId)
+          .catch(() => ({ data: [] })),
+        candidateService.getEducation(candidateId).catch(() => ({ data: [] })),
+        candidateService.getSkills(candidateId).catch(() => ({ data: [] })),
+        candidateService.getLanguages(candidateId).catch(() => ({ data: [] })),
+      ]);
 
-    currentProfile = profileData.status === 'fulfilled' ? profileData.value?.data : null;
-    currentExperiences = expData.status === 'fulfilled' ? expData.value?.data || [] : [];
-    currentEducation = eduData.status === 'fulfilled' ? eduData.value?.data || [] : [];
-    currentSkills = skillsData.status === 'fulfilled' ? skillsData.value?.data || [] : [];
-    currentLanguages = langData.status === 'fulfilled' ? langData.value?.data || [] : [];
+    currentProfile =
+      profileData.status === "fulfilled" ? profileData.value?.data : null;
+    currentExperiences =
+      expData.status === "fulfilled" ? expData.value?.data || [] : [];
+    currentEducation =
+      eduData.status === "fulfilled" ? eduData.value?.data || [] : [];
+    currentSkills =
+      skillsData.status === "fulfilled" ? skillsData.value?.data || [] : [];
+    currentLanguages =
+      langData.status === "fulfilled" ? langData.value?.data || [] : [];
 
-    document.getElementById('app').innerHTML = getEditHTML(user);
+    document.getElementById("app").innerHTML = getEditHTML(authContext, false);
     initEditEvents();
   } catch (error) {
-    console.error('Error loading profile for edit:', error);
-    document.getElementById('app').innerHTML = getEditHTML(user);
+    console.error("Error loading profile for edit:", error);
+    document.getElementById("app").innerHTML = getEditHTML(authContext, true);
     initEditEvents();
   }
 }
 
-function getEditHTML(user) {
-  const navbar = renderNavbar({ activeRoute: 'candidate/profile/edit', isAuthenticated: true, user });
+function getEditHTML(authContext, loadFailed = false) {
+  const { user, isAuthenticated, roles, primaryRole } = authContext;
+  const navbar = renderNavbar({
+    activeRoute: "candidate/profile/edit",
+    isAuthenticated,
+    user,
+    roles,
+    primaryRole,
+  });
   const p = currentProfile || {};
 
- 
-
   const tabs = [
-    { id: 'tab-personal', label: 'Información Personal', icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>` },
-    { id: 'tab-experience', label: 'Experiencia', icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>` },
-    { id: 'tab-education', label: 'Educación', icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>` },
-    { id: 'tab-skills', label: 'Habilidades', icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` },
-    { id: 'tab-languages', label: 'Idiomas', icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>` },
+    {
+      id: "tab-personal",
+      label: "Información Personal",
+      icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+    },
+    {
+      id: "tab-experience",
+      label: "Experiencia",
+      icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+    },
+    {
+      id: "tab-education",
+      label: "Educación",
+      icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`,
+    },
+    {
+      id: "tab-skills",
+      label: "Habilidades",
+      icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
+    },
+    {
+      id: "tab-languages",
+      label: "Idiomas",
+      icon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
+    },
   ];
 
   const mainContent = `
     <div class="edit-content">
+      ${loadFailed ? '<div class="edit-warning">No pudimos cargar completamente los datos actuales. Si editas, revisa cuidadosamente la información antes de guardar.</div>' : ""}
       <!-- Tabs -->
       <div class="edit-tabs">
-        ${tabs.map((t, i) => `<button class="edit-tab${i === 0 ? ' edit-tab--active' : ''}" data-tab="${t.id}"><span class="edit-tab__icon">${t.icon}</span> ${t.label}</button>`).join('')}
+        ${tabs.map((t, i) => `<button class="edit-tab${i === 0 ? " edit-tab--active" : ""}" data-tab="${t.id}"><span class="edit-tab__icon">${t.icon}</span> ${t.label}</button>`).join("")}
       </div>
 
       <!-- Tab: Personal Info -->
@@ -69,47 +107,47 @@ function getEditHTML(user) {
             <div class="form-grid form-grid--2">
               <div class="form-field">
                 <label class="form-label" for="edit-firstName">Nombre</label>
-                <input class="form-input" id="edit-firstName" type="text" value="${user?.firstName || ''}" required />
+                <input class="form-input" id="edit-firstName" type="text" value="${user?.firstName || ""}" required />
               </div>
               <div class="form-field">
                 <label class="form-label" for="edit-lastName">Apellido</label>
-                <input class="form-input" id="edit-lastName" type="text" value="${user?.lastName || ''}" required />
+                <input class="form-input" id="edit-lastName" type="text" value="${user?.lastName || ""}" required />
               </div>
             </div>
             <div class="form-field">
               <label class="form-label" for="edit-headline">Título profesional</label>
-              <input class="form-input" id="edit-headline" type="text" placeholder="Ej: Desarrollador Full Stack" value="${p.headline || ''}" />
+              <input class="form-input" id="edit-headline" type="text" placeholder="Ej: Desarrollador Full Stack" value="${p.headline || ""}" />
             </div>
             <div class="form-field">
               <label class="form-label" for="edit-bio">Biografía</label>
-              <textarea class="form-textarea" id="edit-bio" rows="4" placeholder="Cuéntanos sobre ti...">${p.bio || ''}</textarea>
+              <textarea class="form-textarea" id="edit-bio" rows="4" placeholder="Cuéntanos sobre ti...">${p.bio || ""}</textarea>
             </div>
             <div class="form-grid form-grid--2">
               <div class="form-field">
                 <label class="form-label" for="edit-location">Ubicación</label>
-                <input class="form-input" id="edit-location" type="text" placeholder="Ciudad, País" value="${p.location || ''}" />
+                <input class="form-input" id="edit-location" type="text" placeholder="Ciudad, País" value="${p.location || ""}" />
               </div>
               <div class="form-field">
                 <label class="form-label" for="edit-availability">Disponibilidad</label>
                 <select class="form-select" id="edit-availability">
-                  <option value="immediately" ${p.availability === 'immediately' ? 'selected' : ''}>Disponible inmediatamente</option>
-                  <option value="open" ${p.availability === 'open' ? 'selected' : ''}>Abierto a oportunidades</option>
-                  <option value="notLooking" ${p.availability === 'notLooking' ? 'selected' : ''}>No buscando activamente</option>
+                  <option value="immediately" ${p.availability === "immediately" ? "selected" : ""}>Disponible inmediatamente</option>
+                  <option value="open" ${p.availability === "open" ? "selected" : ""}>Abierto a oportunidades</option>
+                  <option value="notLooking" ${p.availability === "notLooking" ? "selected" : ""}>No buscando activamente</option>
                 </select>
               </div>
             </div>
             <div class="form-grid form-grid--3">
               <div class="form-field">
                 <label class="form-label" for="edit-website">Sitio web</label>
-                <input class="form-input" id="edit-website" type="url" placeholder="https://..." value="${p.websiteUrl || ''}" />
+                <input class="form-input" id="edit-website" type="url" placeholder="https://..." value="${p.websiteUrl || ""}" />
               </div>
               <div class="form-field">
                 <label class="form-label" for="edit-linkedin">LinkedIn</label>
-                <input class="form-input" id="edit-linkedin" type="url" placeholder="https://linkedin.com/in/..." value="${p.linkedinUrl || ''}" />
+                <input class="form-input" id="edit-linkedin" type="url" placeholder="https://linkedin.com/in/..." value="${p.linkedinUrl || ""}" />
               </div>
               <div class="form-field">
                 <label class="form-label" for="edit-github">GitHub</label>
-                <input class="form-input" id="edit-github" type="url" placeholder="https://github.com/..." value="${p.githubUrl || ''}" />
+                <input class="form-input" id="edit-github" type="url" placeholder="https://github.com/..." value="${p.githubUrl || ""}" />
               </div>
             </div>
             <div class="form-actions">
@@ -130,12 +168,16 @@ function getEditHTML(user) {
             <button class="btn btn--primary btn--sm" id="add-exp-btn">+ Agregar</button>
           </div>
           <div id="experiences-list">
-            ${currentExperiences.length > 0 ? currentExperiences.map((exp, i) => `
+            ${
+              currentExperiences.length > 0
+                ? currentExperiences
+                    .map(
+                      (exp, i) => `
               <div class="edit-item" data-id="${exp.id}">
                 <div class="edit-item__header">
                   <div>
-                    <strong>${exp.position || 'Puesto'}</strong>
-                    <span class="edit-item__sub">${exp.companyName || ''}</span>
+                    <strong>${exp.position || "Puesto"}</strong>
+                    <span class="edit-item__sub">${exp.companyName || ""}</span>
                   </div>
                   <div class="edit-item__actions">
                     <button class="btn-icon btn-icon--edit" data-edit-exp="${exp.id}" title="Editar">
@@ -146,10 +188,14 @@ function getEditHTML(user) {
                     </button>
                   </div>
                 </div>
-                <p class="edit-item__meta">${exp.startDate || ''} — ${exp.isCurrent ? 'Presente' : (exp.endDate || '')}${exp.location ? ` · ${exp.location}` : ''}</p>
-                ${exp.description ? `<p class="edit-item__desc">${exp.description.substring(0, 120)}${exp.description.length > 120 ? '...' : ''}</p>` : ''}
+                <p class="edit-item__meta">${exp.startDate || ""} — ${exp.isCurrent ? "Presente" : exp.endDate || ""}${exp.location ? ` · ${exp.location}` : ""}</p>
+                ${exp.description ? `<p class="edit-item__desc">${exp.description.substring(0, 120)}${exp.description.length > 120 ? "..." : ""}</p>` : ""}
               </div>
-            `).join('') : '<p class="empty-list">No has agregado experiencias aún</p>'}
+            `,
+                    )
+                    .join("")
+                : '<p class="empty-list">No has agregado experiencias aún</p>'
+            }
           </div>
         </div>
       </div>
@@ -165,12 +211,16 @@ function getEditHTML(user) {
             <button class="btn btn--primary btn--sm" id="add-edu-btn">+ Agregar</button>
           </div>
           <div id="education-list">
-            ${currentEducation.length > 0 ? currentEducation.map(edu => `
+            ${
+              currentEducation.length > 0
+                ? currentEducation
+                    .map(
+                      (edu) => `
               <div class="edit-item" data-id="${edu.id}">
                 <div class="edit-item__header">
                   <div>
-                    <strong>${edu.degree || 'Título'}${edu.fieldOfStudy ? ` en ${edu.fieldOfStudy}` : ''}</strong>
-                    <span class="edit-item__sub">${edu.institutionName || ''}</span>
+                    <strong>${edu.degree || "Título"}${edu.fieldOfStudy ? ` en ${edu.fieldOfStudy}` : ""}</strong>
+                    <span class="edit-item__sub">${edu.institutionName || ""}</span>
                   </div>
                   <div class="edit-item__actions">
                     <button class="btn-icon btn-icon--edit" data-edit-edu="${edu.id}" title="Editar">
@@ -181,10 +231,14 @@ function getEditHTML(user) {
                     </button>
                   </div>
                 </div>
-                <p class="edit-item__meta">${edu.startDate || ''} — ${edu.isCurrent ? 'Presente' : (edu.endDate || '')}</p>
-                ${edu.description ? `<p class="edit-item__desc">${edu.description.substring(0, 120)}${edu.description.length > 120 ? '...' : ''}</p>` : ''}
+                <p class="edit-item__meta">${edu.startDate || ""} — ${edu.isCurrent ? "Presente" : edu.endDate || ""}</p>
+                ${edu.description ? `<p class="edit-item__desc">${edu.description.substring(0, 120)}${edu.description.length > 120 ? "..." : ""}</p>` : ""}
               </div>
-            `).join('') : '<p class="empty-list">No has agregado educación aún</p>'}
+            `,
+                    )
+                    .join("")
+                : '<p class="empty-list">No has agregado educación aún</p>'
+            }
           </div>
         </div>
       </div>
@@ -200,15 +254,23 @@ function getEditHTML(user) {
             <button class="btn btn--primary btn--sm" id="add-skill-btn">+ Agregar</button>
           </div>
           <div id="skills-list" class="tags-list">
-            ${currentSkills.length > 0 ? currentSkills.map(s => `
+            ${
+              currentSkills.length > 0
+                ? currentSkills
+                    .map(
+                      (s) => `
               <div class="tag-item">
-                <span class="tag-label">${s.name || ''}</span>
-                <span class="tag-badge" style="background: ${{beginner:'#fef2f2',intermediate:'#fffbeb',advanced:'#eff6ff',expert:'#ecfdf5'}[s.level]};color: ${{beginner:'#dc2626',intermediate:'#d97706',advanced:'#2563eb',expert:'#059669'}[s.level]};">${{beginner:'Principiante',intermediate:'Intermedio',advanced:'Avanzado',expert:'Experto'}[s.level] || ''}</span>
+                <span class="tag-label">${s.name || ""}</span>
+                <span class="tag-badge" style="background: ${{ beginner: "#fef2f2", intermediate: "#fffbeb", advanced: "#eff6ff", expert: "#ecfdf5" }[s.level]};color: ${{ beginner: "#dc2626", intermediate: "#d97706", advanced: "#2563eb", expert: "#059669" }[s.level]};">${{ beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzado", expert: "Experto" }[s.level] || ""}</span>
                 <button class="btn-icon btn-icon--delete" data-del-skill="${s.id}" title="Eliminar">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
-            `).join('') : '<p class="empty-list">No has agregado habilidades aún</p>'}
+            `,
+                    )
+                    .join("")
+                : '<p class="empty-list">No has agregado habilidades aún</p>'
+            }
           </div>
         </div>
       </div>
@@ -224,15 +286,23 @@ function getEditHTML(user) {
             <button class="btn btn--primary btn--sm" id="add-lang-btn">+ Agregar</button>
           </div>
           <div id="languages-list" class="tags-list">
-            ${currentLanguages.length > 0 ? currentLanguages.map(l => `
+            ${
+              currentLanguages.length > 0
+                ? currentLanguages
+                    .map(
+                      (l) => `
               <div class="tag-item">
-                <span class="tag-label">${l.name || ''}</span>
-                <span class="tag-badge" style="background: ${{basic:'#fef2f2',intermediate:'#fffbeb',advanced:'#eff6ff',native:'#ecfdf5'}[l.proficiency]};color: ${{basic:'#dc2626',intermediate:'#d97706',advanced:'#2563eb',native:'#059669'}[l.proficiency]};">${{basic:'Básico',intermediate:'Intermedio',advanced:'Avanzado',native:'Nativo'}[l.proficiency] || ''}</span>
+                <span class="tag-label">${l.name || ""}</span>
+                <span class="tag-badge" style="background: ${{ basic: "#fef2f2", intermediate: "#fffbeb", advanced: "#eff6ff", native: "#ecfdf5" }[l.proficiency]};color: ${{ basic: "#dc2626", intermediate: "#d97706", advanced: "#2563eb", native: "#059669" }[l.proficiency]};">${{ basic: "Básico", intermediate: "Intermedio", advanced: "Avanzado", native: "Nativo" }[l.proficiency] || ""}</span>
                 <button class="btn-icon btn-icon--delete" data-del-lang="${l.id}" title="Eliminar">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
-            `).join('') : '<p class="empty-list">No has agregado idiomas aún</p>'}
+            `,
+                    )
+                    .join("")
+                : '<p class="empty-list">No has agregado idiomas aún</p>'
+            }
           </div>
         </div>
       </div>
@@ -242,6 +312,15 @@ function getEditHTML(user) {
   const styles = `
     .edit-page { background: #f3f4f6; }
     .edit-content { max-width: 800px; margin: 0 auto; padding: 32px; }
+    .edit-warning {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #fde68a;
+      background: #fffbeb;
+      color: #92400e;
+      font-size: 13px;
+    }
     .edit-tabs { display: flex; gap: 4px; margin-bottom: 32px; }
     .edit-tab {
       flex: 1; min-width: 0; justify-content: center; padding: 8px 6px; border: none; background: white; border-radius: 10px; font-size: 12px; font-weight: 500;
@@ -305,53 +384,56 @@ function getEditHTML(user) {
     }
   `;
 
-  return renderPage({ navbar, main:  mainContent, pageClass: 'edit-page', extraStyles: styles });
+  return renderPage({
+    navbar,
+    main: mainContent,
+    pageClass: "edit-page",
+    extraStyles: styles,
+  });
 }
 
 function initEditEvents() {
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try { await authService.logout(); window.location.hash = '#/'; }
-      catch (error) { console.error('Logout error:', error); }
-    });
-  }
-
   // Tab switching
-  document.querySelectorAll('.edit-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.edit-tab').forEach(t => t.classList.remove('edit-tab--active'));
-      document.querySelectorAll('.edit-panel').forEach(p => p.classList.remove('edit-panel--active'));
-      tab.classList.add('edit-tab--active');
-      document.getElementById(tab.dataset.tab)?.classList.add('edit-panel--active');
+  document.querySelectorAll(".edit-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document
+        .querySelectorAll(".edit-tab")
+        .forEach((t) => t.classList.remove("edit-tab--active"));
+      document
+        .querySelectorAll(".edit-panel")
+        .forEach((p) => p.classList.remove("edit-panel--active"));
+      tab.classList.add("edit-tab--active");
+      document
+        .getElementById(tab.dataset.tab)
+        ?.classList.add("edit-panel--active");
     });
   });
 
   // Save personal info
-  const personalForm = document.getElementById('form-personal');
+  const personalForm = document.getElementById("form-personal");
   if (personalForm) {
-    personalForm.addEventListener('submit', async (e) => {
+    personalForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const user = store.get('user');
+      const user = getAuthUiContext().user;
       const data = {
-        headline: document.getElementById('edit-headline').value,
-        bio: document.getElementById('edit-bio').value,
-        location: document.getElementById('edit-location').value,
-        availability: document.getElementById('edit-availability').value,
-        websiteUrl: document.getElementById('edit-website').value || null,
-        linkedinUrl: document.getElementById('edit-linkedin').value || null,
-        githubUrl: document.getElementById('edit-github').value || null,
+        headline: document.getElementById("edit-headline").value,
+        bio: document.getElementById("edit-bio").value,
+        location: document.getElementById("edit-location").value,
+        availability: document.getElementById("edit-availability").value,
+        websiteUrl: document.getElementById("edit-website").value || null,
+        linkedinUrl: document.getElementById("edit-linkedin").value || null,
+        githubUrl: document.getElementById("edit-github").value || null,
       };
 
       const btn = personalForm.querySelector('button[type="submit"]');
       const origText = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Guardando...';
+      btn.textContent = "Guardando...";
 
       try {
         // Update name
-        const firstName = document.getElementById('edit-firstName').value;
-        const lastName = document.getElementById('edit-lastName').value;
+        const firstName = document.getElementById("edit-firstName").value;
+        const lastName = document.getElementById("edit-lastName").value;
         if (firstName !== user?.firstName || lastName !== user?.lastName) {
           // Note: API may not support name update via this endpoint
         }
@@ -361,53 +443,85 @@ function initEditEvents() {
         } else {
           await candidateService.createProfile(data);
         }
-        btn.textContent = '✓ Guardado';
-        setTimeout(() => { btn.textContent = origText; btn.disabled = false; }, 1500);
+        btn.textContent = "✓ Guardado";
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.disabled = false;
+        }, 1500);
       } catch (error) {
-        console.error('Save error:', error);
-        btn.textContent = 'Error al guardar';
-        setTimeout(() => { btn.textContent = origText; btn.disabled = false; }, 2000);
+        console.error("Save error:", error);
+        btn.textContent = "Error al guardar";
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.disabled = false;
+        }, 2000);
       }
     });
   }
 
   // Add buttons (placeholder - full modal forms would go here)
-  const addBtns = { 'add-exp-btn': 'Experiencia', 'add-edu-btn': 'Educación', 'add-skill-btn': 'Habilidad', 'add-lang-btn': 'Idioma' };
+  const addBtns = {
+    "add-exp-btn": "Experiencia",
+    "add-edu-btn": "Educación",
+    "add-skill-btn": "Habilidad",
+    "add-lang-btn": "Idioma",
+  };
   Object.entries(addBtns).forEach(([id, label]) => {
     const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', () => alert(`El formulario para agregar ${label.toLowerCase()} estará disponible próximamente.`));
+    if (btn)
+      btn.addEventListener("click", () =>
+        alert(
+          `El formulario para agregar ${label.toLowerCase()} estará disponible próximamente.`,
+        ),
+      );
   });
 
   // Delete buttons (placeholder)
-  document.querySelectorAll('[data-del-exp]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      if (confirm('¿Eliminar esta experiencia?')) {
-        try { await candidateService.deleteExperience(btn.dataset.delExp); btn.closest('.edit-item').remove(); }
-        catch (e) { console.error(e); }
+  document.querySelectorAll("[data-del-exp]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (confirm("¿Eliminar esta experiencia?")) {
+        try {
+          await candidateService.deleteExperience(btn.dataset.delExp);
+          btn.closest(".edit-item").remove();
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   });
-  document.querySelectorAll('[data-del-edu]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      if (confirm('¿Eliminar esta educación?')) {
-        try { await candidateService.deleteEducationItem(btn.dataset.delEdu); btn.closest('.edit-item').remove(); }
-        catch (e) { console.error(e); }
+  document.querySelectorAll("[data-del-edu]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (confirm("¿Eliminar esta educación?")) {
+        try {
+          await candidateService.deleteEducationItem(btn.dataset.delEdu);
+          btn.closest(".edit-item").remove();
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   });
-  document.querySelectorAll('[data-del-skill]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      if (confirm('¿Eliminar esta habilidad?')) {
-        try { await candidateService.deleteSkill(btn.dataset.delSkill); btn.closest('.tag-item').remove(); }
-        catch (e) { console.error(e); }
+  document.querySelectorAll("[data-del-skill]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (confirm("¿Eliminar esta habilidad?")) {
+        try {
+          await candidateService.deleteSkill(btn.dataset.delSkill);
+          btn.closest(".tag-item").remove();
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   });
-  document.querySelectorAll('[data-del-lang]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      if (confirm('¿Eliminar este idioma?')) {
-        try { await candidateService.deleteLanguage(btn.dataset.delLang); btn.closest('.tag-item').remove(); }
-        catch (e) { console.error(e); }
+  document.querySelectorAll("[data-del-lang]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (confirm("¿Eliminar este idioma?")) {
+        try {
+          await candidateService.deleteLanguage(btn.dataset.delLang);
+          btn.closest(".tag-item").remove();
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   });

@@ -1,26 +1,34 @@
 // Login Page Controller
-import { authService } from '@services/auth.service';
-import { store } from '@core/store';
-import { showLoading, renderNavbar, renderPage } from '@utils/ui.js';
+import { authService } from "@services/auth.service";
+import { config } from "@core/config";
+import { getDashboardRouteForRoles } from "@core/roles";
+import {
+  getAuthUiContext,
+  resolveRequestErrorMessage,
+  showLoading,
+  renderNavbar,
+  renderPage,
+} from "@utils/ui.js";
 
 export async function initLoginPage(params, query) {
-  // Redirect if already authenticated
-  if (store.get('isAuthenticated')) {
-    const roles = store.get('roles') || [];
-    window.location.hash = roles.includes('candidate') ? '#/candidate/dashboard' : '#/company/dashboard';
+  const { isAuthenticated, roles } = getAuthUiContext();
+  if (isAuthenticated) {
+    window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
     return;
   }
 
-  showLoading('Cargando...');
+  showLoading("Cargando...");
   renderLoginPage();
   initLoginEvents();
 }
 
 function renderLoginPage() {
-  const navbar = renderNavbar({ activeRoute: '' });
+  const navbar = renderNavbar({ activeRoute: "" });
 
   const mainContent = `
-    <div class="login-page">
+    <div class="auth-page auth-page--login">
+      <div class="auth-page__glow auth-page__glow--left"></div>
+      <div class="auth-page__glow auth-page__glow--right"></div>
       <div class="login-page__logo-container">
         <a href="#/">
           <img src="/logoPortal.png" alt="Logo TrabajaHoy" class="login-page__logo" />
@@ -51,7 +59,7 @@ function renderLoginPage() {
                 <input type="checkbox" id="remember-me" class="form-checkbox__input" />
                 <span class="form-checkbox__label">Recuérdame</span>
               </label>
-              <a href="#" class="form-link">Olvidé la contraseña</a>
+              <span class="form-link" aria-hidden="true">Olvidé la contraseña</span>
             </div>
           </div>
           <button type="submit" class="btn btn--primary btn--full-width" id="login-btn">
@@ -67,21 +75,54 @@ function renderLoginPage() {
   `;
 
   const styles = `
-    .login-page {
+    .auth-page {
       min-height: calc(100vh - 70px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 10% 10%, #fff4de 0%, transparent 42%),
+                  radial-gradient(circle at 88% 16%, #e0f2fe 0%, transparent 40%),
+                  linear-gradient(120deg, #f8fafc 0%, #eef2ff 45%, #fefce8 100%);
       padding: 40px 20px;
     }
+    .auth-page__glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .auth-page__glow--left {
+      background: #fdba74;
+      left: -80px;
+      top: 40px;
+    }
+    .auth-page__glow--right {
+      background: #7dd3fc;
+      right: -100px;
+      bottom: 20px;
+    }
     .login-page__logo-container { margin-bottom: 32px; }
-    .login-page__logo { height: 60px; width: auto; cursor: pointer; }
+    .login-page__logo {
+      height: 60px;
+      width: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
     .login-page__container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 24px 50px rgba(15, 23, 42, 0.15);
       padding: 48px;
       max-width: 500px;
       width: 100%;
@@ -108,8 +149,7 @@ function renderLoginPage() {
     .form-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .form-checkbox__input { width: 18px; height: 18px; cursor: pointer; accent-color: #3b82f6; }
     .form-checkbox__label { font-size: 14px; color: #374151; }
-    .form-link { color: #3b82f6; text-decoration: none; font-size: 14px; }
-    .form-link:hover { text-decoration: underline; }
+    .form-link { color: #64748b; font-size: 13px; }
     .login-form__error {
       background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 6px;
       margin-bottom: 16px; font-size: 14px;
@@ -126,48 +166,64 @@ function renderLoginPage() {
     }
   `;
 
-  document.getElementById('app').innerHTML = renderPage({ navbar, main: mainContent, extraStyles: styles });
+  document.getElementById("app").innerHTML = renderPage({
+    navbar,
+    main: mainContent,
+    extraStyles: styles,
+  });
 }
 
 function initLoginEvents() {
-  const form = document.getElementById('login-form');
-  const emailInput = document.getElementById('login-email');
-  const passwordInput = document.getElementById('login-password');
-  const submitBtn = document.getElementById('login-btn');
-  const togglePasswordBtn = document.getElementById('toggle-password');
-  const errorDiv = document.getElementById('login-error');
+  const form = document.getElementById("login-form");
+  const emailInput = document.getElementById("login-email");
+  const passwordInput = document.getElementById("login-password");
+  const submitBtn = document.getElementById("login-btn");
+  const togglePasswordBtn = document.getElementById("toggle-password");
+  const errorDiv = document.getElementById("login-error");
+  const defaultSubmitHtml = submitBtn.innerHTML;
+
+  const setSubmitting = (isSubmitting) => {
+    submitBtn.disabled = isSubmitting;
+    emailInput.disabled = isSubmitting;
+    passwordInput.disabled = isSubmitting;
+    submitBtn.innerHTML = isSubmitting
+      ? '<span class="spinner"></span> Iniciando sesión...'
+      : defaultSubmitHtml;
+  };
 
   if (togglePasswordBtn) {
-    togglePasswordBtn.addEventListener('click', () => {
-      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    togglePasswordBtn.addEventListener("click", () => {
+      passwordInput.type =
+        passwordInput.type === "password" ? "text" : "password";
     });
   }
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
 
     if (!email || !password) {
-      errorDiv.textContent = 'Por favor, completa todos los campos';
-      errorDiv.style.display = 'block';
+      errorDiv.textContent = "Por favor, completa todos los campos";
+      errorDiv.style.display = "block";
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Iniciando sesión...';
-    errorDiv.style.display = 'none';
+    setSubmitting(true);
+    errorDiv.style.display = "none";
 
     try {
       await authService.login({ email, password });
-      const roles = store.get('roles') || [];
-      window.location.hash = roles.includes('candidate') ? '#/candidate/dashboard' : '#/company/dashboard';
+      const { roles } = getAuthUiContext();
+      window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
     } catch (error) {
-      console.error('Login error:', error);
-      errorDiv.textContent = error.response?.data?.message || error.response?.data?.error || 'Error de autenticación. Verifica tus credenciales.';
-      errorDiv.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `Iniciar Sesión <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      console.error("Login error:", error);
+      errorDiv.textContent = resolveRequestErrorMessage(
+        error,
+        "Error de autenticación. Verifica tus credenciales.",
+      );
+      errorDiv.style.display = "block";
+      setSubmitting(false);
     }
   });
 }
