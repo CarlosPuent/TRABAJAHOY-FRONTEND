@@ -76,7 +76,7 @@ export function renderNavbar({ activeRoute = '', isAuthenticated = false, user =
     <header class="site-header">
       <div class="site-header__container">
         <a href="#/" class="site-header__logo-link" aria-label="Inicio">
-          <img src="/logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
+          <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
         </a>
         <nav class="site-header__nav" aria-label="Navegación principal">
           ${navLinks}

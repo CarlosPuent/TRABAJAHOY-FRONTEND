@@ -23,7 +23,7 @@ function renderLoginPage() {
     <div class="login-page">
       <div class="login-page__logo-container">
         <a href="#/">
-          <img src="/logoPortal.png" alt="Logo TrabajaHoy" class="login-page__logo" />
+          <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="Logo TrabajaHoy" class="login-page__logo" />
         </a>
       </div>
       <div class="login-page__container">

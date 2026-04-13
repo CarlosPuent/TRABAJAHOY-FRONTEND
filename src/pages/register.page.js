@@ -22,7 +22,7 @@ function renderRegisterPage() {
     <div class="register-page">
       <div class="register-page__logo-container">
         <a href="#/">
-          <img src="/logoPortal.png" alt="Logo TrabajaHoy" class="register-page__logo" />
+          <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="Logo TrabajaHoy" class="register-page__logo" />
         </a>
       </div>
       <div class="register-page__container">
