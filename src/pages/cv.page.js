@@ -82,6 +82,7 @@ function getCVHTML(user, cvs) {
         ${cvs.length > 0 ? cvs.map(cv => {
           const ext = (cv.fileName || '').split('.').pop().toUpperCase();
           const size = cv.fileSize ? formatFileSize(cv.fileSize) : '';
+          const isPDF = ext === 'PDF';
           return `
             <div class="cv-row" data-id="${cv.id}">
               <div class="cv-row__icon">
@@ -92,8 +93,12 @@ function getCVHTML(user, cvs) {
                 <p class="cv-row__meta">${ext}${size ? ` · ${size}` : ''}${cv.createdAt ? ` · ${new Date(cv.createdAt).toLocaleDateString('es-ES', {day:'numeric',month:'short',year:'numeric'})}` : ''}</p>
               </div>
               <div class="cv-row__actions">
-                <button class="btn-icon" data-view-cv="${cv.id}" data-url="${cv.downloadUrl || ''}" title="Ver">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                ${isPDF ? `<button class="btn btn--sm btn--outline" data-preview-cv="${cv.id}" data-url="${cv.downloadUrl || ''}" title="Vista previa">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  Ver
+                </button>` : ''}
+                <button class="btn-icon" data-view-cv="${cv.id}" data-url="${cv.downloadUrl || ''}" title="Descargar">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 </button>
                 <button class="btn-icon btn-icon--danger" data-del-cv="${cv.id}" title="Eliminar">
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -102,6 +107,22 @@ function getCVHTML(user, cvs) {
             </div>
           `;
         }).join('') : `<div class="cv-empty"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><h3>No has subido ningun CV</h3><p>Sube tu curriculum para que los empleadores puedan verlo</p></div>`}
+      </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div id="cv-pdf-modal" class="cv-modal" style="display:none;">
+      <div class="cv-modal__overlay"></div>
+      <div class="cv-modal__content">
+        <div class="cv-modal__header">
+          <h2 class="cv-modal__title" id="cv-modal-title">Vista Previa del CV</h2>
+          <button class="cv-modal__close" id="cv-modal-close">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="cv-modal__body">
+          <iframe id="cv-pdf-frame" src="" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
       </div>
     </div>
   `;
@@ -139,9 +160,22 @@ function getCVHTML(user, cvs) {
     .btn--primary { background: #3b82f6; color: white; }
     .btn--primary:hover { background: #2563eb; }
     .btn--sm { padding: 7px 14px; font-size: 13px; }
+    .btn--outline { background: white; color: #3b82f6; border: 1px solid #3b82f6; }
+    .btn--outline:hover { background: #eff6ff; }
     .btn-icon { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; color: #6b7280; transition: all 0.15s; display: flex; }
     .btn-icon:hover { background: #f3f4f6; color: #374151; }
     .btn-icon--danger:hover { background: #fee2e2; color: #dc2626; }
+    
+    /* PDF Preview Modal */
+    .cv-modal { position: fixed; inset: 0; z-index: 1000; }
+    .cv-modal__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+    .cv-modal__content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 12px; width: 90%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .cv-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e5e7eb; }
+    .cv-modal__title { font-size: 18px; font-weight: 600; color: #111827; margin: 0; }
+    .cv-modal__close { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; color: #6b7280; transition: all 0.15s; }
+    .cv-modal__close:hover { background: #f3f4f6; color: #374151; }
+    .cv-modal__body { flex: 1; overflow: hidden; }
+    
     @media (max-width: 1024px) {
       .cv-layout { flex-direction: column; }
       .cv-sidebar { width: 100%; position: static; height: auto; border-right: none; border-bottom: 1px solid #e5e7eb; }
@@ -150,6 +184,7 @@ function getCVHTML(user, cvs) {
       .cv-sidebar__link { border-right: none; border-bottom: 3px solid transparent; white-space: nowrap; padding: 10px 16px; }
       .cv-sidebar__link--active { border-bottom-color: #2563eb; }
       .cv-content { padding: 20px 16px; }
+      .cv-modal__content { width: 95%; height: 90vh; }
     }
   `;
 
@@ -207,14 +242,72 @@ function initCVEvents() {
     });
   });
 
-  // View CV
+  // View/Download CV
   document.querySelectorAll('[data-view-cv]').forEach(btn => {
     btn.addEventListener('click', () => {
       const url = btn.dataset.url;
-      if (url) window.open(url, '_blank');
-      else alert('URL de descarga no disponible');
+      if (url) {
+        // Create a temporary link for download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        alert('URL de descarga no disponible');
+      }
     });
   });
+
+  // Preview PDF in modal
+  document.querySelectorAll('[data-preview-cv]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const url = btn.dataset.url;
+      if (url) {
+        showPDFModal(url);
+      } else {
+        alert('URL de vista previa no disponible');
+      }
+    });
+  });
+
+  // Close PDF modal
+  const modalClose = document.getElementById('cv-modal-close');
+  const modalOverlay = document.querySelector('.cv-modal__overlay');
+  if (modalClose) {
+    modalClose.addEventListener('click', hidePDFModal);
+  }
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', hidePDFModal);
+  }
+
+  // Close modal with ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hidePDFModal();
+    }
+  });
+}
+
+function showPDFModal(url) {
+  const modal = document.getElementById('cv-pdf-modal');
+  const frame = document.getElementById('cv-pdf-frame');
+  if (modal && frame) {
+    frame.src = url;
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  }
+}
+
+function hidePDFModal() {
+  const modal = document.getElementById('cv-pdf-modal');
+  const frame = document.getElementById('cv-pdf-frame');
+  if (modal && frame) {
+    modal.style.display = 'none';
+    frame.src = '';
+    document.body.style.overflow = ''; // Restore scrolling
+  }
 }
 
 async function handleFileUpload(file) {

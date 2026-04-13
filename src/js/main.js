@@ -135,7 +135,7 @@ function registerRoutes() {
     roles: ['candidate'],
   });
 
-  router.on(config.ROUTES.MANAGE_CV, createPlaceholderPage('Mi CV', 'Sube y gestiona tu currículum.'), {
+  router.on(config.ROUTES.MANAGE_CV, initCVPage, {
     requiresAuth: true,
     roles: ['candidate'],
   });
