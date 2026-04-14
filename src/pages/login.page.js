@@ -32,48 +32,6 @@ export async function initLoginPage(params, query) {
 function renderLoginPage() {
   const navbar = renderNavbar({ activeRoute: "" });
 
-<<<<<<< HEAD
-  const mainContent = `
-    <div class="login-page">
-      <div class="login-page__logo-container">
-        <a href="#/">
-          <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="Logo TrabajaHoy" class="login-page__logo" />
-        </a>
-      </div>
-      <div class="login-page__container">
-        <header class="login-page__header">
-          <h1 class="login-page__title">Iniciar Sesión</h1>
-          <p class="login-page__subtitle">¿No tienes cuenta? <a href="#/register" class="login-page__link">Crear Cuenta</a></p>
-        </header>
-        <form class="login-form" id="login-form">
-          <div class="login-form__error" id="login-error" style="display:none;"></div>
-          <div class="login-form__fields">
-            <div class="form-group">
-              <input type="email" id="login-email" class="form-input" placeholder="Correo Electrónico" required />
-            </div>
-            <div class="form-group form-group--password">
-              <input type="password" id="login-password" class="form-input" placeholder="Contraseña" required />
-              <button type="button" class="form-password-toggle" id="toggle-password" aria-label="Mostrar contraseña">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-            <div class="form-actions">
-              <label class="form-checkbox">
-                <input type="checkbox" id="remember-me" class="form-checkbox__input" />
-                <span class="form-checkbox__label">Recuérdame</span>
-              </label>
-              <a href="#" class="form-link">Olvidé la contraseña</a>
-            </div>
-          </div>
-          <button type="submit" class="btn btn--primary btn--full-width" id="login-btn">
-            Iniciar Sesión
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-=======
   const form = `
     <form class="auth-form" id="login-form" novalidate>
       ${renderAuthErrorBlock("login-error")}
@@ -91,7 +49,6 @@ function renderLoginPage() {
             <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
               <circle cx="12" cy="12" r="3"></circle>
->>>>>>> puente
             </svg>
           </button>
         </div>

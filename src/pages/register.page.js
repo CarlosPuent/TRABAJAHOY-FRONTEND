@@ -32,50 +32,6 @@ export async function initRegisterPage(params, query) {
 function renderRegisterPage() {
   const navbar = renderNavbar({ activeRoute: "" });
 
-<<<<<<< HEAD
-  const mainContent = `
-    <div class="register-page">
-      <div class="register-page__logo-container">
-        <a href="#/">
-          <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="Logo TrabajaHoy" class="register-page__logo" />
-        </a>
-      </div>
-      <div class="register-page__container">
-        <header class="register-page__header">
-          <h1 class="register-page__title">Crear Cuenta</h1>
-          <p class="register-page__subtitle">¿Ya tienes cuenta? <a href="#/login" class="register-page__link">Iniciar Sesión</a></p>
-        </header>
-        <form class="register-form" id="register-form">
-          <div class="register-form__error" id="register-error" style="display:none;"></div>
-          <div class="register-form__fields">
-            <div class="form-row">
-              <div class="form-group">
-                <input type="text" id="register-firstname" class="form-input" placeholder="Nombre" required />
-              </div>
-              <div class="form-group">
-                <input type="text" id="register-lastname" class="form-input" placeholder="Apellido" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <input type="email" id="register-email" class="form-input" placeholder="Correo Electrónico" required />
-            </div>
-            <div class="form-group form-group--password">
-              <input type="password" id="register-password" class="form-input" placeholder="Contraseña" required minlength="8" />
-              <button type="button" class="form-password-toggle" id="toggle-password" aria-label="Mostrar contraseña">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-            <div class="form-group form-group--password">
-              <input type="password" id="register-confirm-password" class="form-input" placeholder="Confirmar Contraseña" required />
-            </div>
-            <div class="form-checkbox">
-              <input type="checkbox" id="accept-terms" class="form-checkbox__input" required />
-              <label for="accept-terms" class="form-checkbox__label">Acepto los <a href="#">Términos y Condiciones</a></label>
-            </div>
-=======
   const form = `
     <form class="auth-form" id="register-form" novalidate>
       ${renderAuthErrorBlock("register-error")}
@@ -85,7 +41,6 @@ function renderRegisterPage() {
           <div class="auth-field">
             <label class="sr-only" for="register-firstname">Nombre</label>
             <input type="text" id="register-firstname" class="auth-input" placeholder="Nombre" autocomplete="given-name" required />
->>>>>>> puente
           </div>
           <div class="auth-field">
             <label class="sr-only" for="register-lastname">Apellido</label>

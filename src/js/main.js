@@ -333,30 +333,6 @@ function createPlaceholderPage(title, description) {
       ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
       : "Usuario";
 
-<<<<<<< HEAD
-    app.innerHTML = `
-      <header class="site-header">
-        <div class="container site-header__container">
-          <a href="#/" class="site-header__logo-link" aria-label="Inicio">
-            <img src="${import.meta.env.BASE_URL}logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
-          </a>
-          <nav class="site-header__nav" aria-label="Navegación principal">
-            <a href="#/vacancies" class="site-header__nav-link">Buscar empleos</a>
-            <a href="#/resources" class="site-header__nav-link">Recursos</a>
-            <a href="#/forum" class="site-header__nav-link">Foro</a>
-          </nav>
-          <div class="site-header__actions">
-            ${isAuthenticated
-              ? `<a href="#/candidate/dashboard" class="btn btn--outline">Mi Panel</a>
-                 <span style="color: #374151; font-size: 14px;">${fullName}</span>
-                 <button id="logout-btn" style="background: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px;">Salir</button>`
-              : `<a href="#/login" class="btn btn--login">Login</a>
-                 <a href="#/register" class="btn btn--register">Registrarse</a>`
-            }
-          </div>
-        </div>
-      </header>
-=======
     const navbar = renderNavbar({
       activeRoute: panelRoute,
       isAuthenticated,
@@ -367,7 +343,6 @@ function createPlaceholderPage(title, description) {
         ? `<span class="main-placeholder__user">${fullName}</span>`
         : "",
     });
->>>>>>> puente
 
     const shell = renderRoleShell({
       title,
