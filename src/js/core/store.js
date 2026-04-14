@@ -1,4 +1,5 @@
 // Global State Management using Proxy Pattern
+import { getPrimaryRole, hasAnyRole, normalizeRoles } from "@core/roles";
 
 class Store {
   constructor() {
@@ -7,14 +8,15 @@ class Store {
       isAuthenticated: false,
       user: null,
       roles: [],
+      primaryRole: null,
       accessToken: null,
       refreshToken: null,
-      
+
       // UI State
       loading: false,
       error: null,
       toasts: [],
-      
+
       // Data caches
       vacancies: {
         list: [],
@@ -38,7 +40,7 @@ class Store {
       set: (target, property, value) => {
         const oldValue = target[property];
         target[property] = value;
-        
+
         // Notify subscribers
         this._notify(property, value, oldValue);
         return true;
@@ -51,28 +53,33 @@ class Store {
 
   // Get state value
   get(path) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let value = this._proxy;
-    
+
     for (const key of keys) {
       if (value === undefined || value === null) {
         return undefined;
       }
       value = value[key];
     }
-    
+
     return value;
   }
 
   // Set state value
   set(path, value) {
-    const keys = path.split('.');
+    if (path === "roles") {
+      this.setRoles(value);
+      return;
+    }
+
+    const keys = path.split(".");
     let target = this._proxy;
-    
+
     for (let i = 0; i < keys.length - 1; i++) {
       target = target[keys[i]];
     }
-    
+
     target[keys[keys.length - 1]] = value;
   }
 
@@ -81,27 +88,61 @@ class Store {
     if (!this._subscribers[path]) {
       this._subscribers[path] = [];
     }
-    
+
     this._subscribers[path].push(callback);
-    
+
     // Return unsubscribe function
     return () => {
-      this._subscribers[path] = this._subscribers[path].filter(cb => cb !== callback);
+      this._subscribers[path] = this._subscribers[path].filter(
+        (cb) => cb !== callback,
+      );
     };
   }
 
   // Notify subscribers
   _notify(path, newValue, oldValue) {
     const subscribers = this._subscribers[path] || [];
-    subscribers.forEach(callback => callback(newValue, oldValue));
+    subscribers.forEach((callback) => callback(newValue, oldValue));
   }
 
   // Authentication helpers
-  setAuth(tokens, user) {
+  setAuth(tokens = {}, user = null, roles = null) {
     this._proxy.isAuthenticated = true;
-    this._proxy.accessToken = tokens.accessToken;
-    this._proxy.refreshToken = tokens.refreshToken;
+    this._proxy.accessToken = tokens?.accessToken || null;
+    this._proxy.refreshToken = tokens?.refreshToken || null;
     this._proxy.user = user;
+
+    const resolvedRoles = Array.isArray(roles)
+      ? roles
+      : Array.isArray(user?.roles)
+        ? user.roles
+        : Array.isArray(tokens?.roles)
+          ? tokens.roles
+          : [];
+
+    this.setRoles(resolvedRoles);
+  }
+
+  setRoles(roles = []) {
+    const normalizedRoles = normalizeRoles(roles);
+    this._proxy.roles = normalizedRoles;
+    this._proxy.primaryRole = getPrimaryRole(normalizedRoles);
+  }
+
+  getRoles() {
+    return [...(this._proxy.roles || [])];
+  }
+
+  getPrimaryRole() {
+    return this._proxy.primaryRole || getPrimaryRole(this._proxy.roles || []);
+  }
+
+  hasAnyRole(roles = []) {
+    return hasAnyRole(this._proxy.roles || [], roles);
+  }
+
+  isAuthenticated() {
+    return this._proxy.isAuthenticated === true;
   }
 
   clearAuth() {
@@ -109,27 +150,27 @@ class Store {
     this._proxy.accessToken = null;
     this._proxy.refreshToken = null;
     this._proxy.user = null;
-    this._proxy.roles = [];
+    this.setRoles([]);
   }
 
   hasRole(roleName) {
-    return this._proxy.roles.includes(roleName);
+    return this.hasAnyRole([roleName]);
   }
 
   isCandidate() {
-    return this.hasRole('candidate');
+    return this.hasRole("candidate");
   }
 
   isRecruiter() {
-    return this.hasRole('recruiter');
+    return this.hasRole("recruiter");
   }
 
   isAdmin() {
-    return this.hasRole('admin');
+    return this.hasRole("admin");
   }
 
   isModerator() {
-    return this.hasRole('moderator');
+    return this.hasRole("moderator");
   }
 
   // Toast notifications
@@ -140,7 +181,7 @@ class Store {
   }
 
   removeToast(id) {
-    this._proxy.toasts = this._proxy.toasts.filter(t => t.id !== id);
+    this._proxy.toasts = this._proxy.toasts.filter((t) => t.id !== id);
   }
 
   // Loading state
@@ -166,7 +207,7 @@ class Store {
   reset() {
     this._proxy.isAuthenticated = false;
     this._proxy.user = null;
-    this._proxy.roles = [];
+    this.setRoles([]);
     this._proxy.accessToken = null;
     this._proxy.refreshToken = null;
     this._proxy.loading = false;

@@ -1,22 +1,31 @@
 // HTTP Client Configuration with Axios
-import axios from 'axios';
-import { config } from '@core/config';
-import { store } from '@core/store';
-import { storage } from '@utils/storage';
+import axios from "axios";
+import { config } from "@core/config";
+import { store } from "@core/store";
+import { storage } from "@utils/storage";
 
 // Create axios instance
 const apiClient = axios.create({
   baseURL: config.API_BASE_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
+
+function shouldSkipRefreshForRequest(requestUrl = "") {
+  const normalizedUrl = String(requestUrl || "").toLowerCase();
+  return normalizedUrl.includes("/auth/logout");
+}
+
+function isExpectedLogoutUnauthorizedError(error, shouldSkipRefresh) {
+  return shouldSkipRefresh && error?.response?.status === 401;
+}
 
 // Request interceptor - Add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = store.get('accessToken');
+    const token = store.get("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,7 +33,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - Handle errors and token refresh
@@ -34,32 +43,47 @@ apiClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    const shouldSkipRefresh = shouldSkipRefreshForRequest(originalRequest?.url);
+
+    if (isExpectedLogoutUnauthorizedError(error, shouldSkipRefresh)) {
+      // Logout can return 401 when token is already invalid/expired.
+      // The auth service handles this as a non-blocking warning.
+      return Promise.reject(error);
+    }
 
     // Handle 401 Unauthorized - Token expired
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest?._retry &&
+      !shouldSkipRefresh
+    ) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = store.get('refreshToken');
-        
+        const refreshToken = store.get("refreshToken");
+
         if (!refreshToken) {
           // No refresh token, redirect to login
           store.clearAuth();
-          storage.clearTokens();
-          window.location.hash = '#/login';
+          storage.clearAuthSession();
+          window.location.hash = "#/login";
           return Promise.reject(error);
         }
 
         // Attempt to refresh token
-        const response = await axios.post(`${config.API_BASE_URL}/auth/refresh`, {
-          refreshToken,
-        });
+        const response = await axios.post(
+          `${config.API_BASE_URL}/auth/refresh`,
+          {
+            refreshToken,
+          },
+        );
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        const { accessToken, refreshToken: newRefreshToken } =
+          response.data.data;
 
         // Update store with new tokens
-        store.set('accessToken', accessToken);
-        store.set('refreshToken', newRefreshToken);
+        store.set("accessToken", accessToken);
+        store.set("refreshToken", newRefreshToken);
         storage.setTokens({ accessToken, refreshToken: newRefreshToken });
 
         // Retry original request with new token
@@ -68,8 +92,8 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         // Refresh failed, logout user
         store.clearAuth();
-        storage.clearTokens();
-        window.location.hash = '#/login';
+        storage.clearAuthSession();
+        window.location.hash = "#/login";
         return Promise.reject(refreshError);
       }
     }
@@ -77,47 +101,47 @@ apiClient.interceptors.response.use(
     // Handle other errors
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 403:
           store.addToast({
-            type: 'error',
-            message: 'No tienes permisos para realizar esta acción',
+            type: "error",
+            message: "No tienes permisos para realizar esta acción",
           });
           break;
         case 404:
           store.addToast({
-            type: 'error',
-            message: 'Recurso no encontrado',
+            type: "error",
+            message: "Recurso no encontrado",
           });
           break;
         case 409:
           store.addToast({
-            type: 'error',
-            message: data?.message || 'Conflicto con el recurso',
+            type: "error",
+            message: data?.message || "Conflicto con el recurso",
           });
           break;
         case 500:
           store.addToast({
-            type: 'error',
-            message: 'Error del servidor. Inténtalo más tarde',
+            type: "error",
+            message: "Error del servidor. Inténtalo más tarde",
           });
           break;
         default:
           store.addToast({
-            type: 'error',
-            message: data?.message || 'Error inesperado',
+            type: "error",
+            message: data?.message || "Error inesperado",
           });
       }
     } else if (error.request) {
       store.addToast({
-        type: 'error',
-        message: 'Error de conexión. Verifica tu conexión a internet',
+        type: "error",
+        message: "Error de conexión. Verifica tu conexión a internet",
       });
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // Helper methods for common operations
@@ -156,7 +180,7 @@ export const api = {
   upload: async (url, formData, onProgress = null) => {
     const response = await apiClient.post(url, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
       onUploadProgress: onProgress,
     });
@@ -166,12 +190,12 @@ export const api = {
   // Download file
   download: async (url, filename) => {
     const response = await apiClient.get(url, {
-      responseType: 'blob',
+      responseType: "blob",
     });
-    
+
     const blob = new Blob([response.data]);
     const downloadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = downloadUrl;
     link.download = filename;
     document.body.appendChild(link);

@@ -1,9 +1,12 @@
 // Candidate Dashboard Page Controller
-import { authService } from '@services/auth.service';
-import { vacancyService } from '@services/vacancy.service';
-import { applicationService } from '@services/application.service';
-import { store } from '@core/store';
-import { showLoading, renderNavbar, renderPage } from '@utils/ui.js';
+import { vacancyService } from "@services/vacancy.service";
+import { applicationService } from "@services/application.service";
+import {
+  getAuthUiContext,
+  showLoading,
+  renderNavbar,
+  renderPage,
+} from "@utils/ui.js";
 
 let dashboardData = { vacancies: [], savedJobs: [], applications: [] };
 
@@ -28,6 +31,15 @@ const styles = `
   .dashboard-main { flex: 1; padding: 32px; min-width: 0; }
   .dashboard-main__title { font-size: 24px; font-weight: 700; color: #111827; margin: 0 0 4px; }
   .dashboard-main__subtitle { color: #6b7280; margin: 0 0 28px; font-size: 14px; }
+  .dashboard-warning {
+    margin: 0 0 20px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+    font-size: 13px;
+  }
   .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
   .dashboard-stat { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
   .dashboard-stat__icon { color: #3b82f6; margin-bottom: 8px; }
@@ -74,8 +86,9 @@ const styles = `
 `;
 
 export async function initCandidateDashboardPage(params, query) {
-  const user = store.get('user');
-  showLoading('Cargando panel...');
+  const authContext = getAuthUiContext();
+  const user = authContext.user;
+  showLoading("Cargando panel...");
 
   try {
     const [vacanciesData, savedJobsData, applicationsData] = await Promise.all([
@@ -84,22 +97,42 @@ export async function initCandidateDashboardPage(params, query) {
       applicationService.getApplications({ limit: 5 }).catch(() => []),
     ]);
 
-    dashboardData.vacancies = Array.isArray(vacanciesData) ? vacanciesData : (vacanciesData.data || []);
-    dashboardData.savedJobs = Array.isArray(savedJobsData) ? savedJobsData : (savedJobsData.data || []);
-    dashboardData.applications = Array.isArray(applicationsData) ? applicationsData : (applicationsData.data || []);
+    dashboardData.vacancies = Array.isArray(vacanciesData)
+      ? vacanciesData
+      : vacanciesData.data || [];
+    dashboardData.savedJobs = Array.isArray(savedJobsData)
+      ? savedJobsData
+      : savedJobsData.data || [];
+    dashboardData.applications = Array.isArray(applicationsData)
+      ? applicationsData
+      : applicationsData.data || [];
 
-    document.getElementById('app').innerHTML = renderDashboardPage(user);
+    document.getElementById("app").innerHTML = renderDashboardPage(
+      authContext,
+      false,
+    );
     initDashboardEvents();
   } catch (error) {
-    console.error('Error loading dashboard:', error);
-    document.getElementById('app').innerHTML = renderDashboardPage(user);
+    console.error("Error loading dashboard:", error);
+    document.getElementById("app").innerHTML = renderDashboardPage(
+      authContext,
+      true,
+    );
     initDashboardEvents();
   }
 }
 
-function renderDashboardPage(user) {
-  const fullName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Usuario';
-  const navbar = renderNavbar({ activeRoute: 'candidate/dashboard', isAuthenticated: true, user });
+function renderDashboardPage(authContext, loadFailed = false) {
+  const { user, isAuthenticated, roles, primaryRole } = authContext;
+  const fullName =
+    `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "Usuario";
+  const navbar = renderNavbar({
+    activeRoute: "candidate/dashboard",
+    isAuthenticated,
+    user,
+    roles,
+    primaryRole,
+  });
 
   const sidebarHTML = `
     <aside class="dashboard-sidebar">
@@ -142,12 +175,16 @@ function renderDashboardPage(user) {
   `;
 
   const d = dashboardData;
+  const dataWarning = loadFailed
+    ? '<div class="dashboard-warning">Algunos datos no se pudieron cargar. Mostramos la última información disponible.</div>'
+    : "";
 
   // Overview panel
   const overviewHTML = `
     <div class="section-panel" id="panel-overview">
       <h1 class="dashboard-main__title">Bienvenido, ${fullName}</h1>
       <p class="dashboard-main__subtitle">Resumen de tu actividad</p>
+      ${dataWarning}
       <div class="dashboard-stats">
         <div class="dashboard-stat">
           <div class="dashboard-stat__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></div>
@@ -169,69 +206,91 @@ function renderDashboardPage(user) {
         <div class="dashboard-card">
           <div class="dashboard-card__header"><h2 class="dashboard-card__title">Empleos Recomendados</h2><a href="#/vacancies" class="dashboard-card__link">Ver todos →</a></div>
           <div class="dashboard-card__body">
-            ${d.vacancies.length ? d.vacancies.map(v => {
-              const modLabels = { remote: 'Remoto', hybrid: 'Híbrido', onsite: 'Presencial' };
-              return `<div class="detail-card">
+            ${
+              d.vacancies.length
+                ? d.vacancies
+                    .map((v) => {
+                      const modLabels = {
+                        remote: "Remoto",
+                        hybrid: "Híbrido",
+                        onsite: "Presencial",
+                      };
+                      return `<div class="detail-card">
                 <div class="detail-card__header">
-                  <div class="detail-card__logo">${(v.companyName||'C')[0]}</div>
+                  <div class="detail-card__logo">${(v.companyName || "C")[0]}</div>
                   <div class="detail-card__info">
-                    <p class="detail-card__title">${v.title||'Puesto'}</p>
-                    <p class="detail-card__company">${v.companyName||'Empresa'}${v.city?` · ${v.city}`:''}</p>
+                    <p class="detail-card__title">${v.title || "Puesto"}</p>
+                    <p class="detail-card__company">${v.companyName || "Empresa"}${v.city ? ` · ${v.city}` : ""}</p>
                   </div>
                 </div>
                 <div class="detail-card__tags">
-                  ${v.modality?`<span class="detail-tag">${modLabels[v.modality]||v.modality}</span>`:''}
-                  ${v.type?`<span class="detail-tag">${v.type}</span>`:''}
-                  ${v.level?`<span class="detail-tag">${v.level}</span>`:''}
+                  ${v.modality ? `<span class="detail-tag">${modLabels[v.modality] || v.modality}</span>` : ""}
+                  ${v.type ? `<span class="detail-tag">${v.type}</span>` : ""}
+                  ${v.level ? `<span class="detail-tag">${v.level}</span>` : ""}
                 </div>
-                ${v.salaryMin?`<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax||v.salaryMin).toLocaleString()} ${v.currency||''}</p>`:''}
+                ${v.salaryMin ? `<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax || v.salaryMin).toLocaleString()} ${v.currency || ""}</p>` : ""}
                 <div class="detail-card__actions">
                   <a href="#/vacancies/${v.id}" class="btn btn--sm btn--primary">Ver Detalles</a>
                   <a href="#/vacancies/${v.id}" class="btn btn--sm btn--outline">Aplicar</a>
                 </div>
               </div>`;
-            }).join('') : '<p class="empty-state">Sin recomendaciones aún</p>'}
+                    })
+                    .join("")
+                : '<p class="empty-state">Sin recomendaciones aún</p>'
+            }
           </div>
         </div>
         <div class="dashboard-card">
           <div class="dashboard-card__header"><h2 class="dashboard-card__title">Empleos Guardados</h2><a href="#panel:saved" class="dashboard-card__link" data-panel="saved">Ver todos →</a></div>
           <div class="dashboard-card__body">
-            ${d.savedJobs.length ? d.savedJobs.map(j => {
-              const v = j.vacancy||{};
-              return `<div class="detail-card">
+            ${
+              d.savedJobs.length
+                ? d.savedJobs
+                    .map((j) => {
+                      const v = j.vacancy || {};
+                      return `<div class="detail-card">
                 <div class="detail-card__header">
-                  <div class="detail-card__logo">${(v.companyName||'C')[0]}</div>
+                  <div class="detail-card__logo">${(v.companyName || "C")[0]}</div>
                   <div class="detail-card__info">
-                    <p class="detail-card__title">${v.title||'Puesto'}</p>
-                    <p class="detail-card__company">${v.companyName||''}${v.city?` · ${v.city}`:''}</p>
+                    <p class="detail-card__title">${v.title || "Puesto"}</p>
+                    <p class="detail-card__company">${v.companyName || ""}${v.city ? ` · ${v.city}` : ""}</p>
                   </div>
                 </div>
                 <div class="detail-card__actions">
                   <a href="#/vacancies/${j.vacancyId}" class="btn btn--sm btn--primary">Ver Detalles</a>
                 </div>
               </div>`;
-            }).join('') : '<p class="empty-state">Sin empleos guardados</p>'}
+                    })
+                    .join("")
+                : '<p class="empty-state">Sin empleos guardados</p>'
+            }
           </div>
         </div>
         <div class="dashboard-card">
           <div class="dashboard-card__header"><h2 class="dashboard-card__title">Mis Aplicaciones</h2><a href="#panel:applications" class="dashboard-card__link" data-panel="applications">Ver todas →</a></div>
           <div class="dashboard-card__body">
-            ${d.applications.length ? d.applications.map(a => {
-              const v = a.vacancy||{};
-              return `<div class="detail-card">
+            ${
+              d.applications.length
+                ? d.applications
+                    .map((a) => {
+                      const v = a.vacancy || {};
+                      return `<div class="detail-card">
                 <div class="detail-card__header">
-                  <div class="detail-card__logo">${(v.companyName||'C')[0]}</div>
+                  <div class="detail-card__logo">${(v.companyName || "C")[0]}</div>
                   <div class="detail-card__info">
-                    <p class="detail-card__title">${v.title||'Puesto'}</p>
-                    <p class="detail-card__company">${v.companyName||''}</p>
+                    <p class="detail-card__title">${v.title || "Puesto"}</p>
+                    <p class="detail-card__company">${v.companyName || ""}</p>
                   </div>
                 </div>
                 <div class="detail-card__bottom">
                   <span class="status-badge status--${a.status}">${getStatusText(a.status)}</span>
-                  ${a.createdAt?`<span class="detail-date">${new Date(a.createdAt).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}</span>`:''}
+                  ${a.createdAt ? `<span class="detail-date">${new Date(a.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}</span>` : ""}
                 </div>
               </div>`;
-            }).join('') : '<p class="empty-state">Sin aplicaciones</p>'}
+                    })
+                    .join("")
+                : '<p class="empty-state">Sin aplicaciones</p>'
+            }
           </div>
         </div>
       </div>
@@ -242,30 +301,40 @@ function renderDashboardPage(user) {
   const savedHTML = `
     <div class="section-panel" id="panel-saved" style="display:none;">
       <h1 class="dashboard-main__title">Empleos Guardados</h1>
-      <p class="dashboard-main__subtitle">${d.savedJobs.length} empleo${d.savedJobs.length!==1?'s':''} guardado${d.savedJobs.length!==1?'s':''}</p>
-      ${d.savedJobs.length ? `<div class="dashboard-grid">${d.savedJobs.map(j => {
-        const v = j.vacancy||{};
-        const modLabels = { remote: 'Remoto', hybrid: 'Híbrido', onsite: 'Presencial' };
-        return `<div class="dashboard-card"><div class="dashboard-card__body">
+      <p class="dashboard-main__subtitle">${d.savedJobs.length} empleo${d.savedJobs.length !== 1 ? "s" : ""} guardado${d.savedJobs.length !== 1 ? "s" : ""}</p>
+      ${
+        d.savedJobs.length
+          ? `<div class="dashboard-grid">${d.savedJobs
+              .map((j) => {
+                const v = j.vacancy || {};
+                const modLabels = {
+                  remote: "Remoto",
+                  hybrid: "Híbrido",
+                  onsite: "Presencial",
+                };
+                return `<div class="dashboard-card"><div class="dashboard-card__body">
           <div class="detail-card" style="border:none;padding:0;margin:0;">
             <div class="detail-card__header">
-              <div class="detail-card__logo">${(v.companyName||'C')[0]}</div>
+              <div class="detail-card__logo">${(v.companyName || "C")[0]}</div>
               <div class="detail-card__info">
-                <p class="detail-card__title">${v.title||'Puesto'}</p>
-                <p class="detail-card__company">${v.companyName||''}${v.city?` · ${v.city}`:''}</p>
+                <p class="detail-card__title">${v.title || "Puesto"}</p>
+                <p class="detail-card__company">${v.companyName || ""}${v.city ? ` · ${v.city}` : ""}</p>
               </div>
             </div>
             <div class="detail-card__tags">
-              ${v.modality?`<span class="detail-tag">${modLabels[v.modality]||v.modality}</span>`:''}
-              ${v.type?`<span class="detail-tag">${v.type}</span>`:''}
+              ${v.modality ? `<span class="detail-tag">${modLabels[v.modality] || v.modality}</span>` : ""}
+              ${v.type ? `<span class="detail-tag">${v.type}</span>` : ""}
             </div>
-            ${v.salaryMin?`<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax||v.salaryMin).toLocaleString()} ${v.currency||''}</p>`:''}
+            ${v.salaryMin ? `<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax || v.salaryMin).toLocaleString()} ${v.currency || ""}</p>` : ""}
             <div class="detail-card__actions">
               <a href="#/vacancies/${v.id}" class="btn btn--sm btn--primary">Ver Detalles</a>
             </div>
           </div>
         </div></div>`;
-      }).join('')}</div>` : '<div class="dashboard-card"><div class="dashboard-card__body"><p class="empty-state" style="padding:40px 0;">No tienes empleos guardados</p></div></div>'}
+              })
+              .join("")}</div>`
+          : '<div class="dashboard-card"><div class="dashboard-card__body"><p class="empty-state" style="padding:40px 0;">No tienes empleos guardados</p></div></div>'
+      }
     </div>
   `;
 
@@ -273,31 +342,41 @@ function renderDashboardPage(user) {
   const appsHTML = `
     <div class="section-panel" id="panel-applications" style="display:none;">
       <h1 class="dashboard-main__title">Mis Aplicaciones</h1>
-      <p class="dashboard-main__subtitle">${d.applications.length} aplicacion${d.applications.length!==1?'es':''}</p>
-      ${d.applications.length ? `<div class="dashboard-grid">${d.applications.map(a => {
-        const v = a.vacancy||{};
-        const modLabels = { remote: 'Remoto', hybrid: 'Híbrido', onsite: 'Presencial' };
-        return `<div class="dashboard-card"><div class="dashboard-card__body">
+      <p class="dashboard-main__subtitle">${d.applications.length} aplicacion${d.applications.length !== 1 ? "es" : ""}</p>
+      ${
+        d.applications.length
+          ? `<div class="dashboard-grid">${d.applications
+              .map((a) => {
+                const v = a.vacancy || {};
+                const modLabels = {
+                  remote: "Remoto",
+                  hybrid: "Híbrido",
+                  onsite: "Presencial",
+                };
+                return `<div class="dashboard-card"><div class="dashboard-card__body">
           <div class="detail-card" style="border:none;padding:0;margin:0;">
             <div class="detail-card__header">
-              <div class="detail-card__logo">${(v.companyName||'C')[0]}</div>
+              <div class="detail-card__logo">${(v.companyName || "C")[0]}</div>
               <div class="detail-card__info">
-                <p class="detail-card__title">${v.title||'Puesto'}</p>
-                <p class="detail-card__company">${v.companyName||''}${v.city?` · ${v.city}`:''}</p>
+                <p class="detail-card__title">${v.title || "Puesto"}</p>
+                <p class="detail-card__company">${v.companyName || ""}${v.city ? ` · ${v.city}` : ""}</p>
               </div>
             </div>
             <div class="detail-card__tags">
-              ${v.modality?`<span class="detail-tag">${modLabels[v.modality]||v.modality}</span>`:''}
-              ${v.type?`<span class="detail-tag">${v.type}</span>`:''}
+              ${v.modality ? `<span class="detail-tag">${modLabels[v.modality] || v.modality}</span>` : ""}
+              ${v.type ? `<span class="detail-tag">${v.type}</span>` : ""}
             </div>
-            ${v.salaryMin?`<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax||v.salaryMin).toLocaleString()} ${v.currency||''}</p>`:''}
+            ${v.salaryMin ? `<p class="detail-card__salary">$${v.salaryMin.toLocaleString()} - $${(v.salaryMax || v.salaryMin).toLocaleString()} ${v.currency || ""}</p>` : ""}
             <div class="detail-card__bottom">
               <span class="status-badge status--${a.status}">${getStatusText(a.status)}</span>
-              <span class="detail-date">Aplicado el ${a.createdAt?new Date(a.createdAt).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):'—'}</span>
+              <span class="detail-date">Aplicado el ${a.createdAt ? new Date(a.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "—"}</span>
             </div>
           </div>
         </div></div>`;
-      }).join('')}</div>` : '<div class="dashboard-card"><div class="dashboard-card__body"><p class="empty-state" style="padding:40px 0;">No has enviado aplicaciones</p></div></div>'}
+              })
+              .join("")}</div>`
+          : '<div class="dashboard-card"><div class="dashboard-card__body"><p class="empty-state" style="padding:40px 0;">No has enviado aplicaciones</p></div></div>'
+      }
     </div>
   `;
 
@@ -311,30 +390,35 @@ function renderDashboardPage(user) {
 }
 
 function getStatusText(status) {
-  const map = { pending:'Pendiente', reviewed:'Revisada', interview:'Entrevista', accepted:'Aceptada', rejected:'Rechazada' };
+  const map = {
+    pending: "Pendiente",
+    reviewed: "Revisada",
+    interview: "Entrevista",
+    accepted: "Aceptada",
+    rejected: "Rechazada",
+  };
   return map[status] || status;
 }
 
 function initDashboardEvents() {
-  document.querySelectorAll('.dashboard-sidebar__link').forEach(link => {
-    link.addEventListener('click', (e) => {
+  document.querySelectorAll(".dashboard-sidebar__link").forEach((link) => {
+    link.addEventListener("click", (e) => {
       e.preventDefault();
       const panel = link.dataset.panel;
-      if (!panel) { window.location.hash = link.getAttribute('href'); return; }
-      document.querySelectorAll('.dashboard-sidebar__link').forEach(l => l.classList.remove('dashboard-sidebar__link--active'));
-      link.classList.add('dashboard-sidebar__link--active');
-      document.querySelectorAll('.section-panel').forEach(p => p.style.display = 'none');
+      if (!panel) {
+        window.location.hash = link.getAttribute("href");
+        return;
+      }
+      document
+        .querySelectorAll(".dashboard-sidebar__link")
+        .forEach((l) => l.classList.remove("dashboard-sidebar__link--active"));
+      link.classList.add("dashboard-sidebar__link--active");
+      document
+        .querySelectorAll(".section-panel")
+        .forEach((p) => (p.style.display = "none"));
       const target = document.getElementById(`panel-${panel}`);
-      if (target) target.style.display = 'block';
+      if (target) target.style.display = "block";
       window.scrollTo(0, 0);
     });
   });
-
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try { await authService.logout(); window.location.hash = '#/'; }
-      catch (error) { console.error('Logout error:', error); }
-    });
-  }
 }

@@ -1,17 +1,22 @@
 // Vacancies Listing Page Controller
-import { vacancyService } from '@services/vacancy.service';
-import { applicationService } from '@services/application.service';
-import { authService } from '@services/auth.service';
-import { store } from '@core/store';
-import { config } from '@core/config';
-import { showLoading, renderNavbar, renderPage } from '@utils/ui.js';
+import { vacancyService } from "@services/vacancy.service";
+import { applicationService } from "@services/application.service";
+import {
+  getAuthUiContext,
+  renderContentState,
+  renderSectionHeader,
+  renderVacancyCard,
+  resolveRequestErrorMessage,
+  showLoading,
+  renderNavbar,
+  renderPage,
+} from "@utils/ui.js";
 
 export async function initVacanciesPage(params, query) {
-  const app = document.getElementById('app');
-  const isAuthenticated = store.get('isAuthenticated');
-  const user = store.get('user');
+  const app = document.getElementById("app");
+  const authContext = getAuthUiContext();
 
-  showLoading('Cargando empleos...');
+  showLoading("Cargando empleos...");
 
   try {
     const filters = {};
@@ -25,52 +30,101 @@ export async function initVacanciesPage(params, query) {
     if (query.level) filters.level = query.level;
     if (query.categoryId) filters.categoryId = query.categoryId;
 
-    const [vacanciesData, categoriesData] = await Promise.all([
-      vacancyService.getVacancies(Object.keys(filters).length ? filters : {}).catch((err) => {
-        console.error('Error fetching vacancies:', err);
-        return [];
-      }),
-      vacancyService.getCategories().catch(() => ({ data: [] })),
-    ]);
-
-    console.log('=== VACANCIES API RESPONSE ===');
-    console.log('vacanciesData:', vacanciesData);
-    console.log('vacanciesData.data:', vacanciesData.data);
-    console.log('vacanciesData.pagination:', vacanciesData.pagination);
+    const vacanciesData = await vacancyService.getVacancies(
+      Object.keys(filters).length ? filters : {},
+    );
 
     // Handle both envelope format { data: [], pagination: {} } and direct array []
-    const vacancies = Array.isArray(vacanciesData) ? vacanciesData : (vacanciesData.data || []);
+    const vacancies = Array.isArray(vacanciesData)
+      ? vacanciesData
+      : vacanciesData.data || [];
     const pagination = vacanciesData.pagination || null;
 
-    console.log('Resolved vacancies array:', vacancies);
-    console.log('Resolved pagination:', pagination);
-
-    app.innerHTML = getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user);
+    app.innerHTML = getVacanciesHTML(
+      vacancies,
+      pagination,
+      filters,
+      authContext,
+    );
     initVacanciesEvents(filters);
   } catch (error) {
-    console.error('Error loading vacancies:', error);
-    app.innerHTML = getVacanciesHTML([], null, {}, isAuthenticated, user);
+    console.error("Error loading vacancies:", error);
+    app.innerHTML = getVacanciesHTML([], null, {}, authContext, {
+      hasError: true,
+      errorMessage: "No pudimos cargar las vacantes en este momento.",
+    });
     initVacanciesEvents({});
   }
 }
 
-function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user) {
-  const fullName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
-  const navbar = renderNavbar({ activeRoute: 'vacancies', isAuthenticated, user });
+function getVacanciesHTML(
+  vacancies,
+  pagination,
+  filters,
+  authContext,
+  options = {},
+) {
+  const { isAuthenticated, user, roles, primaryRole } = authContext;
+  const navbar = renderNavbar({
+    activeRoute: "vacancies",
+    isAuthenticated,
+    user,
+    roles,
+    primaryRole,
+  });
+  const { hasError = false, errorMessage = "" } = options;
+  const activeFilters = getActiveFilterItems(filters);
 
-  const jobsHTML = vacancies.length > 0
-    ? vacancies.map(v => getVacancyCardHTML(v)).join('\n')
-    : `<div class="empty-state">
-        <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-        </svg>
-        <h3>No se encontraron empleos</h3>
-        <p>Intenta con otros filtros o busca más tarde</p>
-       </div>`;
+  const jobsHTML = hasError
+    ? renderContentState({
+        type: "error",
+        icon: "alert",
+        title: "Error al cargar empleos",
+        message: errorMessage,
+        actionLabel: "Reintentar",
+        actionHref: "#/vacancies",
+      })
+    : vacancies.length > 0
+      ? vacancies
+          .map((vacancy) =>
+            renderVacancyCard({
+              vacancy,
+              showSaveAction: true,
+              detailHref: `#/vacancies/${vacancy.id}`,
+            }),
+          )
+          .join("\n")
+      : renderContentState({
+          title: "No se encontraron empleos",
+          message: "Intenta con otros filtros o vuelve a intentarlo más tarde.",
+          actionLabel: "Limpiar filtros",
+          actionHref: "#/vacancies",
+        });
 
-  const paginationHTML = pagination && pagination.totalPages > 1
-    ? getPaginationHTML(pagination, filters) : '';
+  const paginationHTML =
+    pagination && pagination.totalPages > 1
+      ? getPaginationHTML(pagination, filters)
+      : "";
+
+  const header = renderSectionHeader({
+    title: hasError
+      ? "Empleos"
+      : pagination
+        ? `${pagination.total || vacancies.length} empleos encontrados`
+        : "Empleos disponibles",
+    subtitle: hasError
+      ? "Revisa tu conexión y vuelve a intentarlo."
+      : "Descubre vacantes activas según tu perfil y preferencias.",
+    actions:
+      activeFilters.length > 0
+        ? `<span class="vacancies-filters__active-count">${activeFilters.length} filtro${activeFilters.length === 1 ? "" : "s"} activo${activeFilters.length === 1 ? "" : "s"}</span>`
+        : "",
+  });
+
+  const activeFiltersHtml =
+    activeFilters.length > 0
+      ? `<div class="th-chip-list">${activeFilters.map((item) => `<span class="th-chip">${item.label}: ${item.value}</span>`).join("")}</div>`
+      : "";
 
   const mainContent = `
     <div class="container">
@@ -83,50 +137,50 @@ function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user)
           <form class="vacancies-filters__form" id="filters-form">
             <div class="filter-group">
               <label class="filter-label">Buscar</label>
-              <input type="text" class="filter-input" id="filter-search" placeholder="Palabras clave..." value="${filters.search || ''}" />
+              <input type="text" class="filter-input" id="filter-search" placeholder="Palabras clave..." value="${filters.search || ""}" aria-label="Buscar por palabras clave" />
             </div>
             <div class="filter-group">
               <label class="filter-label">Ubicación</label>
-              <input type="text" class="filter-input" id="filter-city" placeholder="Ciudad..." value="${filters.city || ''}" />
+              <input type="text" class="filter-input" id="filter-city" placeholder="Ciudad..." value="${filters.city || ""}" aria-label="Filtrar por ciudad" />
             </div>
             <div class="filter-group">
               <label class="filter-label">Modalidad</label>
-              <select class="filter-select" id="filter-modality">
+              <select class="filter-select" id="filter-modality" aria-label="Filtrar por modalidad">
                 <option value="">Todas</option>
-                <option value="remote" ${filters.modality === 'remote' ? 'selected' : ''}>Remoto</option>
-                <option value="hybrid" ${filters.modality === 'hybrid' ? 'selected' : ''}>Híbrido</option>
-                <option value="onsite" ${filters.modality === 'onsite' ? 'selected' : ''}>Presencial</option>
+                <option value="remote" ${filters.modality === "remote" ? "selected" : ""}>Remoto</option>
+                <option value="hybrid" ${filters.modality === "hybrid" ? "selected" : ""}>Híbrido</option>
+                <option value="onsite" ${filters.modality === "onsite" ? "selected" : ""}>Presencial</option>
               </select>
             </div>
             <div class="filter-group">
               <label class="filter-label">Tipo</label>
-              <select class="filter-select" id="filter-type">
+              <select class="filter-select" id="filter-type" aria-label="Filtrar por tipo de contrato">
                 <option value="">Todos</option>
-                <option value="full-time" ${filters.type === 'full-time' ? 'selected' : ''}>Tiempo completo</option>
-                <option value="part-time" ${filters.type === 'part-time' ? 'selected' : ''}>Medio tiempo</option>
-                <option value="contract" ${filters.type === 'contract' ? 'selected' : ''}>Contrato</option>
-                <option value="freelance" ${filters.type === 'freelance' ? 'selected' : ''}>Freelance</option>
-                <option value="internship" ${filters.type === 'internship' ? 'selected' : ''}>Prácticas</option>
+                <option value="full-time" ${filters.type === "full-time" ? "selected" : ""}>Tiempo completo</option>
+                <option value="part-time" ${filters.type === "part-time" ? "selected" : ""}>Medio tiempo</option>
+                <option value="contract" ${filters.type === "contract" ? "selected" : ""}>Contrato</option>
+                <option value="freelance" ${filters.type === "freelance" ? "selected" : ""}>Freelance</option>
+                <option value="internship" ${filters.type === "internship" ? "selected" : ""}>Prácticas</option>
               </select>
             </div>
             <div class="filter-group">
               <label class="filter-label">Nivel</label>
-              <select class="filter-select" id="filter-level">
+              <select class="filter-select" id="filter-level" aria-label="Filtrar por nivel de experiencia">
                 <option value="">Todos</option>
-                <option value="junior" ${filters.level === 'junior' ? 'selected' : ''}>Junior</option>
-                <option value="mid" ${filters.level === 'mid' ? 'selected' : ''}>Mid</option>
-                <option value="senior" ${filters.level === 'senior' ? 'selected' : ''}>Senior</option>
-                <option value="lead" ${filters.level === 'lead' ? 'selected' : ''}>Lead</option>
-                <option value="manager" ${filters.level === 'manager' ? 'selected' : ''}>Manager</option>
+                <option value="junior" ${filters.level === "junior" ? "selected" : ""}>Junior</option>
+                <option value="mid" ${filters.level === "mid" ? "selected" : ""}>Mid</option>
+                <option value="senior" ${filters.level === "senior" ? "selected" : ""}>Senior</option>
+                <option value="lead" ${filters.level === "lead" ? "selected" : ""}>Lead</option>
+                <option value="manager" ${filters.level === "manager" ? "selected" : ""}>Manager</option>
               </select>
             </div>
             <button type="submit" class="btn btn--primary btn--full-width">Aplicar Filtros</button>
           </form>
         </aside>
         <section class="vacancies-results">
-          <div class="vacancies-results__header">
-            <h1 class="vacancies-results__title">${pagination ? `${pagination.total} empleos encontrados` : 'Empleos disponibles'}</h1>
-          </div>
+          ${header}
+          ${activeFiltersHtml}
+          <p class="th-feedback th-feedback--info" id="vacancies-feedback" style="display:none;"></p>
           <div class="vacancies-grid">${jobsHTML}</div>
           ${paginationHTML}
         </section>
@@ -144,6 +198,7 @@ function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user)
     .vacancies-filters__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; }
     .vacancies-filters__title { font-size: 18px; font-weight: 600; margin: 0; }
     .vacancies-filters__clear { background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 14px; }
+    .vacancies-filters__active-count { font-size: 12px; color: #475569; font-weight: 600; }
     .vacancies-filters__form { display: flex; flex-direction: column; gap: 20px; }
     .filter-label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; }
     .filter-input, .filter-select {
@@ -151,14 +206,13 @@ function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user)
       font-size: 14px; transition: all 0.2s;
     }
     .filter-input:focus, .filter-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-    .vacancies-results__header { margin-bottom: 24px; }
-    .vacancies-results__title { font-size: 24px; font-weight: 700; margin: 0; color: #111827; }
     .vacancies-grid { display: grid; gap: 20px; }
     .vacancy-card {
       background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       transition: all 0.2s; cursor: pointer;
     }
     .vacancy-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .vacancy-card:focus-visible { outline: 3px solid rgba(59,130,246,0.35); outline-offset: 2px; }
     .vacancy-card__header { display: flex; gap: 16px; margin-bottom: 16px; }
     .vacancy-card__logo {
       width: 56px; height: 56px; border-radius: 12px; background: #f3f4f6;
@@ -176,6 +230,8 @@ function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user)
       padding: 4px 12px; background: #f3f4f6; border-radius: 9999px; font-size: 12px; color: #374151;
     }
     .vacancy-card__actions { display: flex; gap: 12px; }
+    .vacancy-card .btn[disabled] { opacity: 0.9; cursor: not-allowed; }
+    .vacancies-grid .btn--saved { border-color: #bbf7d0; color: #166534; background: #f0fdf4; }
     .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 32px; }
     .pagination__btn {
       padding: 8px 16px; border: 1px solid #d1d5db; background: white; border-radius: 8px;
@@ -183,120 +239,136 @@ function getVacanciesHTML(vacancies, pagination, filters, isAuthenticated, user)
     }
     .pagination__btn:hover { background: #f9fafb; }
     .pagination__btn--active { background: #3b82f6; color: white; border-color: #3b82f6; }
-    .empty-state { text-align: center; padding: 64px 24px; color: #9ca3af; grid-column: 1 / -1; }
-    .empty-state svg { margin-bottom: 16px; }
-    .empty-state h3 { font-size: 18px; margin: 0 0 8px; color: #6b7280; }
-    .empty-state p { margin: 0; }
+    .th-content-state { grid-column: 1 / -1; }
+    .th-chip-list { margin-bottom: 12px; }
+    .th-feedback { margin: 0 0 14px; }
     @media (max-width: 1024px) {
       .vacancies-layout { grid-template-columns: 1fr; }
       .vacancies-filters { position: static; }
     }
   `;
 
-  return renderPage({ navbar, main: mainContent, pageClass: 'vacancies-page', extraStyles: styles });
+  return renderPage({
+    navbar,
+    main: mainContent,
+    pageClass: "vacancies-page",
+    extraStyles: styles,
+  });
 }
 
-function getVacancyCardHTML(v) {
-  const modalityLabels = { remote: 'Remoto', hybrid: 'Híbrido', onsite: 'Presencial' };
-  const typeLabels = { 'full-time': 'Tiempo completo', 'part-time': 'Medio tiempo', contract: 'Contrato', freelance: 'Freelance', internship: 'Prácticas' };
-  const levelLabels = { junior: 'Junior', mid: 'Mid', senior: 'Senior', lead: 'Lead', manager: 'Manager' };
+function getActiveFilterItems(filters = {}) {
+  const labels = {
+    search: "Busqueda",
+    city: "Ciudad",
+    modality: "Modalidad",
+    type: "Tipo",
+    level: "Nivel",
+  };
 
-  return `
-    <article class="vacancy-card" data-vacancy-id="${v.id}">
-      <div class="vacancy-card__header">
-        <div class="vacancy-card__logo">${(v.companyName || 'C')[0]}</div>
-        <div class="vacancy-card__info">
-          <p class="vacancy-card__company">${v.companyName || 'Empresa'}</p>
-          <h3 class="vacancy-card__title">${v.title || 'Puesto'}</h3>
-        </div>
-      </div>
-      <div class="vacancy-card__meta">
-        ${v.city ? `<span class="vacancy-card__meta-item">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          ${v.city}${v.country ? `, ${v.country}` : ''}
-        </span>` : ''}
-        ${v.modality ? `<span class="vacancy-card__meta-item">${modalityLabels[v.modality] || v.modality}</span>` : ''}
-        ${v.type ? `<span class="vacancy-card__meta-item">${typeLabels[v.type] || v.type}</span>` : ''}
-        ${v.level ? `<span class="vacancy-card__meta-item">${levelLabels[v.level] || v.level}</span>` : ''}
-      </div>
-      ${v.salaryMin ? `<div class="vacancy-card__salary">$${v.salaryMin.toLocaleString()} - $${v.salaryMax?.toLocaleString()} ${v.currency || ''}</div>` : ''}
-      <div class="vacancy-card__actions">
-        <a href="#/vacancies/${v.id}" class="btn btn--primary">Ver Detalles</a>
-        <button class="btn btn--outline" data-save-job="${v.id}">Guardar</button>
-      </div>
-    </article>
-  `;
+  return Object.entries(filters)
+    .filter(([key, value]) => labels[key] && value)
+    .map(([key, value]) => ({ label: labels[key], value }));
 }
 
 function getPaginationHTML(pagination, filters) {
   const { page, totalPages } = pagination;
-  let buttons = '';
+  let buttons = "";
   for (let i = 1; i <= totalPages; i++) {
     const params = new URLSearchParams();
-    if (filters.search) params.set('search', filters.search);
-    if (filters.city) params.set('city', filters.city);
-    if (filters.modality) params.set('modality', filters.modality);
-    if (filters.type) params.set('type', filters.type);
-    if (filters.level) params.set('level', filters.level);
-    params.set('page', i);
+    if (filters.search) params.set("search", filters.search);
+    if (filters.city) params.set("city", filters.city);
+    if (filters.modality) params.set("modality", filters.modality);
+    if (filters.type) params.set("type", filters.type);
+    if (filters.level) params.set("level", filters.level);
+    params.set("page", i);
     const qs = params.toString();
-    buttons += `<a href="#/vacancies${qs ? '?' + qs : ''}" class="pagination__btn ${i === page ? 'pagination__btn--active' : ''}">${i}</a>`;
+    buttons += `<a href="#/vacancies${qs ? "?" + qs : ""}" class="pagination__btn ${i === page ? "pagination__btn--active" : ""}">${i}</a>`;
   }
   return `<div class="pagination">${buttons}</div>`;
 }
 
 function initVacanciesEvents(filters) {
-  const form = document.getElementById('filters-form');
-  const clearBtn = document.getElementById('clear-filters');
+  const form = document.getElementById("filters-form");
+  const clearBtn = document.getElementById("clear-filters");
+  const feedback = document.getElementById("vacancies-feedback");
+
+  const showFeedback = (message, type = "info") => {
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.className = `th-feedback th-feedback--${type}`;
+    feedback.style.display = "block";
+  };
 
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const search = document.getElementById('filter-search')?.value || '';
-      const city = document.getElementById('filter-city')?.value || '';
-      const modality = document.getElementById('filter-modality')?.value || '';
-      const type = document.getElementById('filter-type')?.value || '';
-      const level = document.getElementById('filter-level')?.value || '';
+      const search = document.getElementById("filter-search")?.value || "";
+      const city = document.getElementById("filter-city")?.value || "";
+      const modality = document.getElementById("filter-modality")?.value || "";
+      const type = document.getElementById("filter-type")?.value || "";
+      const level = document.getElementById("filter-level")?.value || "";
       const params = new URLSearchParams();
-      if (search) params.set('search', search);
-      if (city) params.set('city', city);
-      if (modality) params.set('modality', modality);
-      if (type) params.set('type', type);
-      if (level) params.set('level', level);
-      params.set('page', '1');
+      if (search) params.set("search", search);
+      if (city) params.set("city", city);
+      if (modality) params.set("modality", modality);
+      if (type) params.set("type", type);
+      if (level) params.set("level", level);
+      params.set("page", "1");
       const qs = params.toString();
-      window.location.hash = `#/vacancies${qs ? '?' + qs : ''}`;
+      window.location.hash = `#/vacancies${qs ? "?" + qs : ""}`;
     });
   }
 
   if (clearBtn) {
-    clearBtn.addEventListener('click', () => { window.location.hash = '#/vacancies'; });
+    clearBtn.addEventListener("click", () => {
+      window.location.hash = "#/vacancies";
+    });
   }
 
-  document.querySelectorAll('[data-save-job]').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
+  document.querySelectorAll("[data-save-job]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
       e.stopPropagation();
-      if (!store.get('isAuthenticated')) { window.location.hash = '#/login'; return; }
-      try {
-        await applicationService.saveJob(btn.getAttribute('data-save-job'));
-        btn.textContent = 'Guardado'; btn.disabled = true;
-      } catch (error) { console.error('Error saving job:', error); }
-    });
-  });
+      if (!getAuthUiContext().isAuthenticated) {
+        window.location.hash = "#/login";
+        return;
+      }
 
-  document.querySelectorAll('.vacancy-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
-        window.location.hash = `#/vacancies/${card.getAttribute('data-vacancy-id')}`;
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = "Guardando...";
+      btn.classList.remove("btn--saved");
+
+      try {
+        await applicationService.saveJob(btn.getAttribute("data-save-job"));
+        btn.textContent = "Guardado";
+        btn.classList.add("btn--saved");
+        showFeedback("Vacante guardada en tu lista.", "success");
+      } catch (error) {
+        console.error("Error saving job:", error);
+        btn.disabled = false;
+        btn.textContent = original;
+        showFeedback(
+          resolveRequestErrorMessage(
+            error,
+            "No se pudo guardar la vacante en este momento.",
+          ),
+          "error",
+        );
       }
     });
   });
 
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try { await authService.logout(); window.location.hash = '#/'; }
-      catch (error) { console.error('Logout error:', error); }
+  document.querySelectorAll(".vacancy-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("button, a")) return;
+      window.location.hash = `#/vacancies/${card.getAttribute("data-vacancy-id")}`;
     });
-  }
+
+    card.addEventListener("keydown", (e) => {
+      if (e.target !== card) return;
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      window.location.hash = `#/vacancies/${card.getAttribute("data-vacancy-id")}`;
+    });
+  });
 }
