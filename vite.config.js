@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig(({ mode }) => ({
   // Base path for GitHub Pages deployment (production only)
 
-  base: mode === "production" ? "/Portal-de-Trabajo-TRABAJAHOY/" : "/",
+  base: mode === "production" ? "/TRABAJAHOY-FRONTEND/" : "/",
   root: ".",
   build: {
     outDir: "dist",

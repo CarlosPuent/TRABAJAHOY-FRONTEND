@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar vacante | TrabajaHoy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="edit-vacancy.css" />
+  </head>
+  <body>
+    <header class="ev-header">
+      <div class="ev-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="ev-header__logo-link"
+          aria-label="Ir al inicio"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="ev-header__logo"
+          />
+        </a>
+
+        <div class="ev-header__right">
+          <button
+            type="button"
+            class="ev-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="ev-header__nav" aria-label="Principal">
+            <a href="#" class="ev-header__nav-link">Buscar empleos</a>
+            <a href="#" class="ev-header__nav-link">Empresas</a>
+            <a href="#" class="ev-header__nav-link">Recursos</a>
+            <a href="#" class="ev-header__nav-link">Foro</a>
+          </nav>
+
+          <button type="button" class="ev-header__profile" aria-label="Perfil">
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="ev-main wrapper">
+      <div class="ev-intro">
+        <div class="ev-intro__copy">
+          <h1 class="ev-intro__title">Editar vacante</h1>
+          <p class="ev-intro__subtitle">
+            Actualiza la información de esta vacante.
+          </p>
+        </div>
+        <div class="ev-intro__status">
+          <label class="ev-intro__status-label" for="job-status">Estado</label>
+          <select class="ev-status-select" id="job-status">
+            <option value="activo" selected>Activo</option>
+            <option value="pausado">Pausado</option>
+            <option value="cerrado">Cerrado</option>
+          </select>
+        </div>
+      </div>
+
+      <form class="ev-form" action="#" method="POST">
+        <!-- Información del puesto -->
+        <div class="ev-form__section">
+          <h2 class="ev-form__legend">Información del puesto</h2>
+
+          <div class="ev-form__row">
+            <div class="ev-field">
+              <label class="ev-field__label" for="job-title"
+                >Nombre del puesto</label
+              >
+              <input
+                type="text"
+                class="ev-input"
+                id="job-title"
+                placeholder="Ej. Desarrollador Frontend Senior"
+                value="Campo prellenado con nombre del puesto"
+              />
+            </div>
+
+            <div class="ev-field">
+              <label class="ev-field__label" for="job-category"
+                >Área / categoría</label
+              >
+              <select class="ev-select" id="job-category">
+                <option value="tecnologia" selected>Tecnología</option>
+                <option value="diseno">Diseño</option>
+                <option value="marketing">Marketing</option>
+                <option value="ventas">Ventas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ev-form__row">
+            <div class="ev-field">
+              <label class="ev-field__label" for="job-modality"
+                >Modalidad</label
+              >
+              <select class="ev-select" id="job-modality">
+                <option value="remoto" selected>
+                  Remoto / presencial / híbrido
+                </option>
+                <option value="remoto_full">100% Remoto</option>
+                <option value="presencial">Presencial</option>
+                <option value="hibrido">Híbrido</option>
+              </select>
+            </div>
+
+            <div class="ev-field">
+              <label class="ev-field__label" for="job-type"
+                >Tipo de empleo</label
+              >
+              <select class="ev-select" id="job-type">
+                <option value="full-time" selected>
+                  full-time, part-time, freelance
+                </option>
+                <option value="full-time_only">Full-time</option>
+                <option value="part-time">Part-time</option>
+                <option value="freelance">Freelance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="ev-form__section">
+          <h2 class="ev-form__legend">Ubicación</h2>
+
+          <div class="ev-form__row ev-form__row--inline">
+            <div class="ev-field" style="max-width: 596px">
+              <label class="ev-field__label" for="job-branch"
+                >Seleccionar sucursal/oficina</label
+              >
+              <select class="ev-select" id="job-branch">
+                <option value="san_salvador" selected>
+                  Sucursal San Salvador
+                </option>
+                <option value="santa_ana">Sucursal Santa Ana</option>
+                <option value="san_miguel">Sucursal San Miguel</option>
+              </select>
+            </div>
+
+            <label class="ev-checkbox">
+              <input
+                type="checkbox"
+                class="ev-checkbox__input"
+                id="is-remote"
+              />
+              <span class="ev-checkbox__text"
+                >¿El trabajo es completamente remoto?</span
+              >
+            </label>
+          </div>
+        </div>
+
+        <!-- Rango salarial -->
+        <div class="ev-form__section">
+          <h2 class="ev-form__legend">Rango salarial</h2>
+
+          <div class="ev-form__row ev-form__row--3cols">
+            <div class="ev-field">
+              <label class="ev-field__label" for="salary-min"
+                >Salario mínimo</label
+              >
+              <input
+                type="text"
+                class="ev-input"
+                id="salary-min"
+                value="Campo prellenado con salario mínimo cargado."
+              />
+            </div>
+
+            <div class="cv-field">
+              <label class="ev-field__label" for="salary-max"
+                >Salario máximo</label
+              >
+              <input
+                type="text"
+                class="ev-input"
+                id="salary-max"
+                value="Campo prellenado con salario máximo cargado."
+              />
+            </div>
+
+            <div class="ev-field">
+              <label class="ev-field__label" for="salary-currency"
+                >Moneda</label
+              >
+              <select class="ev-select" id="salary-currency">
+                <option value="usd" selected>USD</option>
+                <option value="mxn">MXN</option>
+                <option value="eur">EUR</option>
+                <option value="clp">CLP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ev-checkbox-row">
+            <label class="ev-checkbox" style="margin-right: 17px">
+              <input
+                type="checkbox"
+                class="ev-checkbox__input"
+                id="show-salary"
+              />
+              <span class="ev-checkbox__text"
+                >Mostrar salario publicamente</span
+              >
+            </label>
+          </div>
+        </div>
+
+        <!-- Detalles descriptivos -->
+        <div class="ev-form__section">
+          <div class="ev-field">
+            <label
+              class="ev-field__label ev-field__label--bold"
+              for="job-short-desc"
+              >Descripción corta</label
+            >
+            <textarea class="ev-textarea" id="job-short-desc">
+Campo prellenado con descripción corta cargada.</textarea
+            >
+          </div>
+
+          <div class="ev-field">
+            <label
+              class="ev-field__label ev-field__label--bold"
+              for="job-requirements"
+              >Requisitos</label
+            >
+            <textarea class="ev-textarea" id="job-requirements">
+Campo prellenado con los requisitos cargados.</textarea
+            >
+          </div>
+
+          <div class="ev-field">
+            <label
+              class="ev-field__label ev-field__label--bold"
+              for="job-benefits"
+              >Beneficios</label
+            >
+            <textarea class="ev-textarea" id="job-benefits">
+Campo prellenado con los beneficios cargados.</textarea
+            >
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="ev-form__actions">
+          <div class="ev-form__actions-group">
+            <button type="button" class="btn btn--danger">
+              Eliminar vacante
+            </button>
+          </div>
+          <div class="ev-form__actions-group">
+            <button type="button" class="btn btn--outline">Cancelar</button>
+            <button type="submit" class="btn btn--primary-orange">
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+
+    <footer class="ev-site-footer">
+      <div class="ev-site-footer__container wrapper">
+        <div class="ev-site-footer__brand">
+          <div class="ev-site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="ev-site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="ev-site-footer__contact">
+            <span class="ev-site-footer__contact-label">Llámanos:</span>
+            <span class="ev-site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+          <p class="ev-site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="ev-site-footer__columns">
+          <div class="ev-site-footer__column">
+            <h4 class="ev-site-footer__title">Enlaces Rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="ev-site-footer__column">
+            <h4 class="ev-site-footer__title">Candidatos</h4>
+            <a href="#">Buscar Empleos</a>
+            <a href="#">Ver Empresas</a>
+            <a href="#">Panel de Candidato</a>
+            <a href="#">Empleos Guardados</a>
+          </div>
+
+          <div class="ev-site-footer__column">
+            <h4 class="ev-site-footer__title">Empleadores</h4>
+            <a href="#">Publicar Empleo</a>
+            <a href="#">Buscar Candidatos</a>
+            <a href="#">Panel del Empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="ev-site-footer__column">
+            <h4 class="ev-site-footer__title">Soporte</h4>
+            <a href="#">Preguntas Frecuentes</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Términos y Condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

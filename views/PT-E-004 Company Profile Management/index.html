@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PT-E-004 | Perfil de Empresa - TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="company-profile.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="container header-content">
+        <a href="../landing/index.html" class="logo-link">
+          <img src="../../src/images/logoPortal.png" alt="TrabajaHoy" class="logo" />
+        </a>
+
+        <div class="header-right">
+          <button class="icon-btn" type="button" aria-label="Notificaciones">
+            <i class="bi bi-bell"></i>
+          </button>
+
+          <nav class="main-nav">
+            <a href="#" class="nav-link active-link">Buscar empleos</a>
+            <a href="#" class="nav-link">Empresas</a>
+            <a href="#" class="nav-link">Recursos</a>
+            <a href="#" class="nav-link">Foro</a>
+          </nav>
+
+          <a href="#" class="user-icon" aria-label="Perfil">
+            <i class="bi bi-person-fill"></i>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="dashboard-page">
+      <div class="dashboard-layout" id="dashboardLayout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-top">
+            <div class="sidebar-top-row">
+              <h2 class="sidebar-title">Panel de compañía</h2>
+
+              <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Colapsar menú">
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
+          </div>
+
+          <nav class="sidebar-menu">
+            <a href="#" class="sidebar-link">Vista General</a>
+            <a href="#" class="sidebar-link active-sidebar-link">Perfil de Empresa</a>
+            <a href="#" class="sidebar-link">Reclutadores</a>
+            <a href="#" class="sidebar-link">Vacantes</a>
+            <a href="#" class="sidebar-link">Postulantes</a>
+            <a href="#" class="sidebar-link">Analíticas</a>
+            <a href="#" class="sidebar-link">Configuración</a>
+          </nav>
+        </aside>
+
+        <!-- COLLAPSED BAR -->
+        <aside class="sidebar-collapsed" id="sidebarCollapsed">
+          <button class="collapsed-toggle" id="collapsedToggle" type="button" aria-label="Expandir menú">
+            <i class="bi bi-list"></i>
+          </button>
+        </aside>
+
+        <!-- CONTENT -->
+        <section class="dashboard-content">
+          <div class="profile-title-area">
+            <h1>Perfil de Empresa</h1>
+            <p>
+              Haz click en el botón de “lápiz” para editar la información que se muestra publicamente de tu empresa.
+            </p>
+          </div>
+
+          <!-- HEADER CARD -->
+          <section class="profile-card company-main-card">
+            <div class="company-main-left">
+              <div class="company-logo-wrap">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="company-logo-img" />
+                <button class="edit-icon small-edit" type="button">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+
+              <div class="company-main-info">
+                <h2>Nombre compañía</h2>
+                <p>Industria · tamaño · ubicación</p>
+              </div>
+
+              <button class="edit-icon inline-edit" type="button">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+
+            <div class="company-main-right">
+              <div class="social-rating">
+                <div class="social-icons">
+                  <i class="bi bi-instagram"></i>
+                  <i class="bi bi-facebook"></i>
+                </div>
+
+                <div class="rating-box">
+                  <p>⭐ 4.3 rating</p>
+                  <strong>120 reviews</strong>
+                </div>
+              </div>
+
+              <div class="company-buttons">
+                <button class="btn btn-light">Visitar sitio web</button>
+                <button class="btn btn-orange">Seguir compañía</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ABOUT -->
+          <section class="profile-card text-card">
+            <div class="card-top">
+              <h2>Sobre la compañía</h2>
+            </div>
+
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+              ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+              mollit anim id est laborum.
+            </p>
+
+            <div class="card-edit-bottom">
+              <button class="edit-icon" type="button">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+          </section>
+
+          <!-- MISSION / VISION -->
+          <div class="double-card-grid">
+            <section class="profile-card text-card small-card">
+              <div class="card-top">
+                <h2>Misión</h2>
+              </div>
+
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+
+              <div class="card-edit-bottom">
+                <button class="edit-icon" type="button">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </section>
+
+            <section class="profile-card text-card small-card">
+              <div class="card-top">
+                <h2>Visión</h2>
+              </div>
+
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+                ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+
+              <div class="card-edit-bottom">
+                <button class="edit-icon" type="button">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <!-- BENEFITS -->
+          <section class="profile-card text-card">
+            <div class="card-top">
+              <h2>Beneficios</h2>
+            </div>
+
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+              ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+              anim id est laborum.
+            </p>
+
+            <div class="card-edit-bottom">
+              <button class="edit-icon" type="button">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+          </section>
+
+          <!-- LOCATIONS -->
+          <section class="locations-section">
+            <div class="locations-header">
+              <h2>Ubicaciones</h2>
+              <button class="btn btn-orange btn-small" type="button" id="openModalBtn">Manejar ubicaciones</button>
+            </div>
+
+            <div class="locations-grid">
+              <article class="location-card">
+                <div class="location-image"></div>
+                <div class="location-info">
+                  <h3>Ubicación #1</h3>
+                  <p>Dirección completa</p>
+                </div>
+                <div class="location-actions">
+                  <button class="btn btn-light btn-map">Go to maps app</button>
+                </div>
+              </article>
+
+              <article class="location-card">
+                <div class="location-image"></div>
+                <div class="location-info">
+                  <h3>Ubicación #2</h3>
+                  <p>Dirección completa</p>
+                </div>
+                <div class="location-actions">
+                  <button class="btn btn-light btn-map">Go to maps app</button>
+                </div>
+              </article>
+
+              <article class="location-card">
+                <div class="location-image"></div>
+                <div class="location-info">
+                  <h3>Ubicación #3</h3>
+                  <p>Dirección completa</p>
+                </div>
+                <div class="location-actions">
+                  <button class="btn btn-light btn-map">Go to maps app</button>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="locationModal">
+      <div class="location-modal">
+        <div class="modal-top">
+          <button class="close-modal" id="closeModalBtn" type="button">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <form class="location-form">
+          <div class="form-group">
+            <input type="text" placeholder="Nombre de la sede" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>País</label>
+              <select>
+                <option>El Salvador</option>
+                <option>Guatemala</option>
+                <option>Honduras</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Ciudad</label>
+              <select>
+                <option>El Salvador</option>
+                <option>San Salvador</option>
+                <option>Santa Ana</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <input type="text" placeholder="URL de ubicación en Maps..." />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-light">Agregar nueva sede</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <div class="footer-title">
+            <span class="footer-icon"><i class="bi bi-briefcase"></i></span>
+            <h3>TrabajaHoy</h3>
+          </div>
+
+          <p class="footer-phone">Llámanos:(503) 2222-0000</p>
+          <p class="footer-address">Av. La Revolución #123, San Salvador, El Salvador</p>
+        </div>
+
+        <div class="footer-links">
+          <div>
+            <h4>Enlaces Rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div>
+            <h4>Candidatos</h4>
+            <a href="#">Buscar Empleos</a>
+            <a href="#">Ver Empresas</a>
+            <a href="#">Panel de Candidato</a>
+            <a href="#">Empleos Guardados</a>
+          </div>
+
+          <div>
+            <h4>Empleadores</h4>
+            <a href="#">Publicar Empleo</a>
+            <a href="#">Buscar Candidatos</a>
+            <a href="#">Panel del Empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div>
+            <h4>Soporte</h4>
+            <a href="#">Preguntas Frecuentes</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Términos y Condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const dashboardLayout = document.getElementById("dashboardLayout");
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const collapsedToggle = document.getElementById("collapsedToggle");
+
+      sidebarToggle.addEventListener("click", function () {
+        dashboardLayout.classList.add("collapsed");
+      });
+
+      collapsedToggle.addEventListener("click", function () {
+        dashboardLayout.classList.remove("collapsed");
+      });
+
+      const locationModal = document.getElementById("locationModal");
+      const openModalBtn = document.getElementById("openModalBtn");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+
+      openModalBtn.addEventListener("click", function () {
+        locationModal.classList.add("show");
+      });
+
+      closeModalBtn.addEventListener("click", function () {
+        locationModal.classList.remove("show");
+      });
+
+      locationModal.addEventListener("click", function (e) {
+        if (e.target === locationModal) {
+          locationModal.classList.remove("show");
+        }
+      });
+    </script>
+  </body>
+</html>

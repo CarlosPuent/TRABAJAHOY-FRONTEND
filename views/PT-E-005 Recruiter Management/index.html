@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PT-E-005 | Manejo de reclutadores - TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="recruiter-management.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="container header-content">
+        <a href="../landing/index.html" class="logo-link">
+          <img src="../../src/images/logoPortal.png" alt="TrabajaHoy" class="logo" />
+        </a>
+
+        <div class="header-right">
+          <button class="icon-btn" type="button" aria-label="Notificaciones">
+            <i class="bi bi-bell"></i>
+          </button>
+
+          <nav class="main-nav">
+            <a href="#" class="nav-link active-link">Buscar empleos</a>
+            <a href="#" class="nav-link">Empresas</a>
+            <a href="#" class="nav-link">Recursos</a>
+            <a href="#" class="nav-link">Foro</a>
+          </nav>
+
+          <a href="#" class="user-icon" aria-label="Perfil">
+            <i class="bi bi-person-fill"></i>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="dashboard-page">
+      <div class="dashboard-layout" id="dashboardLayout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-top">
+            <div class="sidebar-top-row">
+              <h2 class="sidebar-title">Panel de compañía</h2>
+
+              <button
+                class="sidebar-toggle"
+                id="sidebarToggle"
+                type="button"
+                aria-label="Colapsar menú"
+              >
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
+          </div>
+
+          <nav class="sidebar-menu">
+            <a href="#" class="sidebar-link">Vista General</a>
+            <a href="#" class="sidebar-link">Perfil de Empresa</a>
+            <a href="#" class="sidebar-link active-sidebar-link">Reclutadores</a>
+            <a href="#" class="sidebar-link">Vacantes</a>
+            <a href="#" class="sidebar-link">Postulantes</a>
+            <a href="#" class="sidebar-link">Analíticas</a>
+            <a href="#" class="sidebar-link">Configuración</a>
+          </nav>
+        </aside>
+
+        <!-- COLLAPSED BAR -->
+        <aside class="sidebar-collapsed" id="sidebarCollapsed">
+          <button
+            class="collapsed-toggle"
+            id="collapsedToggle"
+            type="button"
+            aria-label="Expandir menú"
+          >
+            <i class="bi bi-list"></i>
+          </button>
+        </aside>
+
+        <!-- CONTENT -->
+        <section class="dashboard-content">
+          <div class="page-top">
+            <div class="page-title-area">
+              <h1><i class="bi bi-list"></i> Manejo de reclutadores</h1>
+              <p>
+                Maneja qué perfiles pueden actuar en nombre de tu empresa a manera de reclutadores.
+              </p>
+            </div>
+
+            <button class="btn btn-orange invite-btn" id="openModalBtn" type="button">
+              + Invitar nuevo reclutador
+            </button>
+          </div>
+
+          <!-- STATS -->
+          <section class="stats-grid">
+            <article class="info-card">
+              <div class="info-icon">
+                <i class="bi bi-person-check"></i>
+              </div>
+              <h3>5</h3>
+              <p>Reclutadores activos</p>
+            </article>
+
+            <article class="info-card">
+              <div class="info-icon">
+                <i class="bi bi-clock-history"></i>
+              </div>
+              <h3>2</h3>
+              <p>Invitaciones pendientes</p>
+            </article>
+
+            <article class="info-card">
+              <div class="info-icon">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <h3>140</h3>
+              <p>Vacantes gestionadas</p>
+            </article>
+          </section>
+
+          <!-- TABLE -->
+          <section class="table-section">
+            <h2>Tabla de reclutadores</h2>
+
+            <div class="table-wrapper">
+              <table class="recruiter-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Vacantes Activas</th>
+                    <th>Ultima Actividad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Hiring Manager</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Owner</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><i class="bi bi-person-circle table-user-icon"></i></td>
+                    <td>Juan Perez</td>
+                    <td>juan@correo.com</td>
+                    <td>Recruiter</td>
+                    <td>4</td>
+                    <td>12 marzo</td>
+                    <td class="actions-cell">
+                      <button class="table-icon-btn"><i class="bi bi-pencil-square"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-trash"></i></button>
+                      <button class="table-icon-btn"><i class="bi bi-eye"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination">
+              <button class="page-nav">← Previous</button>
+              <button class="page-number active-page">1</button>
+              <button class="page-number">2</button>
+              <button class="page-number">3</button>
+              <span class="page-dots">...</span>
+              <button class="page-number">67</button>
+              <button class="page-number">68</button>
+              <button class="page-nav">Next →</button>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="inviteModal">
+      <div class="invite-modal">
+        <form class="invite-form">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" placeholder="John Doe" />
+          </div>
+
+          <div class="form-group">
+            <label>Correo corporativo</label>
+            <input type="email" placeholder="johndoe@amazingcompany.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Rol</label>
+            <select>
+              <option>Owner</option>
+              <option>Recruiter</option>
+              <option>Hiring Manager</option>
+            </select>
+          </div>
+
+          <div class="permission-block">
+            <p>Permisos</p>
+
+            <label class="check-option">
+              <input type="checkbox" checked />
+              <span>Puede publicar vacantes</span>
+            </label>
+
+            <label class="check-option">
+              <input type="checkbox" checked />
+              <span>Puede revisar postulantes</span>
+            </label>
+
+            <label class="check-option">
+              <input type="checkbox" checked />
+              <span>Puede editar perfil</span>
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-orange">Enviar invitación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <div class="footer-title">
+            <span class="footer-icon"><i class="bi bi-briefcase"></i></span>
+            <h3>TrabajaHoy</h3>
+          </div>
+
+          <p class="footer-phone">Llámanos:(503) 2222-0000</p>
+          <p class="footer-address">Av. La Revolución #123, San Salvador, El Salvador</p>
+        </div>
+
+        <div class="footer-links">
+          <div>
+            <h4>Enlaces Rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div>
+            <h4>Candidatos</h4>
+            <a href="#">Buscar Empleos</a>
+            <a href="#">Ver Empresas</a>
+            <a href="#">Panel de Candidato</a>
+            <a href="#">Empleos Guardados</a>
+          </div>
+
+          <div>
+            <h4>Empleadores</h4>
+            <a href="#">Publicar Empleo</a>
+            <a href="#">Buscar Candidatos</a>
+            <a href="#">Panel del Empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div>
+            <h4>Soporte</h4>
+            <a href="#">Preguntas Frecuentes</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Términos y Condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const dashboardLayout = document.getElementById("dashboardLayout");
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const collapsedToggle = document.getElementById("collapsedToggle");
+
+      sidebarToggle.addEventListener("click", function () {
+        dashboardLayout.classList.add("collapsed");
+      });
+
+      collapsedToggle.addEventListener("click", function () {
+        dashboardLayout.classList.remove("collapsed");
+      });
+
+      const inviteModal = document.getElementById("inviteModal");
+      const openModalBtn = document.getElementById("openModalBtn");
+
+      openModalBtn.addEventListener("click", function () {
+        inviteModal.classList.add("show");
+      });
+
+      inviteModal.addEventListener("click", function (e) {
+        if (e.target === inviteModal) {
+          inviteModal.classList.remove("show");
+        }
+      });
+    </script>
+  </body>
+</html>
