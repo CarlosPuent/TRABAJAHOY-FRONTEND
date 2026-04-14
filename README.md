@@ -1,27 +1,5 @@
 # 🧑‍💻 Portal de Trabajo - TRABAJAHOY
 
-Portal web **TrabajaHoy**, enfocado en la gestión de usuarios (candidatos y empresas) con una arquitectura limpia basada en vistas independientes.
-
----
-
-Arquitectura Frontend
-Cada vista tiene su propio:
-HTML
-CSS
-No se utiliza un style.css global gigante
-Esto permite:
-mejor mantenimiento
-escalabilidad
-separación clara de responsabilidades
-Diseño UI/UX
-
-El diseño está basado en prototipos de Figma, priorizando:
-
-consistencia visual
-espaciados precisos
-tipografía uniforme (Inter)
-componentes reutilizables (inputs, botones, layouts)
-
 Cómo ejecutar el proyecto
 
 Puedes usarlo en dos modos:
