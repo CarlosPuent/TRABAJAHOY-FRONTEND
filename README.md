@@ -1,4 +1,4 @@
-# 🧑‍💻 Portal de Trabajo - TRABAJAHOY
+# Portal de Trabajo - TRABAJAHOY
 
 Cómo ejecutar el proyecto
 

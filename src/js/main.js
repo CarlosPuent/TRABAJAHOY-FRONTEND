@@ -54,10 +54,9 @@ async function checkApiHealth() {
       response?.success === true ||
       response?.data?.success === true;
     store.set("apiHealthy", isHealthy);
-    console.log("API Health:", isHealthy ? "OK" : "DEGRADED", response);
     return isHealthy;
   } catch (error) {
-    console.error("API Health Check FAILED:", error.message);
+    console.error("API health check failed:", error.message);
     store.set("apiHealthy", false);
     return false;
   }
@@ -197,9 +196,6 @@ async function restoreSession() {
       return false;
     }
   }
-
-  const sessionUser = store.get("user");
-  console.log("Session restored:", sessionUser?.email || "unknown");
   return true;
 }
 
@@ -403,9 +399,6 @@ function createPlaceholderPage(title, description) {
 // Initialize Application
 // ============================================================
 async function init() {
-  console.log("=== TrabajaHoy App Starting ===");
-  console.log("API URL:", config.API_BASE_URL);
-
   bindGlobalAuthUiEvents();
 
   // Restore session
@@ -434,8 +427,6 @@ async function init() {
 
   // Initialize the router (handles initial route + hash changes)
   router.init();
-
-  console.log("=== TrabajaHoy App Ready ===");
 }
 
 // Start the application
