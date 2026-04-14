@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administrador - Vista General | TrabajaHoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../landing/landing.css">
+  <link rel="stylesheet" href="../admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+
+<body class="admin-body">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="site-header">
+    <div class="container site-header__container">
+      <a href="../landing/index.html" class="site-header__logo-link">
+        <img src="../../src/images/logoPortal.png" alt="TrabajaHoy" class="site-header__logo" />
+      </a>
+      <nav class="site-header__nav">
+        <a href="#" class="site-header__nav-link site-header__nav-link--active">Buscar empleos</a>
+        <a href="#" class="site-header__nav-link">Empresas</a>
+        <a href="#" class="site-header__nav-link">Recursos</a>
+        <a href="#" class="site-header__nav-link">Foro</a>
+      </nav>
+      <div class="site-header__actions">
+        <a href="#" class="btn btn--login">Login</a>
+        <a href="#" class="btn btn--register">Registrarse</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ ADMIN LAYOUT ═══ -->
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <h2 class="admin-sidebar__title">Panel de Administrador</h2>
+      <nav class="admin-sidebar__nav">
+        <a href="../admin-dashboard/index.html" class="admin-sidebar__link admin-sidebar__link--active">Vista
+          General</a>
+        <a href="../admin-manage-users/index.html" class="admin-sidebar__link">Gestión de Usuarios</a>
+        <a href="../admin-verify-company/index.html" class="admin-sidebar__link">Verificacion de Compañias</a>
+        <a href="#" class="admin-sidebar__link">Moderación de Foro</a>
+        <a href="#" class="admin-sidebar__link">Moderación de Revisiones</a>
+        <a href="#" class="admin-sidebar__link">Gestión de Recursos</a>
+      </nav>
+    </aside>
+
+    <main class="admin-content">
+      <h1 class="admin-content__title">Panel de Administrador</h1>
+
+      <!-- Stat Cards -->
+      <div class="admin-stats">
+        <div class="admin-stat-card">
+          <div class="admin-stat-card__label">Total de Candidatos</div>
+          <div class="admin-stat-card__value">25,265</div>
+          <div class="admin-stat-card__growth">+ 12% vs mes anterior</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-card__label">Total de Compañías</div>
+          <div class="admin-stat-card__value">25,265</div>
+          <div class="admin-stat-card__growth">+ 26.3% vs mes anterior</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-card__label">Publicaciones Hoy</div>
+          <div class="admin-stat-card__value">25,265</div>
+          <div class="admin-stat-card__growth">+ 5.6% vs día anterior</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-card__label">Vacantes Totales</div>
+          <div class="admin-stat-card__value">15,000</div>
+          <div class="admin-stat-card__growth">+ 13.5% vs mes anterior</div>
+        </div>
+      </div>
+
+      <div class="admin-actions">
+        <a href="#" class="admin-btn">Exportar Reporte</a>
+      </div>
+
+      <!-- Charts with Chart.js -->
+      <div class="admin-charts">
+        <div class="admin-chart-card">
+          <div class="admin-chart-card__title">Usuarios</div>
+          <canvas id="lineChart"></canvas>
+        </div>
+        <div class="admin-chart-card">
+          <div class="admin-chart-card__title">INTERACCIONES</div>
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Bottom Section -->
+      <div class="admin-bottom">
+        <div>
+          <h3 class="admin-companies__title">Top Compañías</h3>
+          <div class="company-list">
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=128" alt="Microsoft" class="company-list__logo"><span class="company-list__name">Microsoft El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=walmart.com&sz=128" alt="Walmart" class="company-list__logo"><span class="company-list__name">Walmart Centroamérica</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=tigo.com.sv&sz=128" alt="Tigo" class="company-list__logo"><span class="company-list__name">Tigo El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=avianca.com&sz=128" alt="Avianca" class="company-list__logo"><span class="company-list__name">Avianca</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=bancoagricola.com&sz=128" alt="Banco Agrícola" class="company-list__logo"><span class="company-list__name">Banco Agrícola</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=grupocalvo.com&sz=128" alt="Grupo Calvo" class="company-list__logo"><span class="company-list__name">Grupo Calvo S.A.</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=128" alt="Google" class="company-list__logo"><span class="company-list__name">Google El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=128" alt="Amazon" class="company-list__logo"><span class="company-list__name">Amazon Logistics SV</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=coca-cola.com&sz=128" alt="Coca-Cola" class="company-list__logo"><span class="company-list__name">Coca-Cola FEMSA</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=davivienda.com&sz=128" alt="Davivienda" class="company-list__logo"><span class="company-list__name">Banco Davivienda</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=claro.com.sv&sz=128" alt="Claro" class="company-list__logo"><span class="company-list__name">Claro El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=uber.com&sz=128" alt="Uber" class="company-list__logo"><span class="company-list__name">Uber Centroamérica</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=nestle.com&sz=128" alt="Nestlé" class="company-list__logo"><span class="company-list__name">Nestlé El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=bancuscatlan.com&sz=128" alt="Cuscatlán" class="company-list__logo"><span class="company-list__name">Banco Cuscatlán</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=fedex.com&sz=128" alt="FedEx" class="company-list__logo"><span class="company-list__name">FedEx El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=pepsico.com&sz=128" alt="PepsiCo" class="company-list__logo"><span class="company-list__name">PepsiCo Centroamérica</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=cemex.com&sz=128" alt="CEMEX" class="company-list__logo"><span class="company-list__name">CEMEX El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=dell.com&sz=128" alt="Dell" class="company-list__logo"><span class="company-list__name">Dell Technologies SV</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=taca.com&sz=128" alt="Volaris" class="company-list__logo"><span class="company-list__name">Volaris El Salvador</span></div>
+            <div class="company-list__item"><img src="https://www.google.com/s2/favicons?domain=bayer.com&sz=128" alt="Bayer" class="company-list__logo"><span class="company-list__name">Bayer Centroamérica</span></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="admin-vacancies__title">Tipos de Vacantes</h3>
+          <div class="pie-chart-area">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="container site-footer__container">
+      <div class="site-footer__brand">
+        <div class="site-footer__brand-row">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          <span class="site-footer__brand-name">TrabajaHoy</span>
+        </div>
+        <p class="site-footer__phone">Llámanos:(503) 2222-0000</p>
+        <p class="site-footer__address">Av. La Revolución #123, San Salvador, El Salvador</p>
+      </div>
+      <div class="site-footer__columns">
+        <div class="site-footer__column">
+          <h4 class="site-footer__title">Enlaces Rápidos</h4><a href="#">Acerca de</a><a href="#">Contacto</a><a
+            href="#">Precio</a><a href="#">Blog</a>
+        </div>
+        <div class="site-footer__column">
+          <h4 class="site-footer__title">Candidatos</h4><a href="#">Buscar Empleos</a><a href="#">Ver Empresas</a><a
+            href="#">Panel de Candidato</a><a href="#">Empleos Guardados</a>
+        </div>
+        <div class="site-footer__column">
+          <h4 class="site-footer__title">Empleadores</h4><a href="#">Publicar Empleo</a><a href="#">Buscar
+            Candidatos</a><a href="#">Panel del Empleador</a><a href="#">Solicitudes</a>
+        </div>
+        <div class="site-footer__column">
+          <h4 class="site-footer__title">Soporte</h4><a href="#">Preguntas Frecuentes</a><a href="#">Política de
+            Privacidad</a><a href="#">Términos y Condiciones</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Line Chart — Usuarios
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+          {
+            label: 'Nuevos registros',
+            data: [3, 5, 8, 6, 11, 9, 10, 14, 16, 18, 20, 19],
+            borderColor: '#1e1e1e',
+            backgroundColor: 'rgba(30,30,30,0.05)',
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointBackgroundColor: '#1e1e1e',
+            fill: true
+          },
+          {
+            label: 'Usuarios activos',
+            data: [1, 2, 5, 4, 7, 6, 8, 10, 12, 14, 16, 15],
+            borderColor: '#fd8a21',
+            backgroundColor: 'rgba(253,138,33,0.05)',
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointBackgroundColor: '#fd8a21',
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', align: 'end', labels: { usePointStyle: true, pointStyle: 'line', boxWidth: 30, font: { size: 12 } } }
+        },
+        scales: {
+          y: { beginAtZero: true, max: 25, ticks: { stepSize: 5 }, grid: { color: '#f0f0f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Bar Chart — Interacciones
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Publicaciones', 'Reacciones', 'Compartidos', 'Comentarios'],
+        datasets: [
+          {
+            label: 'Este mes',
+            data: [3, 8, 12, 14],
+            backgroundColor: '#1e1e1e',
+            borderRadius: 4,
+            barPercentage: 0.6
+          },
+          {
+            label: 'Mes anterior',
+            data: [2, 10, 11, 13],
+            backgroundColor: '#f7841a',
+            borderRadius: 4,
+            barPercentage: 0.6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', align: 'end', labels: { usePointStyle: true, pointStyle: 'rect', boxWidth: 12, font: { size: 11 } } }
+        },
+        scales: {
+          y: { beginAtZero: true, max: 18, ticks: { stepSize: 5 }, grid: { color: '#f0f0f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Pie/Doughnut Chart — Tipos de Vacantes
+    new Chart(document.getElementById('pieChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['IT (25.3%)', 'Ingeniería (24.0%)', 'Cocina (21.4%)', 'Construcción (20.0%)', 'Jardinería (5.3%)', 'Otros (4.0%)'],
+        datasets: [{
+          data: [25.3, 24.0, 21.4, 20.0, 5.3, 4.0],
+          backgroundColor: ['#fd8a21', '#8c4300', '#948f79', '#717171', '#404040', '#000000'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '40%',
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { font: { size: 12 }, padding: 14, usePointStyle: true, pointStyle: 'rectRounded' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

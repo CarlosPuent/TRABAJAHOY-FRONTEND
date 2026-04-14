@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de recursos | TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="resource-management.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="site-header__logo-link"
+          aria-label="Ir al inicio de TrabajaHoy"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="site-header__logo"
+          />
+        </a>
+
+        <div class="site-header__right">
+          <button
+            type="button"
+            class="site-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="site-header__nav" aria-label="Principal">
+            <a href="#" class="site-header__nav-link">Buscar empleos</a>
+            <a href="#" class="site-header__nav-link">Empresas</a>
+            <a
+              href="#"
+              class="site-header__nav-link site-header__nav-link--active"
+              >Recursos</a
+            >
+            <a href="#" class="site-header__nav-link">Foro</a>
+          </nav>
+
+          <button
+            type="button"
+            class="site-header__profile"
+            aria-label="Perfil"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-section wrapper">
+        <div class="page-intro">
+          <nav class="page-breadcrumbs" aria-label="Navegación de rutas">
+            <span class="page-breadcrumbs__item">Admin</span>
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+            <span class="page-breadcrumbs__item page-breadcrumbs__item--active">
+              Gestión de Biblioteca de Recursos
+            </span>
+          </nav>
+
+          <div class="page-intro__header">
+            <div>
+              <h1 class="page-intro__title">
+                Gestión de Biblioteca de Recursos
+              </h1>
+              <p class="page-intro__subtitle">
+                Agrega, edita y organiza plantillas, guías y documentos para
+                solicitantes de empleo y empleadores.
+              </p>
+            </div>
+
+            <button class="btn btn--primary" type="button">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M12 5v14m-7-7h14"></path>
+              </svg>
+              Subir nuevo recurso
+            </button>
+          </div>
+        </div>
+
+        <section class="stats-grid" aria-label="Resumen de recursos">
+          <article class="stats-card">
+            <h2 class="stats-card__title">Total de recursos</h2>
+            <p class="stats-card__value">156</p>
+            <p class="stats-card__meta">Documentos activos en biblioteca</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Agregados recientemente</h2>
+            <p class="stats-card__value">12</p>
+            <p class="stats-card__meta">Subidos en los últimos 30 días</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Total de descargas</h2>
+            <p class="stats-card__value">45K+</p>
+            <p class="stats-card__meta">Interacciones de usuarios</p>
+          </article>
+
+          <article class="stats-card">
+            <h2 class="stats-card__title">Recursos borrador</h2>
+            <p class="stats-card__value">8</p>
+            <p class="stats-card__meta">En espera de revisión</p>
+          </article>
+        </section>
+
+        <section class="controls-card">
+          <div class="controls-card__filters">
+            <select
+              class="form-control form-control--select"
+              aria-label="Todos los tipos"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="template">Plantillas</option>
+              <option value="guide">Guías</option>
+            </select>
+
+            <select
+              class="form-control form-control--select"
+              aria-label="Todas las categorías"
+            >
+              <option value="">Todas las categorías</option>
+              <option value="resume">Currículum</option>
+              <option value="interview">Entrevista</option>
+            </select>
+
+            <select
+              class="form-control form-control--select"
+              aria-label="Estatus"
+            >
+              <option value="">Todos los estatus</option>
+              <option value="active">Activos</option>
+              <option value="draft">Borrador</option>
+            </select>
+          </div>
+
+          <div class="controls-card__search">
+            <div class="search-field">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="text"
+                class="search-field__input"
+                placeholder="Buscar por título, ID o palabra clave..."
+              />
+            </div>
+
+            <button class="btn btn--secondary" type="button">Filtrar</button>
+          </div>
+        </section>
+
+        <section class="resources-card">
+          <div class="section-heading">
+            <h2 class="section-heading__title">Directorio de recursos</h2>
+            <p class="section-heading__subtitle">
+              Gestiona toda la biblioteca de recursos disponibles en la
+              plataforma.
+            </p>
+          </div>
+
+          <div class="table-card__scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Detalles del recurso</th>
+                  <th>Agregado el</th>
+                  <th>Tipo / Formato</th>
+                  <th>Descargas</th>
+                  <th>Estatus</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="data-table__resource">
+                    <div class="resource-item">
+                      <div
+                        class="resource-item__icon resource-item__icon--blue"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                          ></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <strong class="resource-item__title">
+                          Plantilla de Currículum Profesional
+                        </strong>
+                        <span class="resource-item__subtitle">
+                          Categoría: Currículums
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="data-table__main-text">10 Mar 2026</span>
+                    <span class="data-table__sub-text">Por: Admin Laura</span>
+                  </td>
+
+                  <td>Plantilla (DOCX)</td>
+                  <td>12,450</td>
+                  <td>
+                    <span class="status-tag status-tag--active">Activo</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Editar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                          ></path>
+                          <path
+                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                          ></path>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="icon-action-btn icon-action-btn--danger"
+                        aria-label="Eliminar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="data-table__resource">
+                    <div class="resource-item">
+                      <div
+                        class="resource-item__icon resource-item__icon--orange"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                          <polyline points="2 17 12 22 22 17"></polyline>
+                          <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <strong class="resource-item__title">
+                          Guía definitiva de Entrevistas
+                        </strong>
+                        <span class="resource-item__subtitle">
+                          Categoría: Preparación
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="data-table__main-text">05 Mar 2026</span>
+                    <span class="data-table__sub-text">Por: Admin Carlos</span>
+                  </td>
+
+                  <td>Guía (PDF)</td>
+                  <td>8,920</td>
+                  <td>
+                    <span class="status-tag status-tag--active">Activo</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Editar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                          ></path>
+                          <path
+                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                          ></path>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="icon-action-btn icon-action-btn--danger"
+                        aria-label="Eliminar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="data-table__row--muted">
+                  <td class="data-table__resource">
+                    <div class="resource-item">
+                      <div
+                        class="resource-item__icon resource-item__icon--gray"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                          ></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                      </div>
+
+                      <div>
+                        <strong class="resource-item__title">
+                          Plantilla Carta de Presentación
+                        </strong>
+                        <span class="resource-item__subtitle">
+                          Categoría: Cartas
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="data-table__main-text">14 Mar 2026</span>
+                    <span class="data-table__sub-text">Por: Admin Laura</span>
+                  </td>
+
+                  <td>Plantilla (PDF)</td>
+                  <td>0</td>
+                  <td>
+                    <span class="status-tag status-tag--draft">Borrador</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Editar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                          ></path>
+                          <path
+                            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                          ></path>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="icon-action-btn icon-action-btn--danger"
+                        aria-label="Eliminar"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-pagination">
+            <button class="table-pagination__btn" disabled>&lt; Ant</button>
+            <span class="table-pagination__info">Página 1 de 8</span>
+            <button class="table-pagination__btn">Sig &gt;</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__container wrapper">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="site-footer__contact">
+            <span class="site-footer__contact-label">Llámanos:</span>
+            <span class="site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar empleos</a>
+            <a href="#">Ver empresas</a>
+            <a href="#">Panel de candidato</a>
+            <a href="#">Empleos guardados</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar empleo</a>
+            <a href="#">Buscar candidatos</a>
+            <a href="#">Panel del empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Términos y condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

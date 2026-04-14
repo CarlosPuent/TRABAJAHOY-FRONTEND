@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Postulantes por vacante | TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="vacancy-applicants.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="site-header__logo-link"
+          aria-label="Ir al inicio de TrabajaHoy"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="site-header__logo"
+          />
+        </a>
+
+        <div class="site-header__right">
+          <button
+            type="button"
+            class="site-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="site-header__nav" aria-label="Principal">
+            <a href="#" class="site-header__nav-link">Buscar empleos</a>
+            <a href="#" class="site-header__nav-link">Empresas</a>
+            <a href="#" class="site-header__nav-link">Recursos</a>
+            <a href="#" class="site-header__nav-link">Foro</a>
+          </nav>
+
+          <button
+            type="button"
+            class="site-header__profile"
+            aria-label="Perfil"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-section wrapper">
+        <div class="page-intro">
+          <h1 class="page-intro__title">Postulantes por vacante</h1>
+          <p class="page-intro__subtitle">
+            Se actualizan los postulantes para el puesto de:
+          </p>
+        </div>
+
+        <section class="vacancy-summary-card">
+          <div class="vacancy-summary-card__left">
+            <div class="vacancy-summary-card__media" aria-hidden="true">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            </div>
+
+            <div class="vacancy-summary-card__info">
+              <h2 class="vacancy-summary-card__title">Nombre del puesto</h2>
+              <p class="vacancy-summary-card__meta">
+                Remoto · Tiempo completo · Oficina San Salvador
+              </p>
+              <p class="vacancy-summary-card__salary">$1200 - $1800</p>
+            </div>
+          </div>
+
+          <div class="vacancy-summary-card__right">
+            <p class="vacancy-summary-card__count">128 postulantes</p>
+            <a href="../edit-vacancy/index.html" class="btn btn--primary">
+              Editar vacante
+            </a>
+          </div>
+        </section>
+
+        <div class="section-heading section-heading--spaced">
+          <h2 class="section-heading__title section-heading__title--small">
+            Datos de esta vacante
+          </h2>
+        </div>
+
+        <section class="stats-grid" aria-label="Resumen de postulaciones">
+          <article class="stats-card">
+            <h3 class="stats-card__title">Postulaciones recibidas</h3>
+            <p class="stats-card__value">128</p>
+            <p class="stats-card__meta">Interesados en esta vacante</p>
+          </article>
+
+          <article class="stats-card">
+            <h3 class="stats-card__title">En revisión</h3>
+            <p class="stats-card__value">54</p>
+            <p class="stats-card__meta">
+              Aplicaciones vistas aún no respondidas
+            </p>
+          </article>
+
+          <article class="stats-card">
+            <h3 class="stats-card__title">Entrevistas</h3>
+            <p class="stats-card__value">21</p>
+            <p class="stats-card__meta">Programadas</p>
+          </article>
+
+          <article class="stats-card">
+            <h3 class="stats-card__title">Rechazados</h3>
+            <p class="stats-card__value">42</p>
+            <p class="stats-card__meta">Aplicaciones descartadas</p>
+          </article>
+        </section>
+
+        <section class="filters-card">
+          <div class="filters-card__group">
+            <label class="filter-field">
+              <span class="filter-field__label">Estado</span>
+              <select
+                class="form-control form-control--select"
+                id="filter-status"
+              >
+                <option value="revision" selected>En revisión</option>
+                <option value="entrevista">Entrevista</option>
+                <option value="rechazado">Rechazado</option>
+                <option value="contratado">Contratado</option>
+              </select>
+            </label>
+
+            <label class="filter-field">
+              <span class="filter-field__label">Experiencia</span>
+              <select class="form-control form-control--select" id="filter-exp">
+                <option value="1" selected>0-1 año</option>
+                <option value="3">1-3 años</option>
+                <option value="5">3-5 años</option>
+                <option value="plus5">+5 años</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="search-field" aria-label="Buscar candidato por nombre">
+            <input
+              type="text"
+              class="search-field__input"
+              placeholder="Buscar candidato por nombre"
+            />
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </label>
+        </section>
+
+        <section class="table-card">
+          <div class="table-card__scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Candidato</th>
+                  <th>Experiencia</th>
+                  <th>Skills</th>
+                  <th>Status</th>
+                  <th>Fecha aplicación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Juan Pérez</td>
+                  <td>3 años</td>
+                  <td>React Node Figma</td>
+                  <td>En revisión</td>
+                  <td>12 marzo</td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Ver"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Abrir perfil"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Mensaje"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Juan Pérez</td>
+                  <td>3 años</td>
+                  <td>React Node Figma</td>
+                  <td>En revisión</td>
+                  <td>12 marzo</td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Ver"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Abrir perfil"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Mensaje"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Juan Pérez</td>
+                  <td>3 años</td>
+                  <td>React Node Figma</td>
+                  <td>En revisión</td>
+                  <td>12 marzo</td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Ver"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Abrir perfil"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Mensaje"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Juan Pérez</td>
+                  <td>3 años</td>
+                  <td>React Node Figma</td>
+                  <td>En revisión</td>
+                  <td>12 marzo</td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Ver"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Abrir perfil"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Mensaje"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Juan Pérez</td>
+                  <td>3 años</td>
+                  <td>React Node Figma</td>
+                  <td>En revisión</td>
+                  <td>12 marzo</td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Ver"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Abrir perfil"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-action-btn"
+                        aria-label="Mensaje"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <nav class="pagination" aria-label="Paginación de postulantes">
+          <button class="pagination__nav" disabled>
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Previous
+          </button>
+
+          <div class="pagination__pages">
+            <button class="pagination__page pagination__page--active">1</button>
+            <button class="pagination__page">2</button>
+            <button class="pagination__page">3</button>
+            <span class="pagination__dots">...</span>
+            <button class="pagination__page">67</button>
+            <button class="pagination__page">68</button>
+          </div>
+
+          <button class="pagination__nav">
+            Next
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </nav>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__container wrapper">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="site-footer__contact">
+            <span class="site-footer__contact-label">Llámanos:</span>
+            <span class="site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar empleos</a>
+            <a href="#">Ver empresas</a>
+            <a href="#">Panel de candidato</a>
+            <a href="#">Empleos guardados</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar empleo</a>
+            <a href="#">Buscar candidatos</a>
+            <a href="#">Panel del empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Términos y condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

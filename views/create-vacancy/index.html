@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear nueva vacante | TrabajaHoy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="create-vacancy.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__container wrapper">
+        <a
+          href="../landing/index.html"
+          class="site-header__logo-link"
+          aria-label="Ir al inicio de TrabajaHoy"
+        >
+          <img
+            src="../../src/images/logoPortal.png"
+            alt="TrabajaHoy"
+            class="site-header__logo"
+          />
+        </a>
+
+        <div class="site-header__right">
+          <button
+            type="button"
+            class="site-header__icon-btn"
+            aria-label="Notificaciones"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+
+          <nav class="site-header__nav" aria-label="Principal">
+            <a href="#" class="site-header__nav-link">Buscar empleos</a>
+            <a href="#" class="site-header__nav-link">Empresas</a>
+            <a href="#" class="site-header__nav-link">Recursos</a>
+            <a href="#" class="site-header__nav-link">Foro</a>
+          </nav>
+
+          <button
+            type="button"
+            class="site-header__profile"
+            aria-label="Perfil"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-section wrapper">
+        <div class="page-intro">
+          <h1 class="page-intro__title">Crear nueva vacante</h1>
+          <p class="page-intro__subtitle">
+            Completa la información para publicar una nueva oportunidad laboral.
+          </p>
+        </div>
+
+        <form class="form-card" action="#" method="POST">
+          <section class="form-section">
+            <h2 class="form-section__title">Información del puesto</h2>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field">
+                <label class="form-field__label" for="job-title">
+                  Nombre del puesto
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="job-title"
+                  placeholder="Ej. Desarrollador Frontend Senior"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-field__label" for="job-category">
+                  Área / categoría
+                </label>
+                <select
+                  class="form-control form-control--select"
+                  id="job-category"
+                >
+                  <option value="tecnologia" selected>Tecnología</option>
+                  <option value="diseno">Diseño</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="ventas">Ventas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field">
+                <label class="form-field__label" for="job-modality">
+                  Modalidad
+                </label>
+                <select
+                  class="form-control form-control--select"
+                  id="job-modality"
+                >
+                  <option value="remoto" selected>
+                    Remoto / presencial / híbrido
+                  </option>
+                  <option value="remoto_full">100% Remoto</option>
+                  <option value="presencial">Presencial</option>
+                  <option value="hibrido">Híbrido</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="form-field__label" for="job-type">
+                  Tipo de empleo
+                </label>
+                <select class="form-control form-control--select" id="job-type">
+                  <option value="default" selected>
+                    Full-time, part-time, freelance
+                  </option>
+                  <option value="full-time">Full-time</option>
+                  <option value="part-time">Part-time</option>
+                  <option value="freelance">Freelance</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h2 class="form-section__title">Ubicación</h2>
+
+            <div class="form-grid form-grid--location">
+              <div class="form-field">
+                <label class="form-field__label" for="job-branch">
+                  Seleccionar sucursal/oficina
+                </label>
+                <select
+                  class="form-control form-control--select"
+                  id="job-branch"
+                >
+                  <option value="san_salvador" selected>
+                    Sucursal San Salvador
+                  </option>
+                  <option value="santa_ana">Sucursal Santa Ana</option>
+                  <option value="san_miguel">Sucursal San Miguel</option>
+                </select>
+              </div>
+
+              <label class="form-checkbox">
+                <input
+                  type="checkbox"
+                  class="form-checkbox__input"
+                  id="is-remote"
+                />
+                <span class="form-checkbox__text">
+                  ¿El trabajo es completamente remoto?
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h2 class="form-section__title">Rango salarial</h2>
+
+            <div class="form-grid form-grid--salary">
+              <div class="form-field">
+                <label class="form-field__label" for="salary-min">
+                  Salario mínimo
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="salary-min"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-field__label" for="salary-max">
+                  Salario máximo
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="salary-max"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-field__label" for="salary-currency">
+                  Moneda
+                </label>
+                <select
+                  class="form-control form-control--select"
+                  id="salary-currency"
+                >
+                  <option value="usd" selected>USD</option>
+                  <option value="mxn">MXN</option>
+                  <option value="eur">EUR</option>
+                  <option value="clp">CLP</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-inline-end">
+              <label class="form-checkbox">
+                <input
+                  type="checkbox"
+                  class="form-checkbox__input"
+                  id="show-salary"
+                />
+                <span class="form-checkbox__text">
+                  Mostrar salario públicamente
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="form-field">
+              <label
+                class="form-field__label form-field__label--strong"
+                for="job-short-desc"
+              >
+                Descripción corta
+              </label>
+              <textarea
+                class="form-control form-control--textarea"
+                id="job-short-desc"
+                placeholder="Describe responsabilidad, objetivos e impacto del rol"
+              ></textarea>
+            </div>
+
+            <div class="form-field">
+              <label
+                class="form-field__label form-field__label--strong"
+                for="job-requirements"
+              >
+                Requisitos
+              </label>
+              <textarea
+                class="form-control form-control--textarea"
+                id="job-requirements"
+                placeholder="Describe requisitos necesarios para el puesto como idiomas, tecnologías o habilidades duras y blandas."
+              ></textarea>
+            </div>
+
+            <div class="form-field">
+              <label
+                class="form-field__label form-field__label--strong"
+                for="job-benefits"
+              >
+                Beneficios
+              </label>
+              <textarea
+                class="form-control form-control--textarea"
+                id="job-benefits"
+                placeholder="Describe por qué a un candidato le gustaría ejercer este rol en tu empresa."
+              ></textarea>
+            </div>
+          </section>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--secondary">
+              Guardar borrador
+            </button>
+            <button type="submit" class="btn btn--primary">
+              Publicar vacante
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__container wrapper">
+        <div class="site-footer__brand">
+          <div class="site-footer__brand-row">
+            <svg
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            <span class="site-footer__brand-name">TrabajaHoy</span>
+          </div>
+
+          <div class="site-footer__contact">
+            <span class="site-footer__contact-label">Llámanos:</span>
+            <span class="site-footer__contact-phone">(503) 2222-0000</span>
+          </div>
+
+          <p class="site-footer__address">
+            Av. La Revolución #123, San Salvador, El Salvador
+          </p>
+        </div>
+
+        <div class="site-footer__columns">
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Enlaces rápidos</h4>
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <a href="#">Precio</a>
+            <a href="#">Blog</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Candidatos</h4>
+            <a href="#">Buscar empleos</a>
+            <a href="#">Ver empresas</a>
+            <a href="#">Panel de candidato</a>
+            <a href="#">Empleos guardados</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Empleadores</h4>
+            <a href="#">Publicar empleo</a>
+            <a href="#">Buscar candidatos</a>
+            <a href="#">Panel del empleador</a>
+            <a href="#">Solicitudes</a>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Soporte</h4>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Política de privacidad</a>
+            <a href="#">Términos y condiciones</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
