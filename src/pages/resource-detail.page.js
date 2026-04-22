@@ -85,7 +85,7 @@ function getDetailHTML(resource, ratings, related, resourceId, isAuthenticated, 
           <div class="rd-rating-section">
             <h3 class="rd-rating-title">¿Te fue útil este recurso?</h3>
             <div class="rd-stars" id="resource-stars">
-              ${[1,2,3,4,5].map(i => `<button type="button" class="rd-star" data-value="${i}">${starFilled(22)}</button>`).join('')}
+              ${[1, 2, 3, 4, 5].map(i => `<button type="button" class="rd-star" data-value="${i}">${starFilled(22)}</button>`).join('')}
             </div>
             <input type="hidden" id="resource-rating-value" value="0" />
             <div id="rating-feedback" style="display:none; margin-top:12px;">
@@ -229,8 +229,4 @@ function initDetailEvents(resource, resourceId, isAuthenticated, hasRated = fals
       }
     });
   }
-    } catch (err) {
-      store.addToast({ type: 'error', message: err.response?.data?.message || 'Error al enviar calificación' });
-    }
-  });
 }

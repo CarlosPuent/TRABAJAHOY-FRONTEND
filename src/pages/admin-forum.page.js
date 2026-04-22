@@ -64,7 +64,10 @@ function getAdminForumHTML(reports, threads, categories, reviewReports, allRevie
   const resolvedReports = reports.filter(r => r.status === 'resolved');
   const dismissedReports = reports.filter(r => r.status === 'dismissed');
   const pendingReviewReports = reviewReports.length;
-  const totalReviews = allReviews.length || reviewReports.length;
+  const reviewsForModeration = allReviews.length > 0
+    ? allReviews
+    : reviewReports.map(r => r.review || r);
+  const totalReviews = reviewsForModeration.length;
 
   const mainContent = `
     <div class="af-container">
@@ -203,7 +206,7 @@ function getAdminForumHTML(reports, threads, categories, reviewReports, allRevie
         </div>` : ''}
 
         <!-- Reported reviews -->
-        <div class="af-reviews-list" id="review-list-reported">
+        <div class="af-reviews-list" id="review-list-reported" ${pendingReviewReports > 0 ? '' : 'style="display:none;"'}>
           ${reviewReports.length > 0 ? reviewReports.map(r => {
             const review = r.review || r;
             const reviewer = review.user || review.author || r.reporter;
@@ -233,8 +236,8 @@ function getAdminForumHTML(reports, threads, categories, reviewReports, allRevie
         </div>
 
         <!-- All reviews -->
-        <div class="af-reviews-list" id="review-list-all" style="display:none;">
-          ${allReviews.length > 0 ? allReviews.map(r => {
+        <div class="af-reviews-list" id="review-list-all" ${pendingReviewReports > 0 ? 'style="display:none;"' : ''}>
+          ${reviewsForModeration.length > 0 ? reviewsForModeration.map(r => {
             const reviewer = r.user || r.author;
             const company = r.company;
             const statusColors = { approved: '#d1fae5', rejected: '#fee2e2', pending: '#fef3c7' };
