@@ -46,8 +46,6 @@ apiClient.interceptors.response.use(
     const shouldSkipRefresh = shouldSkipRefreshForRequest(originalRequest?.url);
 
     if (isExpectedLogoutUnauthorizedError(error, shouldSkipRefresh)) {
-      // Logout can return 401 when token is already invalid/expired.
-      // The auth service handles this as a non-blocking warning.
       return Promise.reject(error);
     }
 
@@ -63,34 +61,27 @@ apiClient.interceptors.response.use(
         const refreshToken = store.get("refreshToken");
 
         if (!refreshToken) {
-          // No refresh token, redirect to login
           store.clearAuth();
           storage.clearAuthSession();
           window.location.hash = "#/login";
           return Promise.reject(error);
         }
 
-        // Attempt to refresh token
         const response = await axios.post(
           `${config.API_BASE_URL}/auth/refresh`,
-          {
-            refreshToken,
-          },
+          { refreshToken },
         );
 
         const { accessToken, refreshToken: newRefreshToken } =
           response.data.data;
 
-        // Update store with new tokens
         store.set("accessToken", accessToken);
         store.set("refreshToken", newRefreshToken);
         storage.setTokens({ accessToken, refreshToken: newRefreshToken });
 
-        // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, logout user
         store.clearAuth();
         storage.clearAuthSession();
         window.location.hash = "#/login";
@@ -101,31 +92,21 @@ apiClient.interceptors.response.use(
     // Handle other errors
     if (error.response) {
       const { status, data } = error.response;
-
       switch (status) {
         case 403:
-          store.addToast({
-            type: "error",
-            message: "No tienes permisos para realizar esta acción",
-          });
+          store.addToast({ type: "error", message: "No tienes permisos" });
           break;
         case 404:
-          store.addToast({
-            type: "error",
-            message: "Recurso no encontrado",
-          });
+          store.addToast({ type: "error", message: "Recurso no encontrado" });
           break;
         case 409:
           store.addToast({
             type: "error",
-            message: data?.message || "Conflicto con el recurso",
+            message: data?.message || "Conflicto",
           });
           break;
         case 500:
-          store.addToast({
-            type: "error",
-            message: "Error del servidor. Inténtalo más tarde",
-          });
+          store.addToast({ type: "error", message: "Error del servidor" });
           break;
         default:
           store.addToast({
@@ -134,65 +115,68 @@ apiClient.interceptors.response.use(
           });
       }
     } else if (error.request) {
-      store.addToast({
-        type: "error",
-        message: "Error de conexión. Verifica tu conexión a internet",
-      });
+      store.addToast({ type: "error", message: "Error de conexión" });
     }
 
     return Promise.reject(error);
   },
 );
 
-// Helper methods for common operations
+// Helper methods
 export const api = {
-  // GET request
   get: async (url, params = {}) => {
     const response = await apiClient.get(url, { params });
     return response.data;
   },
 
-  // POST request
   post: async (url, data = {}) => {
     const response = await apiClient.post(url, data);
     return response.data;
   },
 
-  // PATCH request
   patch: async (url, data = {}) => {
     const response = await apiClient.patch(url, data);
     return response.data;
   },
 
-  // PUT request
   put: async (url, data = {}) => {
     const response = await apiClient.put(url, data);
     return response.data;
   },
 
-  // DELETE request
   delete: async (url) => {
     const response = await apiClient.delete(url);
     return response.data;
   },
 
-  // File upload (multipart/form-data)
+  // 🚀 MÉTODO UPLOAD CORREGIDO
   upload: async (url, formData, onProgress = null) => {
-    const response = await apiClient.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      onUploadProgress: onProgress,
-    });
-    return response.data;
+    try {
+      const response = await apiClient.post(url, formData, {
+        // SOBREESCRIBIMOS EL HEADER: Al ponerlo en undefined, Axios
+        // borra el "application/json" global y deja que el navegador
+        // elija el multipart/form-data correcto.
+        headers: {
+          "Content-Type": undefined,
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
+            onProgress(percentCompleted);
+          }
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error en upload api.js:", error);
+      throw error;
+    }
   },
 
-  // Download file
   download: async (url, filename) => {
-    const response = await apiClient.get(url, {
-      responseType: "blob",
-    });
-
+    const response = await apiClient.get(url, { responseType: "blob" });
     const blob = new Blob([response.data]);
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement("a");

@@ -1,5 +1,5 @@
 // Vacancy Service
-import { api } from '@services/api';
+import { api } from "@services/api";
 
 export const vacancyService = {
   /**
@@ -7,7 +7,14 @@ export const vacancyService = {
    * @param {Object} params - { page, limit, categoryId, type, modality, level, country, city, search }
    */
   async getVacancies(params = {}) {
-    const response = await api.get('/vacancies', params);
+    const response = await api.get("/vacancies", params);
+    return response.data;
+  },
+
+  // Agrega esto dentro del objeto vacancyService en vacancy.service.js
+  async getVacanciesForManagement(params = {}) {
+    // Usamos el mismo endpoint que ya tenías definido para gestión
+    const response = await api.get("/vacancies/manage/all", params);
     return response.data;
   },
 
@@ -25,10 +32,32 @@ export const vacancyService = {
    * @param {Object} params - Query parameters
    */
   async getAllVacancies(params = {}) {
-    const response = await api.get('/vacancies/manage/all', params);
+    const response = await api.get("/vacancies/manage/all", params);
     return response.data;
   },
 
+  async getPipeline(vacancyId) {
+    const response = await api.get(
+      `/vacancies/${vacancyId}/applications/pipeline`,
+    );
+    return response.data?.data || response.data;
+  },
+
+  async updateStatus(vacancyId, newStatus) {
+    // Aprovechamos tu endpoint de updateVacancy que ya recibe el status
+    const response = await api.patch(`/vacancies/${vacancyId}`, {
+      status: newStatus,
+    });
+    return response.data?.data || response.data;
+  },
+
+  async updateApplicationStatus(applicationId, status) {
+    const response = await api.post(`/applications/${applicationId}/status`, {
+      toStatus: status,
+      notes: "Movido desde Kanban",
+    });
+    return response.data?.data || response.data;
+  },
   /**
    * Get vacancy with full details (requires auth)
    * @param {string} id - Vacancy ID
@@ -43,7 +72,7 @@ export const vacancyService = {
    * @param {Object} data - Vacancy data
    */
   async createVacancy(data) {
-    const response = await api.post('/vacancies', data);
+    const response = await api.post("/vacancies", data);
     return response.data;
   },
 
@@ -86,7 +115,7 @@ export const vacancyService = {
 
   // Job Categories
   async getCategories() {
-    const response = await api.get('/vacancies/categories');
+    const response = await api.get("/vacancies/categories");
     return response.data;
   },
 
@@ -96,7 +125,7 @@ export const vacancyService = {
   },
 
   async createCategory(data) {
-    const response = await api.post('/vacancies/categories', data);
+    const response = await api.post("/vacancies/categories", data);
     return response.data;
   },
 

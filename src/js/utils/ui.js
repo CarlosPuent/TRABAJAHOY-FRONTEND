@@ -247,6 +247,10 @@ function isActiveLink(href, activePath) {
  * @param {string} [options.extraHeaderContent] - Extra HTML inside header actions
  * @returns {string} HTML string
  */
+/**
+ * Renders a consistent navbar across all pages.
+ * Integrates "Mi Equipo" link for recruiters and owners.
+ */
 export function renderNavbar({
   activeRoute = "",
   isAuthenticated = false,
@@ -262,6 +266,7 @@ export function renderNavbar({
 
   const fallbackStoreRoles =
     typeof store.getRoles === "function" ? store.getRoles() : [];
+
   const resolvedRoles = normalizeRoles(
     Array.isArray(roles) && roles.length > 0
       ? roles
@@ -269,15 +274,18 @@ export function renderNavbar({
         ? user.roles
         : fallbackStoreRoles,
   );
+
   const resolvedPrimaryRole =
     primaryRole ||
     (typeof store.getPrimaryRole === "function"
       ? store.getPrimaryRole()
       : null) ||
     getPrimaryRole(resolvedRoles);
+
   const dashboardRoute = getDashboardRouteForRoles(resolvedRoles, "/");
   const navigation = getNavigationForRoles(resolvedRoles, isAuthenticated);
 
+  // Generamos los links principales de navegación
   const navLinks = navigation
     .map((link) => {
       const isActive = isActiveLink(link.href, activePath);
@@ -285,8 +293,21 @@ export function renderNavbar({
     })
     .join("\n");
 
+  // 🔥 LÓGICA DE "MI EQUIPO" 🔥
+  // Se muestra si el rol primario es reclutador o dueño (Owner)
+  const isManagementRole =
+    resolvedPrimaryRole === "recruiter" || resolvedPrimaryRole === "owner";
+  const isTeamPageActive = activePath === "/company/recruiters";
+
+  const teamLinkHtml = isManagementRole
+    ? `<a href="#/company/recruiters" class="site-header__nav-link ${isTeamPageActive ? "site-header__nav-link--active" : ""}">Mi Equipo</a>`
+    : "";
+
+  // Sección de autenticación (Derecha)
   const authSection = isAuthenticated
-    ? `<a href="#${dashboardRoute}" class="site-header__dashboard-link" aria-label="Ir al panel">Panel</a>
+    ? `
+       ${teamLinkHtml} 
+       <a href="#${dashboardRoute}" class="site-header__dashboard-link" aria-label="Ir al panel">Panel</a>
        <span class="site-header__role-badge site-header__role-badge--${resolvedPrimaryRole || "guest"}">${getRoleLabel(resolvedPrimaryRole)}</span>
        <span class="site-header__username">${fullName || "Usuario"}</span>
        <button class="site-header__logout-btn" id="logout-btn" aria-label="Cerrar sesión">

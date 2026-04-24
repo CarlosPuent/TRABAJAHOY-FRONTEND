@@ -26,8 +26,20 @@ import { initApplicationsPage } from "@pages/applications.page.js";
 import { initResourcesPage } from "@pages/resources.page.js";
 import { initForumPage } from "@pages/forum.page.js";
 import { initCVPage } from "@pages/cv.page.js";
+
+// Company & Recruiter controllers
+import { initCompanyDashboardPage } from "@pages/company-dashboard.page";
+import { initApplicantsPage } from "@pages/applicants.page.js";
 import { initCreateVacancyPage } from "@pages/create-vacancy.page.js";
+import { initEditVacancyPage } from "@pages/edit-vacancy.page.js";
 import { initMyVacanciesPage } from "@pages/my-vacancies.page.js";
+import { initRecruiterManagementPage } from "../pages/recruiter-management.page.js";
+import { initRecruiterCompanyPage } from "@pages/recruiter-company.page.js"; // 🔥 IMPORT NUEVO
+
+// Admin controllers
+import { initAdminDashboardPage } from "@pages/admin-dashboard.page.js";
+import { initAdminCompaniesPage } from "@pages/admin-companies.page.js";
+import { initAdminUsersPage } from "@pages/admin-users.page.js";
 
 let logoutInProgress = false;
 
@@ -259,12 +271,16 @@ function registerRoutes() {
   router.on(config.ROUTES.FORUM, initForumPage);
 
   // Company routes
+  router.on(config.ROUTES.COMPANY_DASHBOARD, initCompanyDashboardPage, {
+    requiresAuth: true,
+    roles: [ROLE.RECRUITER, ROLE.ADMIN],
+  });
+
   router.on(
-    config.ROUTES.COMPANY_DASHBOARD,
-    createPlaceholderPage(
-      "Panel de Empresa",
-      "Gestiona tus ofertas de empleo.",
-    ),
+    config.ROUTES.VACANCY_APPLICANTS,
+    async (params) => {
+      await initApplicantsPage(params);
+    },
     {
       requiresAuth: true,
       roles: [ROLE.RECRUITER, ROLE.ADMIN],
@@ -276,41 +292,52 @@ function registerRoutes() {
     roles: [ROLE.RECRUITER, ROLE.ADMIN],
   });
 
-  router.on(
-    config.ROUTES.COMPANY_PROFILE,
-    createPlaceholderPage("Perfil de Empresa", "Información de tu empresa."),
-    {
-      requiresAuth: true,
-      roles: [ROLE.RECRUITER, ROLE.ADMIN],
-    },
-  );
+  // 🔥 NUEVA RUTA INTEGRADA (Reemplaza al placeholder)
+  router.on(config.ROUTES.COMPANY_PROFILE, initRecruiterCompanyPage, {
+    requiresAuth: true,
+    roles: [ROLE.RECRUITER, ROLE.ADMIN],
+  });
 
   router.on(config.ROUTES.CREATE_VACANCY, initCreateVacancyPage, {
     requiresAuth: true,
     roles: [ROLE.RECRUITER, ROLE.ADMIN],
   });
 
-  // Admin routes
   router.on(
-    config.ROUTES.ADMIN_DASHBOARD,
-    createPlaceholderPage("Panel de Admin", "Administración del sistema."),
+    config.ROUTES.EDIT_VACANCY,
+    async (params) => {
+      await initEditVacancyPage(params.id);
+    },
     {
       requiresAuth: true,
-      roles: [ROLE.ADMIN],
+      roles: [ROLE.RECRUITER, ROLE.ADMIN],
     },
   );
 
-  router.on(
-    config.ROUTES.ADMIN_USERS,
-    createPlaceholderPage(
-      "Gestión de Usuarios",
-      "Administra los usuarios del sistema.",
-    ),
-    {
-      requiresAuth: true,
-      roles: [ROLE.ADMIN],
-    },
-  );
+  router.on(config.ROUTES.COMPANY_RECRUITERS, initRecruiterManagementPage, {
+    requiresAuth: true,
+  });
+
+  // Admin routes
+  router.on(config.ROUTES.ADMIN_DASHBOARD, initAdminDashboardPage, {
+    requiresAuth: true,
+    roles: [ROLE.ADMIN],
+  });
+
+  router.on(config.ROUTES.ADMIN_COMPANIES, initAdminCompaniesPage, {
+    requiresAuth: true,
+    roles: [ROLE.ADMIN],
+  });
+
+  router.on(config.ROUTES.COMPANY_RECRUITERS, initRecruiterManagementPage, {
+    requiresAuth: true,
+    roles: [ROLE.RECRUITER, ROLE.ADMIN],
+  });
+
+  router.on(config.ROUTES.ADMIN_USERS, initAdminUsersPage, {
+    requiresAuth: true,
+    roles: [ROLE.ADMIN],
+  });
 }
 
 // Helper to create a simple placeholder page

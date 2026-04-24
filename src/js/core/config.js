@@ -45,6 +45,7 @@ export const config = {
 
   // Routes
   ROUTES: {
+    ADMIN_COMPANIES: "/admin/companies",
     LANDING: "/",
     LOGIN: "/login",
     REGISTER_CANDIDATE: "/register",
@@ -59,7 +60,7 @@ export const config = {
     VACANCY_DETAIL: "/vacancies/:id",
     COMPANY_DASHBOARD: "/company/dashboard",
     MY_VACANCIES: "/company/vacancies",
-    COMPANY_PROFILE: "/company/profile",
+    COMPANY_PROFILE: "/company/profile", // 🔥 Esta es la ruta que usaremos
     CREATE_VACANCY: "/company/vacancies/create",
     EDIT_VACANCY: "/company/vacancies/edit/:id",
     VACANCY_APPLICANTS: "/company/vacancies/:id/applicants",
@@ -70,6 +71,7 @@ export const config = {
     RESOURCE_DETAIL: "/resources/:id",
     FORUM: "/forum",
     FORUM_THREAD: "/forum/thread/:id",
+    COMPANY_RECRUITERS: "/company/recruiters",
   },
 };
 

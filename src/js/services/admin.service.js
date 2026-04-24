@@ -1,36 +1,93 @@
-// Admin Service
-import { api } from '@services/api';
+import apiClient, { api } from "@services/api";
 
 export const adminService = {
-  // User Management
+  /* =========================
+     USERS
+  ========================= */
+
   async getUsers(params = {}) {
-    const response = await api.get('/admin/users', params);
-    return response.data;
+    return await api.get("/admin/users", params);
+  },
+
+  async getUsersByRole(roleName, params = {}) {
+    return await api.get(`/admin/roles/${roleName}/users`, params);
   },
 
   async getUserRoles(userId) {
-    const response = await api.get(`/admin/users/${userId}/roles`);
-    return response.data;
+    return await api.get(`/admin/users/${userId}/roles`);
   },
 
   async assignRole(userId, roleName) {
-    const response = await api.post(`/admin/users/${userId}/roles`, { roleName });
+    return await api.post(`/admin/users/${userId}/roles`, { roleName });
+  },
+
+  async removeRole(userId, roleName) {
+    const response = await apiClient.delete(`/admin/users/${userId}/roles`, {
+      data: { roleName },
+    });
     return response.data;
   },
 
-  async removeRole(userId) {
-    const response = await api.delete(`/admin/users/${userId}/roles`);
-    return response.data;
+  async updateUser(userId, data) {
+    const response = await api.patch(`/admin/users/${userId}`, data);
+    return response.data?.data || response.data;
   },
 
-  // Role Management
+  async deleteUser(userId) {
+    const response = await api.delete(`/admin/users/${userId}`);
+    return response.data?.data || response.data;
+  },
+
+  async updateCompany(companyId, data) {
+    const response = await api.patch(
+      `/admin/users/companies/${companyId}`,
+      data,
+    );
+    // (si es /api/admin/companies o /api/admin/users/companies)
+    return response.data?.data || response.data;
+  },
+
+  async toggleUserStatus(userId, isActive) {
+    const response = await api.patch(`/admin/users/${userId}/status`, {
+      isActive,
+    });
+    return response.data?.data || response.data;
+  },
+
+  /* =========================
+     ROLES
+  ========================= */
+
   async getRoles() {
-    const response = await api.get('/admin/roles');
-    return response.data;
+    return await api.get("/admin/roles");
   },
 
-  async getUsersByRole(roleName) {
-    const response = await api.get(`/admin/roles/${roleName}/users`);
-    return response.data;
+  /* =========================
+     DASHBOARD
+  ========================= */
+
+  async getDashboard() {
+    return await api.get("/admin/dashboard");
+  },
+
+  async getCompanies(params = {}) {
+    return await api.get("/admin/companies", params);
+  },
+
+  async approveCompany(companyId) {
+    const response = await api.post(`/admin/companies/${companyId}/approve`);
+    return response.data?.data || response.data;
+  },
+
+  async rejectCompany(companyId, reason = "") {
+    const response = await api.post(`/admin/companies/${companyId}/reject`, {
+      reason,
+    });
+    return response.data?.data || response.data;
+  },
+
+  async deleteCompany(companyId) {
+    const response = await api.delete(`/admin/companies/${companyId}`);
+    return response.data?.data || response.data;
   },
 };

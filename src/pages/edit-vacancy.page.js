@@ -5,6 +5,7 @@ import { companyService } from "@services/company.service";
 import { vacancyService } from "@services/vacancy.service";
 import {
   getAuthUiContext,
+  renderContentState,
   renderNavbar,
   renderPage,
   renderRoleShell,
@@ -38,6 +39,8 @@ const VACANCY_LEVELS = [
 const VACANCY_STATUSES = [
   { value: "draft", label: "Borrador" },
   { value: "published", label: "Publicada" },
+  { value: "closed", label: "Cerrada" },
+  { value: "archived", label: "Archivada" },
 ];
 
 function normalizeArray(input) {
@@ -54,42 +57,6 @@ function sanitizeCompanyOption(value, name = "") {
     id,
     name: String(name || "").trim(),
   };
-}
-
-function renderNotVerifiedState(navbar, roles, primaryRole) {
-  const contentHtml = `
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 60px 20px; text-align: center; max-width: 500px; margin: 40px auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-      <div style="width: 64px; height: 64px; margin: 0 auto 24px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-      </div>
-      <h2 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Empresa no verificada</h2>
-      <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
-        Para mantener la calidad y seguridad de Trabaja Hoy, solo las empresas verificadas por un administrador pueden publicar nuevas vacantes.
-      </p>
-      <a href="#${config.ROUTES.COMPANY_DASHBOARD}" class="btn btn--primary" style="display: inline-block;">
-        Ver estado de mi empresa
-      </a>
-    </div>
-  `;
-
-  const shell = renderRoleShell({
-    title: "Crear vacante",
-    subtitle: "Publica una vacante nueva con el contrato real del backend.",
-    roles,
-    primaryRole,
-    content: contentHtml,
-    shellClass: "vacancy-create-shell",
-  });
-
-  return renderPage({
-    navbar,
-    main: `<div class="container">${shell}</div>`,
-    pageClass: "vacancy-create-page",
-    extraStyles: `
-      .vacancy-create-page { min-height: calc(100vh - 70px); background: #f8fafc; padding: 28px 0; }
-      .vacancy-create-shell .role-shell__content { background: transparent; border: none; padding: 0; box-shadow: none; }
-    `,
-  });
 }
 
 function upsertCompanyOption(map, value, name = "") {
@@ -311,6 +278,64 @@ async function resolveCategoryOptions() {
   }
 }
 
+function resolveVacancyCompanyInfo(vacancy = {}) {
+  const company =
+    vacancy.company && typeof vacancy.company === "object"
+      ? vacancy.company
+      : null;
+
+  const id =
+    vacancy.companyId ||
+    vacancy.company_id ||
+    company?.id ||
+    company?.companyId ||
+    company?.company_id ||
+    "";
+
+  const name =
+    vacancy.companyName ||
+    vacancy.company_name ||
+    company?.name ||
+    company?.companyName ||
+    company?.company_name ||
+    "";
+
+  return {
+    id: String(id || "").trim(),
+    name: String(name || "").trim(),
+  };
+}
+
+function ensureVacancyCompanyOption(companyContext, vacancy) {
+  const { id, name } = resolveVacancyCompanyInfo(vacancy);
+  if (!id) {
+    return companyContext;
+  }
+
+  const hasOption = companyContext.options.some(
+    (option) => String(option.id) === String(id),
+  );
+
+  if (hasOption) {
+    return companyContext;
+  }
+
+  const options = [
+    ...companyContext.options,
+    {
+      id,
+      label: name || "Empresa de la vacante",
+    },
+  ];
+
+  return {
+    ...companyContext,
+    options,
+    hasCompanyContext: options.length > 0,
+    requiresSelection: options.length > 1,
+  };
+}
+
 function isIsoDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
 }
@@ -324,18 +349,53 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : Number.NaN;
 }
 
-function getCreateVacancyHTML(authContext, options = {}) {
+function toDateInputValue(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (isIsoDate(raw)) return raw;
+
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toISOString().slice(0, 10);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderOptionList(options, selectedValue = "", includeEmpty = "") {
+  const emptyOption = includeEmpty
+    ? `<option value="">${escapeHtml(includeEmpty)}</option>`
+    : "";
+
+  return `${emptyOption}${options
+    .map(
+      (item) =>
+        `<option value="${escapeHtml(item.value)}" ${String(selectedValue) === String(item.value) ? "selected" : ""}>${escapeHtml(item.label)}</option>`,
+    )
+    .join("")}`;
+}
+
+function getEditVacancyHTML(authContext, options = {}) {
   const { isAuthenticated, user, roles, primaryRole } = authContext;
   const {
+    vacancy,
     companyOptions = [],
     selectedCompanyId = "",
     requiresCompanySelection = false,
     hasCompanyContext = false,
     categoryOptions = [],
-    defaultStatus = "draft",
   } = options;
 
-  const canSubmit = hasCompanyContext;
+  const canSubmit = Boolean(hasCompanyContext && vacancy?.id);
 
   const companyFieldHtml = !hasCompanyContext
     ? `
@@ -355,43 +415,23 @@ function getCreateVacancyHTML(authContext, options = {}) {
           ${companyOptions
             .map(
               (company) =>
-                `<option value="${company.id}" ${selectedCompanyId === company.id ? "selected" : ""}>${company.label}</option>`,
+                `<option value="${escapeHtml(company.id)}" ${String(selectedCompanyId) === String(company.id) ? "selected" : ""}>${escapeHtml(company.label)}</option>`,
             )
             .join("")}
         </select>
-        <small>Tu vacante se publicara en la empresa seleccionada.</small>
+        <small>La vacante se guardara en la empresa seleccionada.</small>
       </div>
     `
       : `
       <div class="vacancy-field vacancy-field--full">
         <label>Empresa *</label>
-        <div class="vacancy-field__info">${companyOptions[0]?.label || "Empresa asociada"}</div>
+        <div class="vacancy-field__info">${escapeHtml(companyOptions[0]?.label || "Empresa asociada")}</div>
         <small>Se usara automaticamente la empresa asociada a tu cuenta.</small>
       </div>
     `;
 
-  const categoryFieldHtml = `
-    <div class="vacancy-field">
-      <label for="vacancy-category-id">Categoria</label>
-      <select id="vacancy-category-id" name="categoryId">
-        <option value="">Sin categoria</option>
-        ${categoryOptions
-          .map(
-            (category) =>
-              `<option value="${category.id}">${category.label}</option>`,
-          )
-          .join("")}
-      </select>
-      ${
-        categoryOptions.length === 0
-          ? "<small>No hay categorias disponibles por ahora. Puedes crear la vacante sin categoria.</small>"
-          : ""
-      }
-    </div>
-  `;
-
   const navbar = renderNavbar({
-    activeRoute: config.ROUTES.CREATE_VACANCY,
+    activeRoute: config.ROUTES.MY_VACANCIES,
     isAuthenticated,
     user,
     roles,
@@ -399,9 +439,9 @@ function getCreateVacancyHTML(authContext, options = {}) {
   });
 
   const content = `
-    <form class="vacancy-create-form" id="create-vacancy-form" novalidate>
-      <p class="th-feedback th-feedback--error" id="create-vacancy-error" style="display:none;"></p>
-      <p class="th-feedback th-feedback--success" id="create-vacancy-success" style="display:none;"></p>
+    <form class="vacancy-create-form" id="edit-vacancy-form" novalidate>
+      <p class="th-feedback th-feedback--error" id="edit-vacancy-error" style="display:none;"></p>
+      <p class="th-feedback th-feedback--success" id="edit-vacancy-success" style="display:none;"></p>
 
       <div class="vacancy-create-grid">
         ${companyFieldHtml}
@@ -409,96 +449,109 @@ function getCreateVacancyHTML(authContext, options = {}) {
         <div class="vacancy-field">
           <label for="vacancy-status">Estado *</label>
           <select id="vacancy-status" name="status" required>
-            ${VACANCY_STATUSES.map((status) => `<option value="${status.value}" ${defaultStatus === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
+            ${renderOptionList(VACANCY_STATUSES, vacancy.status)}
           </select>
         </div>
 
         <div class="vacancy-field vacancy-field--full">
           <label for="vacancy-title">Titulo *</label>
-          <input id="vacancy-title" name="title" type="text" required maxlength="160" />
+          <input id="vacancy-title" name="title" type="text" required maxlength="160" value="${escapeHtml(vacancy.title)}" />
         </div>
 
         <div class="vacancy-field vacancy-field--full">
           <label for="vacancy-description">Descripcion *</label>
-          <textarea id="vacancy-description" name="description" rows="5" required></textarea>
+          <textarea id="vacancy-description" name="description" rows="5" required>${escapeHtml(vacancy.description)}</textarea>
         </div>
 
         <div class="vacancy-field vacancy-field--full">
           <label for="vacancy-requirements">Requisitos *</label>
-          <textarea id="vacancy-requirements" name="requirements" rows="4" required></textarea>
+          <textarea id="vacancy-requirements" name="requirements" rows="4" required>${escapeHtml(vacancy.requirements)}</textarea>
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-country">Pais *</label>
-          <input id="vacancy-country" name="country" type="text" required maxlength="120" />
+          <input id="vacancy-country" name="country" type="text" required maxlength="120" value="${escapeHtml(vacancy.country)}" />
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-city">Ciudad *</label>
-          <input id="vacancy-city" name="city" type="text" required maxlength="120" />
+          <input id="vacancy-city" name="city" type="text" required maxlength="120" value="${escapeHtml(vacancy.city)}" />
         </div>
 
-        ${categoryFieldHtml}
+        <div class="vacancy-field">
+          <label for="vacancy-category-id">Categoria</label>
+          <select id="vacancy-category-id" name="categoryId">
+            <option value="">Sin categoria</option>
+            ${categoryOptions
+              .map(
+                (category) =>
+                  `<option value="${escapeHtml(category.id)}" ${String(vacancy.categoryId || "") === String(category.id) ? "selected" : ""}>${escapeHtml(category.label)}</option>`,
+              )
+              .join("")}
+          </select>
+          ${
+            categoryOptions.length === 0
+              ? "<small>No hay categorias disponibles por ahora. Puedes guardar la vacante sin categoria.</small>"
+              : ""
+          }
+        </div>
 
         <div class="vacancy-field">
           <label for="vacancy-modality">Modalidad</label>
           <select id="vacancy-modality" name="modality">
-            <option value="">(sin definir)</option>
-            ${VACANCY_MODALITIES.map((item) => `<option value="${item.value}">${item.label}</option>`).join("")}
+            ${renderOptionList(VACANCY_MODALITIES, vacancy.modality, "(sin definir)")}
           </select>
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-level">Nivel</label>
           <select id="vacancy-level" name="level">
-            <option value="">(sin definir)</option>
-            ${VACANCY_LEVELS.map((item) => `<option value="${item.value}">${item.label}</option>`).join("")}
+            ${renderOptionList(VACANCY_LEVELS, vacancy.level, "(sin definir)")}
           </select>
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-type">Tipo</label>
           <select id="vacancy-type" name="type">
-            <option value="">(sin definir)</option>
-            ${VACANCY_TYPES.map((item) => `<option value="${item.value}">${item.label}</option>`).join("")}
+            ${renderOptionList(VACANCY_TYPES, vacancy.type, "(sin definir)")}
           </select>
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-salary-min">Salario minimo</label>
-          <input id="vacancy-salary-min" name="salaryMin" type="number" min="0" step="1" />
+          <input id="vacancy-salary-min" name="salaryMin" type="number" min="0" step="1" value="${escapeHtml(vacancy.salaryMin)}" />
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-salary-max">Salario maximo</label>
-          <input id="vacancy-salary-max" name="salaryMax" type="number" min="0" step="1" />
+          <input id="vacancy-salary-max" name="salaryMax" type="number" min="0" step="1" value="${escapeHtml(vacancy.salaryMax)}" />
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-application-deadline">Fecha limite</label>
-          <input id="vacancy-application-deadline" name="applicationDeadline" type="date" />
+          <input id="vacancy-application-deadline" name="applicationDeadline" type="date" value="${escapeHtml(toDateInputValue(vacancy.applicationDeadline))}" />
         </div>
 
         <div class="vacancy-field">
           <label for="vacancy-openings">Vacantes</label>
-          <input id="vacancy-openings" name="openings" type="number" min="1" step="1" />
+          <input id="vacancy-openings" name="openings" type="number" min="1" step="1" value="${escapeHtml(vacancy.openings)}" />
         </div>
       </div>
 
       <div class="vacancy-create-actions">
-        <button type="submit" class="btn btn--primary" id="create-vacancy-submit" ${canSubmit ? "" : "disabled"}>Crear vacante</button>
-        <a href="#${config.ROUTES.COMPANY_DASHBOARD}" class="btn btn--outline">Cancelar</a>
+        <button type="submit" class="btn btn--primary" id="edit-vacancy-submit" ${canSubmit ? "" : "disabled"}>Guardar cambios</button>
+        <a href="#${config.ROUTES.MY_VACANCIES}" class="btn btn--outline">Cancelar</a>
       </div>
     </form>
   `;
 
   const shell = renderRoleShell({
-    title: "Crear vacante",
-    subtitle: "Publica una vacante nueva con el contrato real del backend.",
+    title: "Editar vacante",
+    subtitle: "Actualiza los datos de la vacante seleccionada.",
     roles,
     primaryRole,
     content,
-    actions: `<a href="#${config.ROUTES.COMPANY_DASHBOARD}" class="btn btn--outline btn--sm">Volver al panel</a>`,
+    actions: `<a href="#${config.ROUTES.MY_VACANCIES}" class="btn btn--outline btn--sm">Volver a mis vacantes</a>`,
     shellClass: "vacancy-create-shell",
   });
 
@@ -606,7 +659,7 @@ function getCreateVacancyHTML(authContext, options = {}) {
   });
 }
 
-function validateCreateVacancyForm(formData) {
+function validateEditVacancyForm(formData) {
   const companyId = String(formData.get("companyId") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
@@ -627,7 +680,7 @@ function validateCreateVacancyForm(formData) {
   }
 
   if (!getOptionValues(VACANCY_STATUSES).includes(status)) {
-    throw new Error("El estado debe ser draft o published.");
+    throw new Error("El estado seleccionado no es valido.");
   }
 
   const salaryMin = parseOptionalNumber(formData.get("salaryMin"));
@@ -679,7 +732,6 @@ function validateCreateVacancyForm(formData) {
   }
 
   const payload = {
-    companyId,
     title,
     description,
     requirements,
@@ -731,72 +783,113 @@ function setSubmitting(form, submitBtn, isSubmitting) {
   if (submitBtn) {
     submitBtn.disabled = isSubmitting;
     submitBtn.setAttribute("aria-busy", String(isSubmitting));
-    submitBtn.textContent = isSubmitting ? "Creando..." : "Crear vacante";
+    submitBtn.textContent = isSubmitting ? "Guardando..." : "Guardar cambios";
   }
 }
 
-export async function initCreateVacancyPage() {
+function normalizeVacancyForForm(vacancy = {}) {
+  return {
+    id: vacancy.id || "",
+    companyId: String(vacancy.companyId || vacancy.company_id || "").trim(),
+    title: String(vacancy.title || "").trim(),
+    description: String(vacancy.description || "").trim(),
+    requirements: String(vacancy.requirements || "").trim(),
+    country: String(vacancy.country || "").trim(),
+    city: String(vacancy.city || "").trim(),
+    categoryId: String(vacancy.categoryId || vacancy.category_id || "").trim(),
+    modality: String(vacancy.modality || "").trim(),
+    level: String(vacancy.level || "").trim(),
+    type: String(vacancy.type || "").trim(),
+    salaryMin: vacancy.salaryMin ?? vacancy.salary_min ?? "",
+    salaryMax: vacancy.salaryMax ?? vacancy.salary_max ?? "",
+    applicationDeadline:
+      vacancy.applicationDeadline ?? vacancy.application_deadline ?? "",
+    openings: vacancy.openings ?? "",
+    status: String(vacancy.status || "draft").trim() || "draft",
+  };
+}
+
+function resolveVacancyIdFromRoute(vacancyIdOrParams) {
+  if (
+    vacancyIdOrParams &&
+    typeof vacancyIdOrParams === "object" &&
+    !Array.isArray(vacancyIdOrParams)
+  ) {
+    return String(vacancyIdOrParams.id || "").trim();
+  }
+
+  return String(vacancyIdOrParams || "").trim();
+}
+
+export async function initEditVacancyPage(vacancyIdOrParams) {
   const app = document.getElementById("app");
   const authContext = getAuthUiContext();
+  const vacancyId = resolveVacancyIdFromRoute(vacancyIdOrParams);
 
-  showLoading("Preparando formulario de vacantes...");
+  if (!vacancyId) {
+    const { isAuthenticated, user, roles, primaryRole } = authContext;
+    const navbar = renderNavbar({
+      activeRoute: config.ROUTES.MY_VACANCIES,
+      isAuthenticated,
+      user,
+      roles,
+      primaryRole,
+    });
+
+    const state = renderContentState({
+      type: "error",
+      icon: "alert",
+      title: "Vacante no valida",
+      message: "No se encontro un identificador para editar la vacante.",
+      actionLabel: "Volver a mis vacantes",
+      actionHref: `#${config.ROUTES.MY_VACANCIES}`,
+    });
+
+    app.innerHTML = renderPage({
+      navbar,
+      main: `<div class="container" style="padding: 32px 0;">${state}</div>`,
+      pageClass: "vacancy-create-page",
+    });
+    return;
+  }
+
+  showLoading("Cargando vacante para edicion...");
 
   try {
-    const [companyContext, categoryOptions] = await Promise.all([
+    const vacancyResult = await vacancyService.getVacancyManage(vacancyId);
+    const managedVacancy = vacancyResult?.data || vacancyResult || {};
+    const vacancy = normalizeVacancyForForm(managedVacancy);
+
+    const [rawCompanyContext, categoryOptions] = await Promise.all([
       resolveCompanySelectionContext(),
       resolveCategoryOptions(),
     ]);
 
-    // 🚀 VALIDACIÓN CRÍTICA DE EMPRESA VERIFICADA
-    let isCompanyVerified = false;
-    // Si resolveCompanySelectionContext trajo una empresa por defecto (selectedCompanyId)
-    if (companyContext.selectedCompanyId) {
-      try {
-        const companyResult = await companyService.getCompanyById(
-          companyContext.selectedCompanyId,
-        );
-        const companyData = companyResult?.data || companyResult;
-        // Asumimos que el backend retorna 'isVerified' en boolean
-        isCompanyVerified =
-          companyData?.isVerified === true ||
-          companyData?.verificationStatus === "approved";
-      } catch (e) {
-        console.error("No se pudo comprobar la verificación de la empresa", e);
-      }
-    }
-
-    const navbar = renderNavbar({
-      activeRoute: config.ROUTES.CREATE_VACANCY,
-      ...authContext,
+    const companyContext = ensureVacancyCompanyOption(rawCompanyContext, {
+      ...managedVacancy,
+      companyId: vacancy.companyId,
     });
 
-    // Si la empresa NO está verificada y el usuario NO es un admin del sistema, bloqueamos la vista.
-    if (!isCompanyVerified && !authContext.roles.includes("admin")) {
-      app.innerHTML = renderNotVerifiedState(
-        navbar,
-        authContext.roles,
-        authContext.primaryRole,
-      );
-      return; // Detenemos la ejecución, no se muestra el form.
-    }
+    const selectedCompanyId =
+      vacancy.companyId ||
+      companyContext.selectedCompanyId ||
+      companyContext.options[0]?.id ||
+      "";
 
-    // SI LLEGA AQUÍ, LA EMPRESA ESTÁ VERIFICADA (o el usuario es Super Admin)
-    const formDefaults = {
+    app.innerHTML = getEditVacancyHTML(authContext, {
+      vacancy,
       companyOptions: companyContext.options,
-      selectedCompanyId: companyContext.selectedCompanyId,
+      selectedCompanyId,
       requiresCompanySelection: companyContext.requiresSelection,
       hasCompanyContext: companyContext.hasCompanyContext,
       categoryOptions,
-      defaultStatus: "draft",
-    };
+    });
 
-    app.innerHTML = getCreateVacancyHTML(authContext, formDefaults);
-
-    const form = document.getElementById("create-vacancy-form");
+    const form = document.getElementById("edit-vacancy-form");
     const companySelect = document.getElementById("vacancy-company");
-    const submitBtn = document.getElementById("create-vacancy-submit");
-    const errorEl = document.getElementById("create-vacancy-error");
-    const successEl = document.getElementById("create-vacancy-success");
+    const submitBtn = document.getElementById("edit-vacancy-submit");
+    const errorEl = document.getElementById("edit-vacancy-error");
+    const successEl = document.getElementById("edit-vacancy-success");
 
     if (!form) {
       return;
@@ -806,23 +899,23 @@ export async function initCreateVacancyPage() {
       event.preventDefault();
       setFeedback(errorEl, successEl);
 
-      const selectedCompanyId = companySelect
+      const selectedCompanyValue = companySelect
         ? String(companySelect.value || "").trim()
-        : String(companyContext.selectedCompanyId || "").trim();
+        : String(selectedCompanyId || "").trim();
 
-      if (!selectedCompanyId) {
+      if (!selectedCompanyValue) {
         setFeedback(errorEl, successEl, {
-          error: "Selecciona una empresa valida para publicar la vacante.",
+          error: "Selecciona una empresa valida para guardar la vacante.",
         });
         return;
       }
 
       const formData = new FormData(form);
-      formData.set("companyId", selectedCompanyId);
+      formData.set("companyId", selectedCompanyValue);
 
       let payload;
       try {
-        payload = validateCreateVacancyForm(formData);
+        payload = validateEditVacancyForm(formData);
       } catch (error) {
         setFeedback(errorEl, successEl, { error: error.message });
         return;
@@ -831,34 +924,52 @@ export async function initCreateVacancyPage() {
       setSubmitting(form, submitBtn, true);
 
       try {
-        const created = await vacancyService.createVacancy(payload);
-        const createdVacancy = created?.data || created;
+        await vacancyService.updateVacancy(vacancyId, payload);
         setFeedback(errorEl, successEl, {
-          success: "Vacante creada correctamente. Redirigiendo al panel...",
+          success: "Vacante actualizada correctamente. Redirigiendo...",
         });
 
-        if (createdVacancy?.id) {
-          form.setAttribute(
-            "data-created-vacancy-id",
-            String(createdVacancy.id),
-          );
-        }
-
         window.setTimeout(() => {
-          window.location.hash = `#${config.ROUTES.COMPANY_DASHBOARD}`;
+          window.location.hash = `#${config.ROUTES.MY_VACANCIES}`;
         }, 1200);
       } catch (error) {
         setFeedback(errorEl, successEl, {
           error: resolveRequestErrorMessage(
             error,
-            "No se pudo crear la vacante. Verifica los datos e intenta nuevamente.",
+            "No se pudo actualizar la vacante. Verifica los datos e intenta nuevamente.",
           ),
         });
         setSubmitting(form, submitBtn, false);
       }
     });
-  } catch (err) {
-    console.error("Error al inicializar la página de creación", err);
-    app.innerHTML = `<div class="container" style="text-align: center; margin-top: 40px;"><p>Hubo un error de conexión.</p></div>`;
+  } catch (error) {
+    console.error("Error loading vacancy to edit:", error);
+
+    const { isAuthenticated, user, roles, primaryRole } = authContext;
+    const navbar = renderNavbar({
+      activeRoute: config.ROUTES.MY_VACANCIES,
+      isAuthenticated,
+      user,
+      roles,
+      primaryRole,
+    });
+
+    const state = renderContentState({
+      type: "error",
+      icon: "alert",
+      title: "No se pudo cargar la vacante",
+      message: resolveRequestErrorMessage(
+        error,
+        "Intenta nuevamente en unos segundos.",
+      ),
+      actionLabel: "Volver a mis vacantes",
+      actionHref: `#${config.ROUTES.MY_VACANCIES}`,
+    });
+
+    app.innerHTML = renderPage({
+      navbar,
+      main: `<div class="container" style="padding: 32px 0;">${state}</div>`,
+      pageClass: "vacancy-create-page",
+    });
   }
 }
