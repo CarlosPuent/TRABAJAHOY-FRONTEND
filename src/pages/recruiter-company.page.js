@@ -124,21 +124,11 @@ function showEditCompanyModal(currentData) {
    EVENTS (ACTUALIZADO)
 ========================= */
 function bindEvents(authContext, companyId, currentCompanyData) {
-  // 1. Evento Editar (EL QUE FALTABA)
+  // 1. Evento Editar — redirige al formulario completo de christian
   const editBtn = document.getElementById("btn-edit-company");
   if (editBtn && companyId) {
-    editBtn.onclick = async () => {
-      const newData = await showEditCompanyModal(currentCompanyData);
-      if (!newData) return;
-
-      showLoading("Actualizando datos...");
-      try {
-        await companyService.updateCompany(companyId, newData);
-        showToast("¡Empresa actualizada correctamente!");
-        await initRecruiterCompanyPage(); // Recargamos la página
-      } catch (error) {
-        showToast("Error al actualizar la empresa", "error");
-      }
+    editBtn.onclick = () => {
+      window.location.hash = "#/company/profile/edit";
     };
   }
 

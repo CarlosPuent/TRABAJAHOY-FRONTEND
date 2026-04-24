@@ -15,7 +15,12 @@ export async function initAdminDashboardPage() {
 
   try {
     const response = await api.get("/admin/dashboard");
-    const raw = response.data?.data || response.data || {};
+    // api.get returns response.data (axios body). Backend may use
+    // envelope { success, data: {...} } or return the payload directly.
+    const raw =
+      (response && typeof response === "object"
+        ? response.data || response
+        : null) || {};
     const data = normalizeDashboard(raw);
 
     const user = store.get("user");
@@ -165,14 +170,33 @@ export async function initAdminDashboardPage() {
     });
   } catch (error) {
     console.error("Dashboard error:", error);
-    app.innerHTML = `
-      <div class="container admin-container-centered">
-        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 20px; border-radius: 12px; margin-top: 40px;">
-          <h2 style="margin:0 0 10px;">Oops, algo salió mal</h2>
-          <p>No pudimos cargar la información del panel de control. Por favor intenta recargar la página.</p>
+    const user = store.get("user");
+    const roles = store.getRoles();
+    const primaryRole = store.getPrimaryRole();
+    const navbar = renderNavbar({
+      activeRoute: "/admin/dashboard",
+      isAuthenticated: true,
+      user,
+      roles,
+      primaryRole,
+    });
+    const msg =
+      error?.response?.data?.message ||
+      error?.message ||
+      "Verifica que el backend este corriendo y tu sesion sea valida.";
+    app.innerHTML = renderPage({
+      navbar,
+      main: `
+        <div class="container admin-container-centered">
+          <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 20px; border-radius: 12px; margin-top: 40px;">
+            <h2 style="margin:0 0 10px;">No se pudo cargar el dashboard</h2>
+            <p>${msg}</p>
+          </div>
         </div>
-      </div>
-    `;
+      `,
+      pageClass: "admin-dashboard-page",
+      extraStyles: styles,
+    });
   }
 }
 

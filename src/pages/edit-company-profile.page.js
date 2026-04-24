@@ -49,8 +49,12 @@ export async function initEditCompanyProfilePage(params, query) {
 
     let company = null;
     if (userCompanyId) {
-      const raw = await companyService.getCompanyById(userCompanyId).catch(() => null);
-      company = raw?.data || raw || null;
+      try {
+        const raw = await companyService.getCompanyById(userCompanyId);
+        company = raw?.data || raw || null;
+      } catch (err) {
+        console.warn('No se pudo cargar la empresa:', err);
+      }
     }
 
     document.getElementById('app').innerHTML = getEditHTML(company, isAuthenticated, user);

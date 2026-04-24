@@ -319,7 +319,8 @@ export function renderNavbar({
            <line x1="21" y1="12" x2="9" y2="12"></line>
          </svg>
        </button>`
-    : `<a href="#/login" class="btn btn--login">Login</a>
+    : `<a href="#/login" class="btn btn--login">Candidatos</a>
+       <a href="#/login-company" class="btn btn--login">Empresas</a>
        <a href="#/register" class="btn btn--register">Registrarse</a>`;
 
   return `

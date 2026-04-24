@@ -1,9 +1,7 @@
-// Login Page Controller (Candidato)
+// Company Login Page Controller
 import { authService } from "@services/auth.service";
 import { config } from "@core/config";
 import { ROLE, getDashboardRouteForRoles, hasAnyRole } from "@core/roles";
-
-const CANDIDATE_ALLOWED_ROLES = [ROLE.CANDIDATE];
 import {
   bindPasswordToggle,
   createSubmitStateController,
@@ -19,7 +17,9 @@ import {
   renderPage,
 } from "@utils/ui.js";
 
-export async function initLoginPage(params, query) {
+const COMPANY_ROLES = [ROLE.RECRUITER, ROLE.COMPANY_ADMIN, ROLE.ADMIN];
+
+export async function initLoginCompanyPage(params, query) {
   const { isAuthenticated, roles } = getAuthUiContext();
   if (isAuthenticated) {
     window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
@@ -27,26 +27,26 @@ export async function initLoginPage(params, query) {
   }
 
   showLoading("Cargando...");
-  renderLoginPage();
-  initLoginEvents();
+  renderLoginCompanyPage();
+  initLoginCompanyEvents();
 }
 
-function renderLoginPage() {
+function renderLoginCompanyPage() {
   const navbar = renderNavbar({ activeRoute: "" });
 
   const form = `
-    <form class="auth-form" id="login-form" novalidate>
-      ${renderAuthErrorBlock("login-error")}
+    <form class="auth-form" id="login-company-form" novalidate>
+      ${renderAuthErrorBlock("login-company-error")}
 
       <div class="auth-form__fields">
         <div class="auth-field">
-          <label class="sr-only" for="login-email">Correo electrónico</label>
-          <input type="email" id="login-email" class="auth-input" placeholder="Correo electrónico" autocomplete="email" required />
+          <label class="sr-only" for="login-company-email">Correo corporativo</label>
+          <input type="email" id="login-company-email" class="auth-input" placeholder="Correo corporativo" autocomplete="email" required />
         </div>
 
         <div class="auth-field auth-field--password">
-          <label class="sr-only" for="login-password">Contraseña</label>
-          <input type="password" id="login-password" class="auth-input" placeholder="Contraseña" autocomplete="current-password" required />
+          <label class="sr-only" for="login-company-password">Contraseña</label>
+          <input type="password" id="login-company-password" class="auth-input" placeholder="Contraseña" autocomplete="current-password" required />
           <button type="button" class="auth-password-toggle" id="toggle-password" aria-label="Mostrar contraseña" aria-pressed="false">
             <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -56,16 +56,16 @@ function renderLoginPage() {
         </div>
 
         <div class="auth-form__actions">
-          <label class="auth-checkbox" for="remember-me">
-            <input type="checkbox" id="remember-me" class="auth-checkbox__input" />
+          <label class="auth-checkbox" for="remember-me-company">
+            <input type="checkbox" id="remember-me-company" class="auth-checkbox__input" />
             <span class="auth-checkbox__label">Recuérdame</span>
           </label>
           <span class="auth-form__hint" aria-hidden="true">Olvidé la contraseña</span>
         </div>
       </div>
 
-      <button type="submit" class="btn btn--primary btn--full-width auth-submit" id="login-btn">
-        Iniciar Sesión
+      <button type="submit" class="btn btn--primary btn--full-width auth-submit" id="login-company-btn">
+        Acceder al Panel Empresa
         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
@@ -76,14 +76,14 @@ function renderLoginPage() {
 
   const mainContent = renderAuthShell({
     variant: "login",
-    cardClass: "auth-card--login",
-    eyebrow: "Acceso Candidato",
-    title: "Iniciar Sesión",
+    cardClass: "auth-card--login auth-card--company",
+    eyebrow: "Acceso Empresa",
+    title: "Portal Empresas",
     subtitle:
-      'Entra para postularte a vacantes y gestionar tu perfil. ¿No tienes cuenta? <a href="#/register" class="auth-card__subtitle-link">Crear Cuenta</a>',
+      'Gestiona vacantes, postulantes y tu perfil corporativo. ¿Aún no tienes cuenta empresarial? <a href="#/register-company" class="auth-card__subtitle-link">Registrar Empresa</a>',
     form,
     footer:
-      "Tus credenciales se usan solo para autenticar tu sesión en TrabajaHoy.",
+      "Usa las credenciales del reclutador o administrador asociadas a tu empresa.",
   });
 
   document.getElementById("app").innerHTML = renderPage({
@@ -92,13 +92,13 @@ function renderLoginPage() {
   });
 }
 
-function initLoginEvents() {
-  const form = document.getElementById("login-form");
-  const emailInput = document.getElementById("login-email");
-  const passwordInput = document.getElementById("login-password");
-  const submitBtn = document.getElementById("login-btn");
+function initLoginCompanyEvents() {
+  const form = document.getElementById("login-company-form");
+  const emailInput = document.getElementById("login-company-email");
+  const passwordInput = document.getElementById("login-company-password");
+  const submitBtn = document.getElementById("login-company-btn");
   const togglePasswordBtn = document.getElementById("toggle-password");
-  const errorDiv = document.getElementById("login-error");
+  const errorDiv = document.getElementById("login-company-error");
   const setSubmitting = createSubmitStateController({
     submitButton: submitBtn,
     controls: [emailInput, passwordInput],
@@ -124,19 +124,19 @@ function initLoginEvents() {
       await authService.login({ email, password });
       const { roles } = getAuthUiContext();
 
-      if (!hasAnyRole(roles, CANDIDATE_ALLOWED_ROLES)) {
+      if (!hasAnyRole(roles, COMPANY_ROLES)) {
         await authService.logout();
         setFormError(
           errorDiv,
-          "Esta cuenta es de empresa. Usa el acceso Empresas para ingresar.",
+          "Esta cuenta no tiene acceso al portal empresas. Inicia sesión como candidato.",
         );
         setSubmitting(false);
         return;
       }
 
-      window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.VACANCIES)}`;
+      window.location.hash = `#${getDashboardRouteForRoles(roles, config.ROUTES.COMPANY_DASHBOARD)}`;
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login company error:", error);
       const message = resolveRequestErrorMessage(
         error,
         "Error de autenticación. Verifica tus credenciales.",

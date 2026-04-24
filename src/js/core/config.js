@@ -48,6 +48,7 @@ export const config = {
     ADMIN_COMPANIES: "/admin/companies",
     LANDING: "/",
     LOGIN: "/login",
+    LOGIN_COMPANY: "/login-company",
     REGISTER_CANDIDATE: "/register",
     REGISTER_COMPANY: "/register-company",
     CANDIDATE_DASHBOARD: "/candidate/dashboard",

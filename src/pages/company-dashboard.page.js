@@ -28,10 +28,34 @@ const formatters = {
     u?.email ||
     "Candidato",
   badge: (status) => {
-    const s = status.toLowerCase();
-    return `<span class="status-pill pill-${s}">${status.toUpperCase()}</span>`;
+    const raw = String(status || "desconocido");
+    const s = raw.toLowerCase();
+    return `<span class="status-pill pill-${s}">${raw.toUpperCase()}</span>`;
   },
 };
+
+function renderSetupRequired(app, authContext) {
+  const navbar = renderNavbar({
+    activeRoute: config.ROUTES.COMPANY_DASHBOARD,
+    ...authContext,
+  });
+  const shell = renderRoleShell({
+    title: "Configura tu empresa",
+    subtitle: "Aún no tienes una empresa asociada",
+    roles: authContext.roles,
+    primaryRole: authContext.primaryRole,
+    content: `
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:40px;text-align:center;">
+        <p style="color:#475569;margin-bottom:20px;">Para ver el dashboard primero debes registrar o asociarte a una empresa.</p>
+        <a href="#${config.ROUTES.EDIT_COMPANY_PROFILE}" class="btn btn--primary">Registrar empresa</a>
+      </div>
+    `,
+  });
+  app.innerHTML = renderPage({
+    navbar,
+    main: `<div class="container">${shell}</div>`,
+  });
+}
 
 /* =========================
    COMPONENTES PREMIUM
@@ -69,11 +93,26 @@ export async function initCompanyDashboardPage() {
       return;
     }
 
-    const [stats, distribution, applications] = await Promise.all([
-      companyService.getDashboard(companyId),
-      companyService.getApplicationsByStatus(companyId),
-      companyService.getRecentApplications(companyId),
-    ]);
+    const [statsRes, distributionRes, applicationsRes] =
+      await Promise.allSettled([
+        companyService.getDashboard(companyId),
+        companyService.getApplicationsByStatus(companyId),
+        companyService.getRecentApplications(companyId),
+      ]);
+
+    const stats =
+      statsRes.status === "fulfilled" ? statsRes.value || {} : {};
+    const distribution =
+      distributionRes.status === "fulfilled"
+        ? distributionRes.value || {}
+        : {};
+    const rawApps =
+      applicationsRes.status === "fulfilled" ? applicationsRes.value : [];
+    const applications = Array.isArray(rawApps)
+      ? rawApps
+      : Array.isArray(rawApps?.data)
+        ? rawApps.data
+        : [];
 
     const navbar = renderNavbar({
       activeRoute: config.ROUTES.COMPANY_DASHBOARD,
@@ -161,7 +200,19 @@ export async function initCompanyDashboardPage() {
     initializeAnalytics(distribution);
   } catch (error) {
     console.error("Dashboard Sync Error:", error);
-    app.innerHTML = `<div class="container-error-premium">Error de sincronización con el servidor.</div>`;
+    const navbar = renderNavbar({
+      activeRoute: config.ROUTES.COMPANY_DASHBOARD,
+      ...authContext,
+    });
+    app.innerHTML = renderPage({
+      navbar,
+      main: `<div class="container" style="padding:40px 0;">
+        <div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:20px;border-radius:12px;">
+          <h2 style="margin:0 0 10px;">Error al cargar el dashboard</h2>
+          <p>${error?.response?.data?.message || error?.message || "Verifica que el backend este corriendo y tu sesion sea valida."}</p>
+        </div>
+      </div>`,
+    });
   }
 }
 

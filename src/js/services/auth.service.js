@@ -23,10 +23,6 @@ function extractPayload(response) {
   return {};
 }
 
-function normalizeRoles(roles = []) {
-  return roles.map((r) => String(r).toUpperCase());
-}
-
 function normalizeCompanyMembershipEntry(entry = {}) {
   if (!entry || typeof entry !== "object") return null;
 
@@ -140,8 +136,7 @@ function resolveSession(payload = {}) {
 
   const user = enrichUserWithCompanyContext(payload?.user || null, payload);
 
-  let roles = resolveRolesFromPayload(payload);
-  roles = normalizeRoles(roles);
+  const roles = resolveRolesFromPayload(payload);
 
   return { accessToken, refreshToken, user, roles };
 }
@@ -151,10 +146,7 @@ function persistAuthSession(payload = {}, options = {}) {
 
   const session = resolveSession(payload);
 
-  let roles = resolveRolesFromPayload(payload, fallbackRoles);
-  roles = normalizeRoles(roles);
-
-  session.roles = roles;
+  session.roles = resolveRolesFromPayload(payload, fallbackRoles);
 
   if (!session.accessToken || !session.user) {
     throw new Error("Respuesta de autenticacion invalida");
@@ -260,8 +252,7 @@ export const authService = {
 
     const user = enrichUserWithCompanyContext(payload?.user || null, payload);
 
-    let roles = resolveRolesFromPayload(payload);
-    roles = normalizeRoles(roles);
+    const roles = resolveRolesFromPayload(payload);
 
     if (!user) {
       throw new Error("No se pudo obtener el perfil del usuario autenticado");

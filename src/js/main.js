@@ -13,6 +13,7 @@ import {
 // ── Public pages ────────────────────────────────────────────────────────────
 import { initLandingPage } from "@pages/landing.page.js";
 import { initLoginPage } from "@pages/login.page.js";
+import { initLoginCompanyPage } from "@pages/login-company.page.js";
 import { initRegisterPage } from "@pages/register.page.js";
 import { initVacanciesPage } from "@pages/vacancies.page.js";
 import { initVacancyDetailPage } from "@pages/vacancy-detail.page.js";
@@ -43,7 +44,6 @@ import { initApplicantDetailPage } from "@pages/applicant-detail.page.js";
 import { initCandidatePublicProfilePage } from "@pages/candidate-public-profile.page.js";
 import { initCompanyMembersPage } from "@pages/company-members.page.js";
 import { initCompanyDashboardPage } from "@pages/company-dashboard.page.js";
-import { initApplicantsPage } from "@pages/applicants.page.js";
 import { initRecruiterManagementPage } from "@pages/recruiter-management.page.js";
 import { initRecruiterCompanyPage } from "@pages/recruiter-company.page.js";
 
@@ -119,6 +119,7 @@ function isAuthEntrypointPath(path) {
   return [
     config.ROUTES.LANDING,
     config.ROUTES.LOGIN,
+    config.ROUTES.LOGIN_COMPANY,
     config.ROUTES.REGISTER_CANDIDATE,
   ].includes(path);
 }
@@ -227,6 +228,9 @@ function registerRoutes() {
   // ── Public ──────────────────────────────────────────────────────────────
   router.on(config.ROUTES.LANDING, initLandingPage, { redirectIfAuth: true });
   router.on(config.ROUTES.LOGIN, initLoginPage, { redirectIfAuth: true });
+  router.on(config.ROUTES.LOGIN_COMPANY, initLoginCompanyPage, {
+    redirectIfAuth: true,
+  });
   router.on(config.ROUTES.REGISTER_CANDIDATE, initRegisterPage, {
     redirectIfAuth: true,
   });
@@ -345,17 +349,13 @@ function registerRoutes() {
   );
 
   // IMPORTANT: register the more-specific /create route BEFORE /:id/applicants
-  // Use puente's new applicants page (kanban pipeline)
-  router.on(
-    config.ROUTES.VACANCY_APPLICANTS,
-    async (params) => {
-      await initApplicantsPage(params);
-    },
-    {
-      requiresAuth: true,
-      roles: [ROLE.RECRUITER, ROLE.ADMIN],
-    },
-  );
+  // Use christian's company applicants page (maintains postulation handling)
+  router.on(config.ROUTES.VACANCY_APPLICANTS, async (params) => {
+    await initCompanyApplicantsPage(params.id);
+  }, {
+    requiresAuth: true,
+    roles: [ROLE.RECRUITER, ROLE.ADMIN],
+  });
 
   router.on(config.ROUTES.APPLICANT_DETAIL, async (params) => {
     await initApplicantDetailPage(params.id);
