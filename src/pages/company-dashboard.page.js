@@ -28,8 +28,8 @@ const formatters = {
     u?.email ||
     "Candidato",
   badge: (status) => {
-    const s = status.toLowerCase();
-    return `<span class="status-pill pill-${s}">${status.toUpperCase()}</span>`;
+    const s = status ? status.toLowerCase() : "pending";
+    return `<span class="status-pill pill-${s}">${s.toUpperCase()}</span>`;
   },
 };
 
@@ -37,7 +37,7 @@ const formatters = {
    COMPONENTES PREMIUM
 ========================= */
 
-function renderMetricCard(label, value, trend = "") {
+function renderMetricCard(label, value) {
   return `
     <div class="metric-card-premium">
       <div class="metric-content">
@@ -62,9 +62,12 @@ export async function initCompanyDashboardPage() {
   try {
     const profile = await authService.fetchCurrentUserProfile();
     const user = profile?.user || store.get("user");
+
+    // Resolución de ID de empresa desde múltiples fuentes posibles
     const companyId = user?.companyId || user?.company?.id || user?.company_id;
 
-    if (!companyId || companyId === "undefined") {
+    // 🔥 FIX: Validación de existencia de empresa
+    if (!companyId || companyId === "undefined" || companyId === "null") {
       renderSetupRequired(app, authContext);
       return;
     }
@@ -117,7 +120,7 @@ export async function initCompanyDashboardPage() {
                 </thead>
                 <tbody>
                   ${
-                    applications.length > 0
+                    applications && applications.length > 0
                       ? applications
                           .map(
                             (a) => `
@@ -145,8 +148,8 @@ export async function initCompanyDashboardPage() {
     `;
 
     const shell = renderRoleShell({
-      title: "Dashboard",
-      subtitle: user?.company?.name || "Enterprise Management",
+      title: "Dashboard Operativo",
+      subtitle: user?.company?.name || "Gestión Corporativa",
       roles: authContext.roles,
       primaryRole: authContext.primaryRole,
       content,
@@ -161,8 +164,73 @@ export async function initCompanyDashboardPage() {
     initializeAnalytics(distribution);
   } catch (error) {
     console.error("Dashboard Sync Error:", error);
-    app.innerHTML = `<div class="container-error-premium">Error de sincronización con el servidor.</div>`;
+    app.innerHTML = `
+      <div class="container" style="padding-top: 50px;">
+        <div class="premium-card" style="text-align:center; padding: 60px;">
+           <h2 style="color: #0f172a; margin-bottom: 16px;">Error de Sincronización</h2>
+           <p style="color: #64748b;">No pudimos recuperar las métricas en este momento. Por favor, intente de nuevo más tarde.</p>
+           <button onclick="location.reload()" class="btn-enterprise-primary" style="margin-top: 24px; cursor: pointer;">Reintentar</button>
+        </div>
+      </div>
+    `;
   }
+}
+
+/* =========================
+   VISTA DE CONFIGURACIÓN REQUERIDA
+========================= */
+
+function renderSetupRequired(container, authContext) {
+  const navbar = renderNavbar({
+    activeRoute: config.ROUTES.COMPANY_DASHBOARD,
+    ...authContext,
+  });
+
+  const content = `
+    <div class="setup-required-premium">
+      <div class="premium-card setup-card">
+        <div class="setup-icon">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+        </div>
+        <h2>Identidad Corporativa No Detectada</h2>
+        <p>Para visualizar métricas de rendimiento y gestionar candidatos, es imperativo completar el registro legal de su organización.</p>
+        <div class="setup-actions">
+          <a href="#/company/profile" class="btn-enterprise-primary">Configurar Perfil de Empresa</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const shell = renderRoleShell({
+    title: "Acceso Restringido",
+    subtitle: "Configuración de Cuenta",
+    roles: authContext.roles,
+    primaryRole: authContext.primaryRole,
+    content,
+  });
+
+  container.innerHTML = renderPage({
+    navbar,
+    main: `<div class="container">${shell}</div>`,
+    extraStyles: `
+      ${getEnterpriseStyles()}
+      .setup-required-premium { display: flex; justify-content: center; padding: 60px 0; }
+      .setup-card { max-width: 600px; text-align: center; padding: 64px; border-top: 4px solid var(--brand-orange); }
+      .setup-icon { color: var(--brand-orange); margin-bottom: 32px; }
+      .setup-card h2 { font-size: 28px; font-weight: 800; color: var(--brand-blue); margin-bottom: 16px; letter-spacing: -0.02em; }
+      .setup-card p { color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; font-size: 16px; }
+      .btn-enterprise-primary { 
+        background: var(--brand-blue); color: white; padding: 16px 32px; 
+        border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block;
+        transition: all 0.2s ease;
+      }
+      .btn-enterprise-primary:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    `,
+  });
 }
 
 /* =========================
@@ -173,7 +241,6 @@ function initializeAnalytics(data) {
   const ctx = document.getElementById("applicationsChart");
   if (!ctx || !data || Object.keys(data).length === 0) return;
 
-  // Paleta Premium: Azul noche, Naranja acento, Grises profundos
   const palette = ["#0f172a", "#f97316", "#334155", "#64748b", "#94a3b8"];
 
   new Chart(ctx, {
@@ -194,13 +261,15 @@ function initializeAnalytics(data) {
     },
     options: {
       cutout: "75%",
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: "bottom",
           labels: {
             usePointStyle: true,
             padding: 20,
-            font: { size: 12, family: "'Inter', sans-serif" },
+            font: { size: 12, family: "'Inter', sans-serif", weight: "600" },
           },
         },
       },
@@ -221,67 +290,53 @@ function getEnterpriseStyles() {
 
     .dashboard-premium { display: flex; flex-direction: column; gap: 32px; background: var(--bg-light); }
 
-    /* Metric Cards */
     .metrics-grid-premium { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
     .metric-card-premium { 
-      background: #fff; 
-      padding: 24px; 
-      border-radius: 12px; 
-      border: 1px solid var(--border-soft);
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      background: #fff; padding: 24px; border-radius: 12px; border: 1px solid var(--border-soft);
+      position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     .metric-decoration { 
       position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; 
       background: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-orange) 100%); 
     }
-    .metric-label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.025em; }
-    .metric-value { font-size: 36px; font-weight: 800; color: var(--brand-blue); margin-top: 8px; }
+    .metric-label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-value { font-size: 36px; font-weight: 800; color: var(--brand-blue); margin-top: 8px; letter-spacing: -0.03em; }
 
-    /* Layout Data */
-    .main-data-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
-    @media (max-width: 1024px) { .main-data-layout { grid-template-columns: 1fr; } }
+    .main-data-layout { display: grid; grid-template-columns: 400px 1fr; gap: 24px; }
+    @media (max-width: 1100px) { .main-data-layout { grid-template-columns: 1fr; } }
 
-    .premium-card { background: #fff; border-radius: 12px; border: 1px solid var(--border-soft); padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .card-header-premium { margin-bottom: 24px; }
-    .card-header-premium h3 { font-size: 18px; font-weight: 700; color: var(--brand-blue); }
-    .card-header-premium p { font-size: 14px; color: var(--text-muted); }
+    .premium-card { background: #fff; border-radius: 12px; border: 1px solid var(--border-soft); padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card-header-premium { margin-bottom: 32px; }
+    .card-header-premium h3 { font-size: 20px; font-weight: 800; color: var(--brand-blue); letter-spacing: -0.02em; }
+    .card-header-premium p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
 
-    /* Table Styles */
     .premium-table { width: 100%; border-collapse: separate; border-spacing: 0; }
     .premium-table th { 
-      background: #f1f5f9; 
-      padding: 12px 16px; 
-      text-align: left; 
-      font-size: 12px; 
-      font-weight: 600; 
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-soft);
-      border-bottom: 1px solid var(--border-soft);
+      background: #f8fafc; padding: 16px; text-align: left; font-size: 12px; 
+      font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+      border-top: 1px solid var(--border-soft); border-bottom: 2px solid var(--border-soft);
     }
-    .premium-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+    .premium-table td { padding: 20px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
     
     .user-cell { display: flex; align-items: center; gap: 12px; }
     .user-avatar-mini { 
-      width: 32px; height: 32px; background: var(--brand-blue); color: #fff; 
-      border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;
+      width: 36px; height: 36px; background: var(--brand-blue); color: #fff; 
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;
     }
-    .user-name { font-weight: 600; color: var(--brand-blue); }
-    .td-vacancy { color: var(--text-main); font-weight: 500; }
-    .td-date { color: var(--text-muted); font-size: 13px; }
+    .user-name { font-weight: 700; color: var(--brand-blue); }
+    .td-vacancy { color: var(--text-main); font-weight: 600; }
+    .td-date { color: var(--text-muted); font-size: 13px; font-weight: 500; }
 
-    /* Status Pills */
     .status-pill { 
-      padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block;
-      background: #f1f5f9; color: #475569;
+      padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; display: inline-block;
+      background: #f1f5f9; color: #475569; letter-spacing: 0.02em;
     }
-    .pill-pending { background: #fff7ed; color: #c2410c; } /* Orange soft */
-    .pill-interview { background: #eff6ff; color: #1d4ed8; } /* Blue soft */
-    .pill-accepted { background: #f0fdf4; color: #15803d; } /* Green soft */
-    .pill-rejected { background: #fef2f2; color: #b91c1c; } /* Red soft */
+    .pill-pending { background: #fff7ed; color: #c2410c; }
+    .pill-interview { background: #eff6ff; color: #1d4ed8; }
+    .pill-accepted { background: #f0fdf4; color: #15803d; }
+    .pill-rejected { background: #fef2f2; color: #b91c1c; }
 
-    .chart-wrapper-premium { height: 300px; }
-    .empty-row { text-align: center; padding: 48px !important; color: var(--text-muted); font-style: italic; }
+    .chart-wrapper-premium { height: 320px; position: relative; }
+    .empty-row { text-align: center; padding: 60px !important; color: var(--text-muted); font-style: italic; font-weight: 500; }
   `;
 }
