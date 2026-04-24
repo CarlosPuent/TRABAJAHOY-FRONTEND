@@ -56,6 +56,42 @@ function sanitizeCompanyOption(value, name = "") {
   };
 }
 
+function renderNotVerifiedState(navbar, roles, primaryRole) {
+  const contentHtml = `
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 60px 20px; text-align: center; max-width: 500px; margin: 40px auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <div style="width: 64px; height: 64px; margin: 0 auto 24px; background: #fffbeb; color: #d97706; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </div>
+      <h2 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Empresa no verificada</h2>
+      <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+        Para mantener la calidad y seguridad de Trabaja Hoy, solo las empresas verificadas por un administrador pueden publicar nuevas vacantes.
+      </p>
+      <a href="#${config.ROUTES.COMPANY_DASHBOARD}" class="btn btn--primary" style="display: inline-block;">
+        Ver estado de mi empresa
+      </a>
+    </div>
+  `;
+
+  const shell = renderRoleShell({
+    title: "Crear vacante",
+    subtitle: "Publica una vacante nueva con el contrato real del backend.",
+    roles,
+    primaryRole,
+    content: contentHtml,
+    shellClass: "vacancy-create-shell",
+  });
+
+  return renderPage({
+    navbar,
+    main: `<div class="container">${shell}</div>`,
+    pageClass: "vacancy-create-page",
+    extraStyles: `
+      .vacancy-create-page { min-height: calc(100vh - 70px); background: #f8fafc; padding: 28px 0; }
+      .vacancy-create-shell .role-shell__content { background: transparent; border: none; padding: 0; box-shadow: none; }
+    `,
+  });
+}
+
 function upsertCompanyOption(map, value, name = "") {
   const option = sanitizeCompanyOption(value, name);
   if (!option) return;
@@ -707,82 +743,124 @@ export async function initCreateVacancyPage() {
 
   showLoading("Preparando formulario de vacantes...");
 
-  const [companyContext, categoryOptions] = await Promise.all([
-    resolveCompanySelectionContext(),
-    resolveCategoryOptions(),
-  ]);
+  try {
+    const [companyContext, categoryOptions] = await Promise.all([
+      resolveCompanySelectionContext(),
+      resolveCategoryOptions(),
+    ]);
 
-  const formDefaults = {
-    companyOptions: companyContext.options,
-    selectedCompanyId: companyContext.selectedCompanyId,
-    requiresCompanySelection: companyContext.requiresSelection,
-    hasCompanyContext: companyContext.hasCompanyContext,
-    categoryOptions,
-    defaultStatus: "draft",
-  };
+    // 🚀 VALIDACIÓN CRÍTICA DE EMPRESA VERIFICADA
+    let isCompanyVerified = false;
+    // Si resolveCompanySelectionContext trajo una empresa por defecto (selectedCompanyId)
+    if (companyContext.selectedCompanyId) {
+      try {
+        const companyResult = await companyService.getCompanyById(
+          companyContext.selectedCompanyId,
+        );
+        const companyData = companyResult?.data || companyResult;
+        // Asumimos que el backend retorna 'isVerified' en boolean
+        isCompanyVerified =
+          companyData?.isVerified === true ||
+          companyData?.verificationStatus === "approved";
+      } catch (e) {
+        console.error("No se pudo comprobar la verificación de la empresa", e);
+      }
+    }
 
-  app.innerHTML = getCreateVacancyHTML(authContext, formDefaults);
+    const navbar = renderNavbar({
+      activeRoute: config.ROUTES.CREATE_VACANCY,
+      ...authContext,
+    });
 
-  const form = document.getElementById("create-vacancy-form");
-  const companySelect = document.getElementById("vacancy-company");
-  const submitBtn = document.getElementById("create-vacancy-submit");
-  const errorEl = document.getElementById("create-vacancy-error");
-  const successEl = document.getElementById("create-vacancy-success");
+    // Si la empresa NO está verificada y el usuario NO es un admin del sistema, bloqueamos la vista.
+    if (!isCompanyVerified && !authContext.roles.includes("admin")) {
+      app.innerHTML = renderNotVerifiedState(
+        navbar,
+        authContext.roles,
+        authContext.primaryRole,
+      );
+      return; // Detenemos la ejecución, no se muestra el form.
+    }
 
-  if (!form) {
-    return;
-  }
+    // SI LLEGA AQUÍ, LA EMPRESA ESTÁ VERIFICADA (o el usuario es Super Admin)
+    const formDefaults = {
+      companyOptions: companyContext.options,
+      selectedCompanyId: companyContext.selectedCompanyId,
+      requiresCompanySelection: companyContext.requiresSelection,
+      hasCompanyContext: companyContext.hasCompanyContext,
+      categoryOptions,
+      defaultStatus: "draft",
+    };
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    setFeedback(errorEl, successEl);
+    app.innerHTML = getCreateVacancyHTML(authContext, formDefaults);
 
-    const selectedCompanyId = companySelect
-      ? String(companySelect.value || "").trim()
-      : String(companyContext.selectedCompanyId || "").trim();
+    const form = document.getElementById("create-vacancy-form");
+    const companySelect = document.getElementById("vacancy-company");
+    const submitBtn = document.getElementById("create-vacancy-submit");
+    const errorEl = document.getElementById("create-vacancy-error");
+    const successEl = document.getElementById("create-vacancy-success");
 
-    if (!selectedCompanyId) {
-      setFeedback(errorEl, successEl, {
-        error: "Selecciona una empresa valida para publicar la vacante.",
-      });
+    if (!form) {
       return;
     }
 
-    const formData = new FormData(form);
-    formData.set("companyId", selectedCompanyId);
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setFeedback(errorEl, successEl);
 
-    let payload;
-    try {
-      payload = validateCreateVacancyForm(formData);
-    } catch (error) {
-      setFeedback(errorEl, successEl, { error: error.message });
-      return;
-    }
+      const selectedCompanyId = companySelect
+        ? String(companySelect.value || "").trim()
+        : String(companyContext.selectedCompanyId || "").trim();
 
-    setSubmitting(form, submitBtn, true);
-
-    try {
-      const created = await vacancyService.createVacancy(payload);
-      const createdVacancy = created?.data || created;
-      setFeedback(errorEl, successEl, {
-        success: "Vacante creada correctamente. Redirigiendo al panel...",
-      });
-
-      if (createdVacancy?.id) {
-        form.setAttribute("data-created-vacancy-id", String(createdVacancy.id));
+      if (!selectedCompanyId) {
+        setFeedback(errorEl, successEl, {
+          error: "Selecciona una empresa valida para publicar la vacante.",
+        });
+        return;
       }
 
-      window.setTimeout(() => {
-        window.location.hash = `#${config.ROUTES.COMPANY_DASHBOARD}`;
-      }, 1200);
-    } catch (error) {
-      setFeedback(errorEl, successEl, {
-        error: resolveRequestErrorMessage(
-          error,
-          "No se pudo crear la vacante. Verifica los datos e intenta nuevamente.",
-        ),
-      });
-      setSubmitting(form, submitBtn, false);
-    }
-  });
+      const formData = new FormData(form);
+      formData.set("companyId", selectedCompanyId);
+
+      let payload;
+      try {
+        payload = validateCreateVacancyForm(formData);
+      } catch (error) {
+        setFeedback(errorEl, successEl, { error: error.message });
+        return;
+      }
+
+      setSubmitting(form, submitBtn, true);
+
+      try {
+        const created = await vacancyService.createVacancy(payload);
+        const createdVacancy = created?.data || created;
+        setFeedback(errorEl, successEl, {
+          success: "Vacante creada correctamente. Redirigiendo al panel...",
+        });
+
+        if (createdVacancy?.id) {
+          form.setAttribute(
+            "data-created-vacancy-id",
+            String(createdVacancy.id),
+          );
+        }
+
+        window.setTimeout(() => {
+          window.location.hash = `#${config.ROUTES.COMPANY_DASHBOARD}`;
+        }, 1200);
+      } catch (error) {
+        setFeedback(errorEl, successEl, {
+          error: resolveRequestErrorMessage(
+            error,
+            "No se pudo crear la vacante. Verifica los datos e intenta nuevamente.",
+          ),
+        });
+        setSubmitting(form, submitBtn, false);
+      }
+    });
+  } catch (err) {
+    console.error("Error al inicializar la página de creación", err);
+    app.innerHTML = `<div class="container" style="text-align: center; margin-top: 40px;"><p>Hubo un error de conexión.</p></div>`;
+  }
 }

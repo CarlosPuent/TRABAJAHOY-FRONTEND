@@ -9,6 +9,10 @@ const AUTH_ROLE_VALIDATION_ERROR =
 const AUTH_ROLE_MISSING_ERROR =
   "No pudimos iniciar sesión porque tu cuenta no tiene un rol asignado.";
 
+/* =========================
+   HELPERS
+========================= */
+
 function extractPayload(response) {
   if (response && typeof response === "object") {
     if (response.data && typeof response.data === "object") {
@@ -19,10 +23,12 @@ function extractPayload(response) {
   return {};
 }
 
+function normalizeRoles(roles = []) {
+  return roles.map((r) => String(r).toUpperCase());
+}
+
 function normalizeCompanyMembershipEntry(entry = {}) {
-  if (!entry || typeof entry !== "object") {
-    return null;
-  }
+  if (!entry || typeof entry !== "object") return null;
 
   const company =
     entry.company && typeof entry.company === "object" ? entry.company : null;
@@ -35,9 +41,7 @@ function normalizeCompanyMembershipEntry(entry = {}) {
     company?.company_id ||
     "";
 
-  if (!companyId) {
-    return null;
-  }
+  if (!companyId) return null;
 
   const companyName =
     entry.companyName ||
@@ -92,9 +96,7 @@ function collectCompanyMemberships(payload = {}, user = null) {
 }
 
 function enrichUserWithCompanyContext(user = null, payload = {}) {
-  if (!user || typeof user !== "object") {
-    return user;
-  }
+  if (!user || typeof user !== "object") return user;
 
   const memberships = collectCompanyMemberships(payload, user);
   const firstMembership = memberships[0] || null;
@@ -135,16 +137,24 @@ function enrichUserWithCompanyContext(user = null, payload = {}) {
 function resolveSession(payload = {}) {
   const accessToken = payload?.accessToken || null;
   const refreshToken = payload?.refreshToken || null;
+
   const user = enrichUserWithCompanyContext(payload?.user || null, payload);
-  const roles = resolveRolesFromPayload(payload);
+
+  let roles = resolveRolesFromPayload(payload);
+  roles = normalizeRoles(roles);
 
   return { accessToken, refreshToken, user, roles };
 }
 
 function persistAuthSession(payload = {}, options = {}) {
   const { fallbackRoles = [] } = options;
+
   const session = resolveSession(payload);
-  session.roles = resolveRolesFromPayload(payload, fallbackRoles);
+
+  let roles = resolveRolesFromPayload(payload, fallbackRoles);
+  roles = normalizeRoles(roles);
+
+  session.roles = roles;
 
   if (!session.accessToken || !session.user) {
     throw new Error("Respuesta de autenticacion invalida");
@@ -168,11 +178,11 @@ function isUnauthorizedError(error) {
   return error?.response?.status === 401;
 }
 
+/* =========================
+   SERVICE
+========================= */
+
 export const authService = {
-  /**
-   * Register a new candidate
-   * @param {Object} data - { email, password, firstName, lastName }
-   */
   async registerCandidate(data) {
     const response = await api.post("/auth/register", data);
 
@@ -193,42 +203,38 @@ export const authService = {
     return payload;
   },
 
-  /**
-   * Login user
-   * @param {Object} credentials - { email, password }
-   */
   async login(credentials) {
     const response = await api.post("/auth/login", credentials);
 
     const payload = extractPayload(response);
     const session = persistAuthSession(payload);
 
-    if (session.roles.length === 0) {
+    // 🔥 VALIDACIÓN FUERTE DE ROLES
+    if (!session.roles || session.roles.length === 0) {
       try {
-        await this.fetchCurrentUserProfile();
+        const profile = await this.fetchCurrentUserProfile();
+
+        if (!profile.roles || profile.roles.length === 0) {
+          throw new Error(AUTH_ROLE_MISSING_ERROR);
+        }
       } catch {
         store.clearAuth();
         storage.clearAuthSession();
         throw new Error(AUTH_ROLE_VALIDATION_ERROR);
       }
-
-      if (store.getRoles().length === 0) {
-        store.clearAuth();
-        storage.clearAuthSession();
-        throw new Error(AUTH_ROLE_MISSING_ERROR);
-      }
     }
+
+    // 🔥 evitar race condition con router
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     return payload;
   },
 
-  /**
-   * Refresh access token
-   * @param {string} refreshToken
-   */
   async refreshToken(refreshToken) {
     const response = await api.post("/auth/refresh", { refreshToken });
+
     const payload = extractPayload(response);
+
     const accessToken = payload?.accessToken || null;
     const newRefreshToken = payload?.refreshToken || null;
 
@@ -236,54 +242,51 @@ export const authService = {
       throw new Error("No se pudo refrescar el access token");
     }
 
-    // Update store and storage
     store.set("accessToken", accessToken);
     store.set("refreshToken", newRefreshToken);
-    storage.setTokens({ accessToken, refreshToken: newRefreshToken });
+
+    storage.setTokens({
+      accessToken,
+      refreshToken: newRefreshToken,
+    });
 
     return payload;
   },
 
-  /**
-   * Get current user profile
-   */
   async fetchCurrentUserProfile() {
     const response = await api.get("/auth/me");
+
     const payload = extractPayload(response);
+
     const user = enrichUserWithCompanyContext(payload?.user || null, payload);
-    const roles = resolveRolesFromPayload(payload);
+
+    let roles = resolveRolesFromPayload(payload);
+    roles = normalizeRoles(roles);
 
     if (!user) {
       throw new Error("No se pudo obtener el perfil del usuario autenticado");
     }
 
-    // Update store
     store.set("user", user);
     store.set("roles", roles);
+
     storage.setUser(user);
     storage.setRoles(roles);
 
     return { user, roles };
   },
 
-  /**
-   * Logout user
-   */
   async logout() {
     const hadSession = Boolean(
       store.get("accessToken") ||
       store.get("refreshToken") ||
-      storage.getAccessToken() ||
-      storage.getRefreshToken(),
+      storage.getAccessToken(),
     );
 
-    // Local first: guarantees logout even if the request fails or the page reloads.
     store.clearAuth();
     storage.clearAuthSession();
 
-    if (!hadSession) {
-      return;
-    }
+    if (!hadSession) return;
 
     try {
       await api.post("/auth/logout");
@@ -298,30 +301,18 @@ export const authService = {
     }
   },
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated() {
     return store.get("isAuthenticated");
   },
 
-  /**
-   * Get current user
-   */
   getCurrentUser() {
     return store.get("user");
   },
 
-  /**
-   * Get user roles
-   */
   getUserRoles() {
     return store.get("roles");
   },
 
-  /**
-   * Check if user has specific role
-   */
   hasRole(roleName) {
     return store.hasAnyRole([roleName]);
   },

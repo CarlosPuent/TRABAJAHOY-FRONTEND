@@ -45,6 +45,7 @@ export const config = {
 
   // Routes
   ROUTES: {
+    ADMIN_COMPANIES: "/admin/companies",
     LANDING: "/",
     LOGIN: "/login",
     REGISTER_CANDIDATE: "/register",
@@ -79,6 +80,7 @@ export const config = {
     CANDIDATE_PUBLIC_PROFILE: "/candidate/profile/:userId",
     // Company members management
     COMPANY_MEMBERS: "/company/members",
+    COMPANY_RECRUITERS: "/company/recruiters",
     // Admin-only routes
     ADMIN_RESOURCES: "/admin/resources",
     ADMIN_FORUM: "/admin/forum",

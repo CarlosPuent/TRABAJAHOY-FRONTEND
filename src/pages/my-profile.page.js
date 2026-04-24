@@ -29,21 +29,21 @@ export async function initMyProfilePage(params, query) {
     ]);
 
     const profile =
-      profileData.status === "fulfilled" ? profileData.value?.data : null;
-    const experiences =
-      experiencesData.status === "fulfilled"
-        ? experiencesData.value?.data || []
-        : [];
-    const education =
-      educationData.status === "fulfilled"
-        ? educationData.value?.data || []
-        : [];
-    const skills =
-      skillsData.status === "fulfilled" ? skillsData.value?.data || [] : [];
-    const languages =
-      languagesData.status === "fulfilled"
-        ? languagesData.value?.data || []
-        : [];
+  profileData.status === "fulfilled" ? profileData.value || null : null;
+const experiences =
+  experiencesData.status === "fulfilled"
+    ? experiencesData.value || []
+    : [];
+const education =
+  educationData.status === "fulfilled"
+    ? educationData.value || []
+    : [];
+const skills =
+  skillsData.status === "fulfilled" ? skillsData.value || [] : [];
+const languages =
+  languagesData.status === "fulfilled"
+    ? languagesData.value || []
+    : [];
 
     document.getElementById("app").innerHTML = getProfileHTML(
       authContext,
@@ -93,9 +93,9 @@ function getProfileHTML(
   const bio = profile?.bio || "Aún no has escrito tu biografía profesional.";
   const location = profile?.location || "Sin ubicación";
   const availability = profile?.availability || "notLooking";
-  const websiteUrl = profile?.websiteUrl || "";
-  const linkedinUrl = profile?.linkedinUrl || "";
-  const githubUrl = profile?.githubUrl || "";
+  const websiteUrl = profile?.website || "";
+  const linkedinUrl = "";
+  const githubUrl = "";
   const email = user?.email || "";
 
   const availabilityLabels = {
@@ -260,7 +260,7 @@ function getProfileHTML(
                 <div class="timeline-content">
                   <div class="timeline-header">
                     <div>
-                      <h3 class="timeline-title">${exp.position || "Puesto"}</h3>
+                      <h3 class="timeline-title">${exp.role || exp.position || "Puesto"}</h3>
                       <p class="timeline-company">${exp.companyName || "Empresa"}${exp.location ? ` · ${exp.location}` : ""}</p>
                     </div>
                     <span class="timeline-date">${formatDate(exp.startDate)} — ${exp.isCurrent ? "Presente" : formatDate(exp.endDate)}</span>
@@ -298,7 +298,7 @@ function getProfileHTML(
                   <div class="timeline-header">
                     <div>
                       <h3 class="timeline-title">${edu.degree || "Título"}${edu.fieldOfStudy ? ` en ${edu.fieldOfStudy}` : ""}</h3>
-                      <p class="timeline-company">${edu.institutionName || "Institución"}</p>
+                      <p class="timeline-company">${edu.institution || edu.institutionName || ""}</p>
                     </div>
                     <span class="timeline-date">${formatDate(edu.startDate)} — ${edu.isCurrent ? "Presente" : formatDate(edu.endDate)}</span>
                   </div>
@@ -336,7 +336,7 @@ function getProfileHTML(
                 return `
                 <div class="skill-item">
                   <div class="skill-header">
-                    <span class="skill-name">${s.name || "Habilidad"}</span>
+                    <span class="skill-name">${s.skillName || s.name || ""}</span>
                     <span class="skill-level" style="color: ${clr};">${levelLabels[s.level] || ""}</span>
                   </div>
                   <div class="skill-bar">
@@ -368,7 +368,7 @@ function getProfileHTML(
               .map(
                 (l) => `
               <div class="language-item">
-                <span class="language-name">${l.name || "Idioma"}</span>
+                <span class="language-name">${l.languageName || l.name || ""}</span>
                 <span class="language-level" style="background: ${profColors[l.proficiency] || "#6b7280"}20; color: ${profColors[l.proficiency] || "#6b7280"};">${proficiencyLabels[l.proficiency] || ""}</span>
               </div>
             `,
@@ -487,13 +487,26 @@ function getProfileHTML(
 
 function formatDate(dateStr) {
   if (!dateStr) return "—";
+
   try {
-    return new Date(dateStr + "-01").toLocaleDateString("es-ES", {
+    let normalized = dateStr;
+
+    if (/^\d{4}-\d{2}$/.test(dateStr)) {
+      normalized = `${dateStr}-01`;
+    }
+
+    const date = new Date(normalized);
+
+    if (Number.isNaN(date.getTime())) {
+      return "—";
+    }
+
+    return date.toLocaleDateString("es-ES", {
       month: "short",
       year: "numeric",
     });
   } catch {
-    return dateStr;
+    return "—";
   }
 }
 

@@ -1,5 +1,5 @@
 // Application Service
-import { api } from '@services/api';
+import { api } from "@services/api";
 
 export const applicationService = {
   /**
@@ -7,7 +7,7 @@ export const applicationService = {
    * @param {Object} data - { vacancyId, coverLetter, cvFileUrl, resumeUrl }
    */
   async applyToVacancy(data) {
-    const response = await api.post('/applications', data);
+    const response = await api.post("/applications", data);
     return response.data;
   },
 
@@ -19,12 +19,15 @@ export const applicationService = {
    */
   async getApplications(params = {}) {
     if (params.vacancyId) {
-       // use specialized recruiter route
-       const { vacancyId, ...rest } = params;
-       const response = await api.get(`/applications/vacancies/${vacancyId}/applicants`, rest);
-       return response.data;
+      // use specialized recruiter route
+      const { vacancyId, ...rest } = params;
+      const response = await api.get(
+        `/applications/vacancies/${vacancyId}/applicants`,
+        rest,
+      );
+      return response.data;
     }
-    const response = await api.get('/applications', params);
+    const response = await api.get("/applications", params);
     return response.data;
   },
 
@@ -64,7 +67,9 @@ export const applicationService = {
 
   // Application Comments
   async addComment(applicationId, content) {
-    const response = await api.post(`/applications/${applicationId}/comments`, { content });
+    const response = await api.post(`/applications/${applicationId}/comments`, {
+      content,
+    });
     return response.data;
   },
 
@@ -79,7 +84,9 @@ export const applicationService = {
   },
 
   async updateComment(commentId, content) {
-    const response = await api.patch(`/applications/comments/${commentId}`, { content });
+    const response = await api.patch(`/applications/comments/${commentId}`, {
+      content,
+    });
     return response.data;
   },
 
@@ -90,12 +97,12 @@ export const applicationService = {
 
   // Saved Jobs
   async saveJob(vacancyId) {
-    const response = await api.post('/applications/saved-jobs', { vacancyId });
+    const response = await api.post("/applications/saved-jobs", { vacancyId });
     return response.data;
   },
 
   async getSavedJobs() {
-    const response = await api.get('/applications/saved-jobs');
+    const response = await api.get("/applications/saved-jobs");
     return response.data;
   },
 
@@ -106,12 +113,12 @@ export const applicationService = {
 
   // Company Follows
   async followCompany(companyId) {
-    const response = await api.post('/applications/follows', { companyId });
+    const response = await api.post("/applications/follows", { companyId });
     return response.data;
   },
 
   async getFollowedCompanies() {
-    const response = await api.get('/applications/follows');
+    const response = await api.get("/applications/follows");
     return response.data;
   },
 

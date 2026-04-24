@@ -1,458 +1,305 @@
+// My Vacancies Page Controller - Fixed by Puente
 import { config } from "@core/config";
 import { vacancyService } from "@services/vacancy.service";
+import { companyService } from "@services/company.service";
+import { authService } from "@services/auth.service";
 import {
   getAuthUiContext,
   renderContentState,
   renderNavbar,
   renderPage,
   renderRoleShell,
-  resolveRequestErrorMessage,
   showLoading,
+  resolveRequestErrorMessage,
 } from "@utils/ui";
 
+/* =========================
+   HELPERS & UI
+========================= */
+
 function normalizeVacanciesResponse(result) {
-  if (Array.isArray(result)) {
-    return result;
-  }
-
-  if (Array.isArray(result?.data)) {
-    return result.data;
-  }
-
-  if (Array.isArray(result?.items)) {
-    return result.items;
-  }
-
+  if (Array.isArray(result)) return result;
+  if (Array.isArray(result?.data)) return result.data;
+  if (Array.isArray(result?.items)) return result.items;
   return [];
 }
 
-function formatDate(dateValue) {
-  if (!dateValue) return "-";
+function getStatusMeta(status) {
+  const map = {
+    published: { label: "Publicada", color: "#10b981" },
+    draft: { label: "Borrador", color: "#9ca3af" },
+    closed: { label: "Cerrada", color: "#f59e0b" },
+    archived: { label: "Archivada", color: "#64748b" },
+  };
+  return map[status] || map.draft;
+}
 
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
+function customConfirm(
+  title,
+  message,
+  confirmText = "Confirmar",
+  isDanger = false,
+) {
+  return new Promise((resolve) => {
+    const modalHtml = `
+      <div id="custom-modal" class="modal-overlay">
+        <div class="modal-card">
+          <h3>${title}</h3>
+          <p>${message}</p>
+          <div class="modal-actions">
+            <button class="btn btn--outline" id="modal-cancel">Cancelar</button>
+            <button class="btn ${isDanger ? "btn--danger" : "btn--primary"}" id="modal-confirm">${confirmText}</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-  return date.toLocaleDateString("es-PE", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
+    const modal = document.getElementById("custom-modal");
+    modal.querySelector("#modal-cancel").onclick = () => {
+      modal.remove();
+      resolve(false);
+    };
+    modal.querySelector("#modal-confirm").onclick = () => {
+      modal.remove();
+      resolve(true);
+    };
   });
 }
 
-function getStatusMeta(status) {
-  const normalized = String(status || "").toLowerCase();
-
-  if (normalized === "published") {
-    return {
-      label: "Publicada",
-      className: "status-badge status-badge--published",
-    };
-  }
-
-  if (normalized === "draft") {
-    return {
-      label: "Draft",
-      className: "status-badge status-badge--draft",
-    };
-  }
-
-  if (normalized === "closed") {
-    return {
-      label: "Cerrada",
-      className: "status-badge status-badge--closed",
-    };
-  }
-
-  if (normalized === "archived") {
-    return {
-      label: "Archivada",
-      className: "status-badge status-badge--archived",
-    };
-  }
-
-  return {
-    label: normalized || "Desconocido",
-    className: "status-badge",
-  };
+function showToast(message, type = "success") {
+  const el = document.createElement("div");
+  el.className = `toast toast--${type}`;
+  el.innerText = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
 }
 
-function renderVacancyRow(vacancy = {}) {
-  const statusMeta = getStatusMeta(vacancy.status);
-  const location = [vacancy.city, vacancy.country].filter(Boolean).join(", ");
-  const publishDate = vacancy.publishedAt
-    ? formatDate(vacancy.publishedAt)
-    : "-";
-  const createdDate = formatDate(vacancy.createdAt);
+/* =========================
+   COMPONENTS (RENDERS)
+========================= */
+
+// 1. Renderiza la CARD individual
+function renderVacancyCard(v) {
+  const status = getStatusMeta(v.status);
+  const count = v.applicationsCount || 0;
 
   return `
-    <article class="manage-vacancy-card" data-vacancy-id="${vacancy.id}">
-      <header class="manage-vacancy-card__header">
-        <h3 class="manage-vacancy-card__title">${vacancy.title || "Vacante sin titulo"}</h3>
-        <span class="${statusMeta.className}">${statusMeta.label}</span>
-      </header>
-
-      <div class="manage-vacancy-card__meta">
-        <span>${location || "Ubicacion no definida"}</span>
-        ${vacancy.modality ? `<span>${vacancy.modality}</span>` : ""}
-        ${vacancy.level ? `<span>${vacancy.level}</span>` : ""}
+    <article class="vacancy-card ${v.status === "published" ? "vacancy-card--active" : ""}">
+      <div class="vacancy-card__header">
+        <h3>${v.title || "Sin título"}</h3>
+        <span class="badge" style="background:${status.color}15; color:${status.color}">
+          ${status.label}
+        </span>
       </div>
-
-      <dl class="manage-vacancy-card__dates">
-        <div>
-          <dt>Creada</dt>
-          <dd>${createdDate}</dd>
-        </div>
-        <div>
-          <dt>Publicada</dt>
-          <dd>${publishDate}</dd>
-        </div>
-      </dl>
-
-      <footer class="manage-vacancy-card__actions">
+      <div class="vacancy-card__meta">
+        <span>📍 ${[v.city, v.country].filter(Boolean).join(", ") || "Ubicación no definida"}</span>
+      </div>
+      <div class="vacancy-card__stats">
+        <span class="stat">👥 ${count} candidatos</span>
+      </div>
+      <div class="vacancy-card__actions">
         ${
-          String(vacancy.status || "").toLowerCase() === "draft"
-            ? `<button class="btn btn--primary btn--sm" data-publish-vacancy="${vacancy.id}">Publicar</button>`
-            : `<a href="#/company/vacancies/${vacancy.id}/applicants" class="btn btn--primary btn--sm">Ver postulantes</a>`
+          v.status === "published"
+            ? `<button class="btn btn--primary btn--block" data-view-applicants="${v.id}">Ver candidatos</button>`
+            : `<div class="inactive-badge">Vacante Pausada</div>`
         }
-        <a href="#/company/vacancies/edit/${vacancy.id}" class="btn btn--outline btn--sm" style="margin-left: 8px;">Editar</a>
-      </footer>
+        <div class="vacancy-card__secondary">
+          <button class="btn btn--outline btn--sm" data-edit="${v.id}">Editar</button>
+          
+          ${
+            v.status === "published"
+              ? `<button class="btn btn--outline btn--sm btn-warn-text" data-close="${v.id}">Cerrar</button>`
+              : v.status === "closed" || v.status === "draft"
+                ? `<button class="btn btn--outline btn--sm btn-success-text" data-reopen="${v.id}">Publicar</button>`
+                : ""
+          }
+
+          <button class="btn btn--outline btn--sm" data-archive="${v.id}" title="Archivar">📁</button>
+          <button class="btn btn--outline btn--sm btn-danger-icon" data-delete="${v.id}" title="Eliminar">🗑️</button>
+        </div>
+      </div>
     </article>
   `;
 }
 
+// 2. Renderiza la LISTA completa (ESTA ERA LA QUE FALTABA)
 function renderVacancyList(vacancies = []) {
-  if (vacancies.length === 0) {
+  if (!vacancies.length) {
     return renderContentState({
-      title: "Aun no tienes vacantes",
-      message:
-        "Crea tu primera vacante y luego podras publicarla desde este panel.",
+      title: "Sin vacantes",
+      message: "Crea tu primera vacante para comenzar.",
       actionLabel: "Crear vacante",
       actionHref: `#${config.ROUTES.CREATE_VACANCY}`,
     });
   }
 
   return `
-    <section class="manage-vacancies-grid" id="manage-vacancies-grid">
-      ${vacancies.map((vacancy) => renderVacancyRow(vacancy)).join("\n")}
+    <section class="vacancies-grid">
+      ${vacancies.map(renderVacancyCard).join("")}
     </section>
   `;
 }
 
-function renderMyVacanciesHTML(authContext, vacancies = []) {
-  const { isAuthenticated, user, roles, primaryRole } = authContext;
-  const navbar = renderNavbar({
-    activeRoute: config.ROUTES.MY_VACANCIES,
-    isAuthenticated,
-    user,
-    roles,
-    primaryRole,
+/* =========================
+   EVENTS
+========================= */
+
+function bindEvents() {
+  document.querySelectorAll("[data-view-applicants]").forEach((btn) => {
+    btn.onclick = () =>
+      (window.location.hash = `#/company/vacancies/${btn.dataset.viewApplicants}/applicants`);
   });
 
-  const shell = renderRoleShell({
-    title: "Mis Vacantes",
-    subtitle: "Gestiona tus vacantes y publica las que siguen en estado draft.",
-    roles,
-    primaryRole,
-    actions: `<a href="#${config.ROUTES.CREATE_VACANCY}" class="btn btn--primary btn--sm">Nueva vacante</a>`,
-    shellClass: "my-vacancies-shell",
-    content: `
-      <p class="th-feedback th-feedback--info" id="my-vacancies-feedback">Cargando vacantes...</p>
-      ${renderVacancyList(vacancies)}
-    `,
+  document.querySelectorAll("[data-edit]").forEach((btn) => {
+    btn.onclick = () =>
+      (window.location.hash = `#${config.ROUTES.EDIT_VACANCY.replace(":id", btn.dataset.edit)}`);
   });
 
-  const extraStyles = `
-    .my-vacancies-page {
-      min-height: calc(100vh - 70px);
-      padding: 30px 0;
-      background: #f8fafc;
-    }
-    .my-vacancies-shell .role-shell__content {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 20px;
-    }
-    .manage-vacancies-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 14px;
-      margin-top: 12px;
-    }
-    .manage-vacancy-card {
-      border: 1px solid #dbe4ef;
-      border-radius: 12px;
-      padding: 14px;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .manage-vacancy-card__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .manage-vacancy-card__title {
-      margin: 0;
-      font-size: 17px;
-      color: #0f172a;
-      line-height: 1.25;
-    }
-    .manage-vacancy-card__meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      color: #475569;
-      font-size: 13px;
-    }
-    .manage-vacancy-card__meta span {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 999px;
-      padding: 3px 8px;
-    }
-    .manage-vacancy-card__dates {
-      margin: 0;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .manage-vacancy-card__dates dt {
-      font-size: 11px;
-      text-transform: uppercase;
-      color: #64748b;
-      margin: 0 0 3px;
-    }
-    .manage-vacancy-card__dates dd {
-      margin: 0;
-      font-size: 13px;
-      color: #1e293b;
-      font-weight: 600;
-    }
-    .manage-vacancy-card__actions {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      min-height: 34px;
-    }
-    .manage-vacancy-card__published-note {
-      font-size: 13px;
-      color: #166534;
-      font-weight: 600;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 3px 9px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-weight: 700;
-      background: #f1f5f9;
-      color: #334155;
-      border: 1px solid #cbd5e1;
-      flex-shrink: 0;
-    }
-    .status-badge--draft {
-      background: #fff7ed;
-      color: #9a3412;
-      border-color: #fed7aa;
-    }
-    .status-badge--published {
-      background: #ecfdf5;
-      color: #166534;
-      border-color: #bbf7d0;
-    }
-    .status-badge--closed,
-    .status-badge--archived {
-      background: #f8fafc;
-      color: #475569;
-      border-color: #cbd5e1;
-    }
-  `;
-
-  return renderPage({
-    navbar,
-    main: `<div class="container">${shell}</div>`,
-    pageClass: "my-vacancies-page",
-    extraStyles,
-  });
-}
-
-function updateFeedback({ message, type = "info" }) {
-  const feedback = document.getElementById("my-vacancies-feedback");
-  if (!feedback) return;
-
-  feedback.textContent = message;
-  feedback.className = `th-feedback th-feedback--${type}`;
-}
-
-async function publishDraftVacancy(vacancy, publishButton) {
-  if (!vacancy?.id) {
-    throw new Error("Vacante invalida.");
-  }
-
-  if (String(vacancy.status || "").toLowerCase() !== "draft") {
-    throw new Error("Solo se pueden publicar vacantes en estado draft.");
-  }
-
-  publishButton.disabled = true;
-  publishButton.setAttribute("aria-busy", "true");
-  publishButton.textContent = "Publicando...";
-
-  try {
-    const managedResult = await vacancyService.getVacancyManage(vacancy.id);
-    const managedVacancy = managedResult?.data || managedResult;
-
-    if (
-      String(managedVacancy?.status || vacancy.status).toLowerCase() !== "draft"
-    ) {
-      const conflict = new Error(
-        "La vacante ya no esta en draft y no puede publicarse desde este estado.",
+  document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.onclick = async () => {
+      const ok = await customConfirm(
+        "Cerrar vacante",
+        "¿Deseas pausar esta vacante?",
       );
-      conflict.statusCode = 409;
-      throw conflict;
-    }
-
-    const updateResult = await vacancyService.updateVacancy(vacancy.id, {
-      status: "published",
-    });
-
-    const updatedVacancy = updateResult?.data || updateResult || {};
-    return {
-      ...vacancy,
-      ...updatedVacancy,
-      status: "published",
-      publishedAt: updatedVacancy.publishedAt || new Date().toISOString(),
+      if (ok) {
+        try {
+          await vacancyService.updateVacancy(btn.dataset.close, {
+            status: "closed",
+          });
+          showToast("Vacante cerrada");
+          initMyVacanciesPage();
+        } catch (e) {
+          alert(resolveRequestErrorMessage(e));
+        }
+      }
     };
-  } finally {
-    publishButton.removeAttribute("aria-busy");
-  }
-}
+  });
 
-function bindMyVacanciesEvents(state, authContext) {
-  document.querySelectorAll("[data-publish-vacancy]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const vacancyId = button.getAttribute("data-publish-vacancy");
-      const vacancy = state.vacancies.find(
-        (item) => String(item.id) === String(vacancyId),
-      );
-
-      if (!vacancy) {
-        updateFeedback({
-          message: "No se encontro la vacante seleccionada.",
-          type: "error",
-        });
-        return;
-      }
-
-      updateFeedback({
-        message: `Publicando ${vacancy.title || "vacante"}...`,
-        type: "info",
-      });
-
+  document.querySelectorAll("[data-reopen]").forEach((btn) => {
+    btn.onclick = async () => {
       try {
-        const updatedVacancy = await publishDraftVacancy(vacancy, button);
-        state.vacancies = state.vacancies.map((item) =>
-          String(item.id) === String(updatedVacancy.id) ? updatedVacancy : item,
-        );
-
-        const app = document.getElementById("app");
-        if (!app) return;
-        app.innerHTML = renderMyVacanciesHTML(authContext, state.vacancies);
-
-        updateFeedback({
-          message: "Vacante publicada correctamente.",
-          type: "success",
+        await vacancyService.updateVacancy(btn.dataset.reopen, {
+          status: "published",
         });
-
-        bindMyVacanciesEvents(state, authContext);
-      } catch (error) {
-        const isConflict =
-          error?.response?.status === 409 || error?.statusCode === 409;
-
-        updateFeedback({
-          message: isConflict
-            ? "No se pudo publicar porque la vacante ya no esta en estado draft."
-            : resolveRequestErrorMessage(
-                error,
-                "No se pudo publicar la vacante en este momento.",
-              ),
-          type: "error",
-        });
-
-        button.disabled = false;
-        button.textContent = "Publicar";
+        showToast("¡Vacante en línea!");
+        initMyVacanciesPage();
+      } catch (e) {
+        alert(resolveRequestErrorMessage(e));
       }
-    });
+    };
+  });
+
+  document.querySelectorAll("[data-archive]").forEach((btn) => {
+    btn.onclick = async () => {
+      const ok = await customConfirm(
+        "Archivar",
+        "Se ocultará de la lista principal.",
+      );
+      if (ok) {
+        try {
+          await vacancyService.updateVacancy(btn.dataset.archive, {
+            status: "archived",
+          });
+          showToast("Vacante archivada");
+          initMyVacanciesPage();
+        } catch (e) {
+          alert(resolveRequestErrorMessage(e));
+        }
+      }
+    };
+  });
+
+  document.querySelectorAll("[data-delete]").forEach((btn) => {
+    btn.onclick = async () => {
+      const ok = await customConfirm(
+        "¿Eliminar?",
+        "Esta acción es permanente.",
+        "Eliminar",
+        true,
+      );
+      if (ok) {
+        try {
+          await vacancyService.deleteVacancy(btn.dataset.delete);
+          showToast("Vacante borrada", "error");
+          initMyVacanciesPage();
+        } catch (e) {
+          alert(resolveRequestErrorMessage(e));
+        }
+      }
+    };
   });
 }
+
+/* =========================
+   MAIN INITIALIZATION
+========================= */
 
 export async function initMyVacanciesPage() {
   const app = document.getElementById("app");
   const authContext = getAuthUiContext();
-
   showLoading("Cargando tus vacantes...");
 
   try {
-    const manageResult = await vacancyService.getAllVacancies();
-    const vacancies = normalizeVacanciesResponse(manageResult);
-    const state = { vacancies };
+    const result = await vacancyService.getVacanciesForManagement();
+    let vacancies = normalizeVacanciesResponse(result);
 
-    if (!app) {
-      return;
+    // Filtramos las archivadas para que no salgan
+    vacancies = vacancies.filter((v) => v.status !== "archived");
+
+    const freshProfile = await authService.fetchCurrentUserProfile();
+    const currentUser = freshProfile?.user || authContext.user;
+    const companyId = currentUser?.companyId || currentUser?.company?.id;
+
+    let isCompanyVerified = false;
+    if (companyId) {
+      const companyData = await companyService.getCompanyById(companyId);
+      isCompanyVerified =
+        companyData.isVerified === true ||
+        companyData.verificationStatus === "approved";
     }
 
-    app.innerHTML = renderMyVacanciesHTML(authContext, vacancies);
-
-    if (vacancies.length > 0) {
-      updateFeedback({
-        message: `${vacancies.length} vacante${vacancies.length === 1 ? "" : "s"} cargada${vacancies.length === 1 ? "" : "s"}.`,
-        type: "info",
-      });
-    } else {
-      updateFeedback({
-        message: "Aun no tienes vacantes para gestionar.",
-        type: "info",
-      });
-    }
-
-    bindMyVacanciesEvents(state, authContext);
-  } catch (error) {
-    console.error("Error loading managed vacancies:", error);
-    if (!app) return;
-
-    const { isAuthenticated, user, roles, primaryRole } = authContext;
     const navbar = renderNavbar({
       activeRoute: config.ROUTES.MY_VACANCIES,
-      isAuthenticated,
-      user,
-      roles,
-      primaryRole,
+      ...authContext,
     });
 
-    const state = renderContentState({
-      type: "error",
-      icon: "alert",
-      title: "No se pudieron cargar tus vacantes",
-      message: resolveRequestErrorMessage(
-        error,
-        "Intenta nuevamente en unos segundos.",
-      ),
-      actionLabel: "Reintentar",
-      actionHref: `#${config.ROUTES.MY_VACANCIES}`,
+    const shell = renderRoleShell({
+      title: "Mis Vacantes",
+      subtitle: "Gestiona y monitorea tus procesos de contratación",
+      roles: authContext.roles,
+      primaryRole: authContext.primaryRole,
+      actions: isCompanyVerified
+        ? `<a href="#${config.ROUTES.CREATE_VACANCY}" class="btn btn--primary">+ Nueva vacante</a>`
+        : "",
+      content: renderVacancyList(vacancies), // Aquí es donde se llamaba a la función faltante
     });
 
     app.innerHTML = renderPage({
       navbar,
-      main: `<div class="container" style="padding: 32px 0;">${state}</div>`,
-      pageClass: "my-vacancies-page",
+      main: `<div class="container">${shell}</div>`,
+      extraStyles: `
+        .vacancies-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(320px,1fr)); gap:24px; }
+        .vacancy-card { background:#fff; border-radius:18px; padding:22px; border:1px solid #e5e7eb; display:flex; flex-direction:column; gap:16px; transition:.25s ease; position:relative; }
+        .vacancy-card:hover { transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,0.06); }
+        .vacancy-card--active { border-left: 4px solid #3b82f6; }
+        .inactive-badge { background: #f3f4f6; color: #6b7280; text-align: center; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; border: 1px dashed #d1d5db; }
+        .vacancy-card__secondary { display:flex; gap:8px; margin-top: 5px; }
+        .btn-danger-icon { border-color: #fee2e2 !important; filter: grayscale(1); }
+        .btn-danger-icon:hover { filter: grayscale(0); background: #fee2e2; }
+        .btn-warn-text { color: #d97706; border-color: #fef3c7 !important; }
+        .btn-success-text { color: #059669; border-color: #d1fae5 !important; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-card { background: white; padding: 32px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; z-index: 9999; }
+        .toast--success { background: #10b981; }
+        .toast--error { background: #ef4444; }
+      `,
     });
+
+    bindEvents();
+  } catch (error) {
+    app.innerHTML = `<div class="container">${renderContentState({ type: "error", title: "Error", message: resolveRequestErrorMessage(error) })}</div>`;
   }
 }
